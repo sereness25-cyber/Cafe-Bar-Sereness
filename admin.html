@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【管理画面】セレネス統合管理</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f4f4; padding: 20px; color: #333; }
+        .admin-box { background: #fff; max-width: 600px; margin: 0 auto 40px; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h1 { font-size: 1.2em; border-bottom: 2px solid #A68B5B; padding-bottom: 10px; margin-bottom: 20px; }
+        .tab-wrapper { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 10px; border: 1px solid #A68B5B; background: white; color: #A68B5B; cursor: pointer; border-radius: 4px; font-weight: bold; }
+        .tab-btn.active { background: #A68B5B; color: white; }
+        label { display: block; margin-top: 15px; font-weight: bold; font-size: 0.85em; }
+        select, input, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button[type="submit"] { background-color: #A68B5B; color: white; border: none; padding: 12px; margin-top: 20px; width: 100%; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .menu-list-area { margin-top: 30px; border-top: 2px solid #eee; padding-top: 20px; }
+        .menu-item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; font-size: 0.9em; }
+        .menu-item-info { flex: 1; }
+        .btn-group { display: flex; gap: 5px; }
+        .edit-btn { background: #5cb85c; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; }
+        .del-btn { background: #d9534f; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; }
+        #message { margin-top: 15px; text-align: center; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="admin-box">
+    <h1>セレネス 管理画面</h1>
+    <div class="tab-wrapper">
+        <button class="tab-btn active" onclick="switchTab('article')">記事投稿</button>
+        <button class="tab-btn" onclick="switchTab('menu')">メニュー管理</button>
+    </div>
+
+    <form id="postForm">
+        <div id="article-section">
+            <label>投稿先</label>
+            <select id="type"><option value="blog">ブログ</option><option value="news">News</option></select>
+            <label>日付</label><input type="date" id="date">
+            <label>タイトル</label><input type="text" id="title">
+            <label>本文</label><textarea id="content"></textarea>
+        </div>
+
+        <div id="menu-section" style="display: none;">
+            <label>昼夜の区分</label>
+            <select id="timeMode"><option value="day">昼 (Cafe)</option><option value="night">夜 (Bar)</option></select>
+            <label>カテゴリ</label>
+            <select id="menuCategory">
+                <option value="飲み放題">飲み放題 (通常:左上)</option>
+                <option value="アルコール">アルコール (通常:左下)</option>
+                <option value="ソフトドリンク">ソフトドリンク (通常:右上)</option>
+                <option value="フード">フード (通常:右下)</option>
+                <option disabled>──────────</option>
+                <option value="クラフトStep1">クラフトメニュー: Step 1</option>
+                <option value="クラフトStep2">クラフトメニュー: Step 2</option>
+                <option value="クラフトStep3">クラフトメニュー: Step 3</option>
+            </select>
+            <label>商品名（※編集時は同じ名前にしてください）</label><input type="text" id="menuName">
+            <label>金額（※クラフトの場合は空欄でもOK）</label><input type="text" id="menuPrice">
+            <label>簡単な説明</label><input type="text" id="menuDesc">
+        </div>
+
+        <button type="submit" id="submitBtn">保存する</button>
+        <div id="message"></div>
+    </form>
+
+    <div id="menu-list-container" class="menu-list-area" style="display: none;">
+        <h3>登録済みメニュー一覧</h3>
+        <div id="menuItems">読み込み中...</div>
+    </div>
+</div>
+
+<script>
+    // ★重要：ご自身のGASのURLを貼り付けてください
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzQRAhDa8-BhxaB6IqsQ-hTmkAYLlu_x-5VK44U20hibIarUrgLSGz7wmZDgPgFsQKD6g/exec";
+    
+    let currentMode = 'article';
+    let allMenus = [];
+
+    function switchTab(mode) {
+        currentMode = mode;
+        document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', (i===0 && mode==='article') || (i===1 && mode==='menu')));
+        document.getElementById('article-section').style.display = mode === 'article' ? 'block' : 'none';
+        document.getElementById('menu-section').style.display = mode === 'menu' ? 'block' : 'none';
+        document.getElementById('menu-list-container').style.display = mode === 'menu' ? 'block' : 'none';
+        if(mode === 'menu') loadMenus();
+    }
+
+    function loadMenus() {
+        const container = document.getElementById('menuItems');
+        container.innerHTML = '読み込み中...';
+        fetch(GAS_URL).then(res => res.json()).then(data => {
+            allMenus = data.menu || [];
+            container.innerHTML = '';
+            if(allMenus.length === 0) { container.innerHTML = '登録されたメニューはありません。'; return; }
+            allMenus.forEach((m, index) => {
+                const div = document.createElement('div');
+                div.className = 'menu-item-row';
+                div.innerHTML = `
+                    <div class="menu-item-info"><strong>[${m.timeMode === 'day' ? '昼' : '夜'}] ${m.name}</strong><br><small>${m.category} / ${m.price || '-'}</small></div>
+                    <div class="btn-group">
+                        <button type="button" class="edit-btn" onclick="editMenu(${index})">編集</button>
+                        <button type="button" class="del-btn" onclick="deleteMenu('${m.name}', '${m.timeMode}')">削除</button>
+                    </div>`;
+                container.appendChild(div);
+            });
+        }).catch(err => { container.innerHTML = '読み込み失敗'; });
+    }
+
+    function editMenu(index) {
+        const m = allMenus[index];
+        document.getElementById('timeMode').value = m.timeMode;
+        
+        let cat = m.category;
+        if(cat === '単品ドリンク') cat = 'アルコール'; 
+        document.getElementById('menuCategory').value = cat;
+        
+        document.getElementById('menuName').value = m.name;
+        document.getElementById('menuPrice').value = m.price;
+        document.getElementById('menuDesc').value = m.description || "";
+        window.scrollTo(0,0);
+        document.getElementById('message').style.color = "blue";
+        document.getElementById('message').textContent = "編集モード：保存すると上書きされます";
+    }
+
+    function deleteMenu(name, timeMode) {
+        if(!confirm(name + ' を削除しますか？')) return;
+        sendData({ type: "menu_delete", name: name, timeMode: timeMode });
+    }
+
+    document.getElementById('postForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        let payload = {};
+        if (currentMode === 'article') {
+            const rawDate = document.getElementById('date').value;
+            payload = { type: document.getElementById('type').value, date: rawDate ? rawDate.replace(/-/g, '.') : "", title: document.getElementById('title').value, content: document.getElementById('content').value };
+        } else {
+            payload = { type: "menu", timeMode: document.getElementById('timeMode').value, category: document.getElementById('menuCategory').value, name: document.getElementById('menuName').value, price: document.getElementById('menuPrice').value, description: document.getElementById('menuDesc').value };
+        }
+        sendData(payload);
+    });
+
+    function sendData(payload) {
+        const btn = document.getElementById('submitBtn');
+        const msg = document.getElementById('message');
+        btn.disabled = true; btn.textContent = "処理中...";
+        fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) })
+        .then(res => res.json()).then(res => {
+            if (res.status === "success") {
+                msg.style.color = "green"; msg.textContent = "完了しました！";
+                document.getElementById('postForm').reset();
+                if (currentMode === 'menu') loadMenus();
+            } else { msg.style.color = "red"; msg.textContent = "エラー: " + res.message; }
+        })
+        .catch(err => { msg.style.color = "red"; msg.textContent = "通信に失敗しました。"; })
+        .finally(() => { btn.disabled = false; btn.textContent = "保存する"; });
+    }
+</script>
+</body>
+</html>

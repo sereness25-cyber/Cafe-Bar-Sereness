@@ -10,7 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
 
     <style>
-        /* ベース設定 */
         :root {
             --primary-bg: #FAFAFA;
             --text-main: #333333;
@@ -27,50 +26,16 @@
         h1, h2, h3 { text-align: center; font-weight: normal; }
         .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
         
-        /* おしゃれな英字フォント用のクラス */
-        .elegant-font {
-            font-family: 'Playfair Display', serif;
-        }
-        /* 「&」だけ標準の明朝体に戻すためのクラス */
-        .normal-amp {
-            font-family: "Noto Serif JP", "Hiragino Mincho ProN", serif;
-        }
+        .elegant-font { font-family: 'Playfair Display', serif; }
+        .normal-amp { font-family: "Noto Serif JP", "Hiragino Mincho ProN", serif; }
 
-        /* ヘッダー */
         header { background-color: var(--text-main); padding: 20px; text-align: center; }
-        .header-title { 
-            color: #fff; 
-            font-size: 1.4em; 
-            letter-spacing: 0.1em; 
-            font-family: 'Playfair Display', serif; 
-            font-weight: 500;
-        }
+        .header-title { color: #fff; font-size: 1.4em; letter-spacing: 0.1em; font-family: 'Playfair Display', serif; font-weight: 500; }
         
-        /* ヒーロー */
-        .hero {
-            background-color: var(--hero-bg);
-            color: white; 
-            text-align: center;
-            padding: 80px 20px;
-        }
-        .hero-logo { 
-            width: auto;
-            max-width: 600px;
-            height: auto;
-            display: inline-block;
-            margin-bottom: 20px;
-            opacity: 1; 
-            border-radius: 0; 
-            box-shadow: none; 
-        }
-        .hero p { 
-            font-size: 1.1em; 
-            font-weight: 300; 
-            margin: 0; 
-            letter-spacing: 0.1em;
-        }
+        .hero { background-color: var(--hero-bg); color: white; text-align: center; padding: 80px 20px; }
+        .hero-logo { width: 100%; max-width: 500px; height: auto; display: inline-block; margin-bottom: 20px; opacity: 1; }
+        .hero p { font-size: 1.1em; font-weight: 300; margin: 0; letter-spacing: 0.1em; }
         
-        /* セクション共通 */
         .system, .appeal-section, .info-section, .faq-section, .foryou-section {
             background-color: white; border-radius: 0px; padding: 40px 30px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 50px; border: 1px solid #EAEAEA;
@@ -80,98 +45,39 @@
         }
         .section-wrapper { text-align: center; }
 
-        /* Information */
         .info-grid { display: grid; grid-template-columns: 1fr; gap: 40px; text-align: left; }
         @media (min-width: 768px) { .info-grid { grid-template-columns: 1fr 1fr; gap: 30px; } }
         .info-col-title { font-size: 1.1em; color: var(--text-main); border-bottom: 1px solid #DDD; padding-bottom: 10px; margin-bottom: 20px; }
 
-        /* News & Blog リスト */
         .news-list, .blog-list { text-align: left; list-style: none; padding: 0; margin: 0; }
         .news-list li { border-bottom: 1px dashed #DDD; padding: 12px 0; }
         .news-list li:last-child { border-bottom: none; }
         .news-date { color: var(--accent-color); font-size: 0.85em; display: block; margin-bottom: 3px; }
         .news-title { color: var(--text-main); text-decoration: none; font-size: 0.95em; transition: color 0.3s; display: block; }
-        .news-title:hover { color: var(--accent-color); }
         
-        /* ブログサムネイル */
         .blog-item { display: flex; gap: 15px; margin-bottom: 15px; border-bottom: 1px dashed #DDD; padding-bottom: 15px; align-items: center; }
         .blog-item:last-child { border-bottom: none; }
         .blog-thumb { width: 70px; height: 70px; object-fit: cover; border-radius: 2px; background-color: #eee; flex-shrink: 0; }
         .blog-info { flex: 1; }
 
-        /* ▼ How to enjoy (当店でできること) 文字特化セクション ▼ */
-        .enjoy-wrapper {
-            background-color: var(--text-main);
-            color: white;
-            padding: 70px 20px;
-            text-align: center;
-            margin-bottom: 50px;
-        }
-        .enjoy-wrapper h2 {
-            color: var(--accent-color);
-            border-bottom: 1px solid var(--accent-color);
-            padding-bottom: 15px;
-            margin-bottom: 50px;
-            font-size: 1.5em;
-            display: inline-block;
-        }
-        .enjoy-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 25px;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-        @media (min-width: 600px) {
-            .enjoy-grid { grid-template-columns: 1fr 1fr; }
-        }
-        .enjoy-card {
-            background: #fff;
-            color: var(--text-main);
-            border-radius: 4px;
-            padding: 40px 30px; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            text-align: center;
-            border-top: 4px solid var(--accent-color); 
-        }
-        .enjoy-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-        .enjoy-step-num {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.8em;
-            color: var(--accent-color);
-            margin-bottom: 10px;
-            line-height: 1;
-        }
-        .enjoy-card h3 {
-            font-size: 1.15em;
-            margin-top: 0;
-            margin-bottom: 20px;
-            letter-spacing: 0.1em;
-            color: var(--text-main);
-        }
-        .enjoy-card p {
-            font-size: 0.95em;
-            line-height: 1.8;
-            margin: 0;
-            color: #555;
-            text-align: left; 
-        }
+        /* How to enjoy セクション */
+        .enjoy-wrapper { background-color: var(--text-main); color: white; padding: 70px 20px; text-align: center; margin-bottom: 50px; }
+        .enjoy-wrapper h2 { color: var(--accent-color); border-bottom: 1px solid var(--accent-color); padding-bottom: 15px; margin-bottom: 50px; font-size: 1.5em; display: inline-block; }
+        .enjoy-grid { display: grid; grid-template-columns: 1fr; gap: 25px; max-width: 900px; margin: 0 auto; }
+        @media (min-width: 600px) { .enjoy-grid { grid-template-columns: 1fr 1fr; } }
+        .enjoy-card { background: #fff; color: var(--text-main); border-radius: 4px; padding: 40px 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); text-align: center; border-top: 4px solid var(--accent-color); }
+        .enjoy-step-num { font-family: 'Playfair Display', serif; font-size: 2.8em; color: var(--accent-color); margin-bottom: 10px; line-height: 1; }
+        .enjoy-card h3 { font-size: 1.15em; margin-top: 0; margin-bottom: 20px; letter-spacing: 0.1em; color: var(--text-main); }
+        .enjoy-card p { font-size: 0.95em; line-height: 1.8; margin: 0; color: #555; text-align: left; }
 
-        /* 料金システム */
         .price-summary { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
         .price-box { flex: 1; min-width: 250px; padding: 25px; background-color: var(--section-bg); border-top: 3px solid var(--accent-color); text-align: left;}
         .price-box h3 { text-align: left; margin-top: 0; font-size: 1.2em; color: var(--text-main); border-bottom: 1px solid #DDD; padding-bottom: 10px; margin-bottom: 15px; font-family: 'Playfair Display', serif;}
         .price-list { list-style: none; padding: 0; margin: 0; font-size: 0.95em; }
         .price-list li { margin-bottom: 10px; border-bottom: 1px dashed #DDD; padding-bottom: 5px; display: flex; justify-content: space-between;}
 
-        /* コンセプト等 */
         .concept-text { text-align: left; max-width: 600px; margin: 0 auto; font-size: 0.95em; color: #444; }
 
-        /* FAQ */
         .faq-list { text-align: left; }
         .faq-item { margin-bottom: 25px; }
         .faq-item:last-child { margin-bottom: 0; }
@@ -180,22 +86,37 @@
         .faq-a { color: #555; font-size: 0.95em; padding-left: 28px; position: relative; line-height: 1.7; }
         .faq-a::before { content: "A."; color: #999; font-weight: bold; position: absolute; left: 5px; }
 
-        /* ボタン */
-        .btn { display: block; width: 80%; max-width: 340px; margin: 30px auto 20px; padding: 18px 20px; text-align: center; text-decoration: none; font-size: 1.05em; border-radius: 2px; transition: 0.3s; }
+        .btn { display: block; width: 80%; max-width: 340px; margin: 30px auto 20px; padding: 18px 20px; text-align: center; text-decoration: none; font-size: 1.05em; border-radius: 2px; transition: 0.3s; box-sizing: border-box;}
         .btn-menu { background-color: var(--accent-color); color: white; font-weight: bold; }
-        .btn-menu:hover { opacity: 0.8; }
         .btn-line { background-color: #06C755; color: white; font-weight: bold; }
-        .btn-line:hover { opacity: 0.8; }
         .btn-insta { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); color: white; font-weight: bold; }
-        .btn-insta:hover { opacity: 0.8; }
 
-        /* アクセス */
         .access { background-color: var(--text-main); color: white; padding: 50px 20px; text-align: center; }
         .access-info { max-width: 600px; margin: 0 auto 30px; font-size: 0.95em; line-height: 1.8; }
         .map-container { max-width: 800px; margin: 0 auto; height: 350px; background-color: #eee; }
         .map-container iframe { width: 100%; height: 100%; border: 0; }
         
         footer { text-align: center; padding: 25px; font-size: 12px; background-color: #222; color: #888; }
+
+        /* ▼ スマホ用最適化（画面幅767px以下） ▼ */
+        @media (max-width: 767px) {
+            .container { padding: 30px 15px; }
+            .header-title { font-size: 1.2em; }
+            .hero { padding: 50px 15px; }
+            .hero p { font-size: 1em; }
+            
+            .system, .appeal-section, .info-section, .faq-section, .foryou-section { padding: 30px 15px; margin-bottom: 40px; }
+            .system h2, .appeal-section h2, .info-section h2, .faq-section h2, .foryou-section h2 { font-size: 1.2em; margin-bottom: 25px; }
+            
+            .enjoy-wrapper { padding: 50px 15px; margin-bottom: 40px; }
+            .enjoy-wrapper h2 { font-size: 1.3em; margin-bottom: 30px; }
+            .enjoy-card { padding: 25px 20px; }
+            .enjoy-step-num { font-size: 2.2em; }
+            
+            .price-box { padding: 20px; min-width: 100%; box-sizing: border-box; }
+            .btn { width: 100%; font-size: 1em; padding: 15px; }
+            .map-container { height: 250px; }
+        }
     </style>
 </head>
 <body>
@@ -232,7 +153,7 @@
         </div>
 
         <section class="concept-section section-wrapper" style="background: transparent; border: none; box-shadow: none; margin-bottom: 20px;">
-            <h2 style="color: var(--text-main); font-size: 1.4em; border: none; margin-bottom: 30px; letter-spacing: 0.1em;">より自然で、価値のある出会いを。</h2>
+            <h2 style="color: var(--text-main); font-size: 1.3em; border: none; margin-bottom: 30px; letter-spacing: 0.1em;">より自然で、価値のある出会いを。</h2>
             <div class="concept-text">
                 <p>セレネスが提供するのは、肩の力を抜いて、自然体で楽しめる出会いです。</p>
                 <p>美味しいお酒やゲームを楽しみながら、いつもの自分のままで自然な交流を。秋田で一番、自然なつながりを持てる場所。グラスを合わせて、ゲームで笑って。セレネスで新しい繋がりを見つけませんか？</p>
@@ -325,18 +246,18 @@
             </section>
         </div>
 
-        <div class="contact-wrapper" style="margin-top: 60px; text-align: center;">
+        <div class="contact-wrapper" style="margin-top: 50px; text-align: center;">
             <h2 class="elegant-font" style="font-size: 1.2em; color: var(--text-main); margin-bottom: 20px; letter-spacing: 0.1em;">Reservation <span class="normal-amp">&</span> Contact</h2>
             <div style="background-color: white; border: 1px solid #EAEAEA; padding: 20px; max-width: 400px; margin: 0 auto 40px; border-radius: 4px;">
                 <p style="margin: 10px 0; font-size: 1.1em;">TEL : <a href="tel:07011479049" style="color: var(--text-main); text-decoration: none;">070-1147-9049</a></p>
                 <p style="margin: 10px 0; font-size: 1.1em;">Mail : <a href="mailto:c.b.sereness@gmail.com" style="color: var(--text-main); text-decoration: none;">c.b.sereness@gmail.com</a></p>
             </div>
             
-            <h2 class="elegant-font" style="font-size: 1.2em; color: var(--text-main); margin-bottom: 10px; letter-spacing: 0.1em; margin-top: 50px;">Consultation</h2>
+            <h2 class="elegant-font" style="font-size: 1.2em; color: var(--text-main); margin-bottom: 10px; letter-spacing: 0.1em; margin-top: 40px;">Consultation</h2>
             <p style="font-size: 0.9em; color: #666; margin-bottom: 20px;">マスターへの婚活・恋活相談はこちらからお気軽にどうぞ</p>
             <a href="https://lin.ee/oP0e2Kf" target="_blank" class="btn btn-line">婚活・恋活相談はこちら</a>
 
-            <h2 class="elegant-font" style="font-size: 1.2em; color: var(--text-main); margin-bottom: 10px; letter-spacing: 0.1em; margin-top: 50px;">Official SNS</h2>
+            <h2 class="elegant-font" style="font-size: 1.2em; color: var(--text-main); margin-bottom: 10px; letter-spacing: 0.1em; margin-top: 40px;">Official SNS</h2>
             <p style="font-size: 0.9em; color: #666; margin-bottom: 20px;">最新情報や店内の雰囲気はこちらから</p>
             <a href="https://www.instagram.com/sheep.6682388?igsh=dDdoNGk2YWx1cnpz" target="_blank" class="btn btn-insta">Instagram を見る</a>
         </div>
@@ -362,7 +283,6 @@
         fetch(GAS_URL)
             .then(res => res.json())
             .then(data => {
-                // News表示
                 const newsList = document.getElementById('top-news-list');
                 if(newsList && data.news) {
                     newsList.innerHTML = '';
@@ -374,7 +294,6 @@
                     if(data.news.length === 0) newsList.innerHTML = '<li>現在お知らせはありません。</li>';
                 }
 
-                // Blog表示
                 const blogList = document.getElementById('top-blog-list');
                 if(blogList && data.blog) {
                     blogList.innerHTML = '';
