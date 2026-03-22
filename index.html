@@ -36,15 +36,16 @@
         .hero-logo { width: 100%; max-width: 500px; height: auto; display: inline-block; margin-bottom: 20px; opacity: 1; }
         .hero p { font-size: 1.1em; font-weight: 300; margin: 0; letter-spacing: 0.1em; }
         
-        .system, .appeal-section, .info-section, .faq-section, .foryou-section {
+        .system, .appeal-section, .info-section, .faq-section, .foryou-section, .calendar-section {
             background-color: white; border-radius: 0px; padding: 40px 30px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 50px; border: 1px solid #EAEAEA;
         }
-        .system h2, .appeal-section h2, .info-section h2, .faq-section h2, .foryou-section h2 {
+        .system h2, .appeal-section h2, .info-section h2, .faq-section h2, .foryou-section h2, .calendar-section h2 {
             color: var(--accent-color); border-bottom: 1px solid var(--accent-color); padding-bottom: 15px; margin-bottom: 30px; font-size: 1.3em; display: inline-block;
         }
         .section-wrapper { text-align: center; }
 
+        /* Information */
         .info-grid { display: grid; grid-template-columns: 1fr; gap: 40px; text-align: left; }
         @media (min-width: 768px) { .info-grid { grid-template-columns: 1fr 1fr; gap: 30px; } }
         .info-col-title { font-size: 1.1em; color: var(--text-main); border-bottom: 1px solid #DDD; padding-bottom: 10px; margin-bottom: 20px; }
@@ -59,6 +60,26 @@
         .blog-item:last-child { border-bottom: none; }
         .blog-thumb { width: 70px; height: 70px; object-fit: cover; border-radius: 2px; background-color: #eee; flex-shrink: 0; }
         .blog-info { flex: 1; }
+
+        /* ▼ カレンダー用スタイル ▼ */
+        .calendar-container { max-width: 600px; margin: 0 auto; text-align: center; }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .calendar-header button { background: none; border: 1px solid var(--accent-color); color: var(--accent-color); padding: 5px 15px; cursor: pointer; border-radius: 4px; font-weight: bold; transition: 0.3s; }
+        .calendar-header button:hover { background: var(--accent-color); color: white; }
+        .calendar-header h3 { margin: 0; font-size: 1.2em; color: var(--text-main); }
+        
+        .calendar-table { width: 100%; border-collapse: collapse; font-size: 0.9em; table-layout: fixed; }
+        .calendar-table th { padding: 10px 0; color: #888; font-weight: normal; border-bottom: 2px solid var(--accent-color); }
+        .calendar-table td { padding: 10px 2px; border-bottom: 1px dotted #eee; vertical-align: top; height: 70px; }
+        .cal-date { display: block; font-weight: bold; margin-bottom: 5px; color: var(--text-main); }
+        
+        /* カレンダー内のバッジ */
+        .cal-badge { display: inline-block; padding: 2px 4px; font-size: 0.65em; border-radius: 3px; color: white; line-height: 1.2; word-break: keep-all; margin-bottom: 2px; letter-spacing: 0; }
+        .badge-closed { background-color: #d9534f; }
+        .badge-event { background-color: #A68B5B; }
+        .badge-private { background-color: #5b7da6; }
+        .badge-short { background-color: #f0ad4e; }
+        .badge-normal { background-color: #5cb85c; }
 
         /* How to enjoy セクション */
         .enjoy-wrapper { background-color: var(--text-main); color: white; padding: 70px 20px; text-align: center; margin-bottom: 50px; }
@@ -98,15 +119,15 @@
         
         footer { text-align: center; padding: 25px; font-size: 12px; background-color: #222; color: #888; }
 
-        /* ▼ スマホ用最適化（画面幅767px以下） ▼ */
+        /* スマホ用最適化 */
         @media (max-width: 767px) {
             .container { padding: 30px 15px; }
             .header-title { font-size: 1.2em; }
             .hero { padding: 50px 15px; }
             .hero p { font-size: 1em; }
             
-            .system, .appeal-section, .info-section, .faq-section, .foryou-section { padding: 30px 15px; margin-bottom: 40px; }
-            .system h2, .appeal-section h2, .info-section h2, .faq-section h2, .foryou-section h2 { font-size: 1.2em; margin-bottom: 25px; }
+            .system, .appeal-section, .info-section, .faq-section, .foryou-section, .calendar-section { padding: 30px 15px; margin-bottom: 40px; }
+            .system h2, .appeal-section h2, .info-section h2, .faq-section h2, .foryou-section h2, .calendar-section h2 { font-size: 1.2em; margin-bottom: 25px; }
             
             .enjoy-wrapper { padding: 50px 15px; margin-bottom: 40px; }
             .enjoy-wrapper h2 { font-size: 1.3em; margin-bottom: 30px; }
@@ -116,6 +137,9 @@
             .price-box { padding: 20px; min-width: 100%; box-sizing: border-box; }
             .btn { width: 100%; font-size: 1em; padding: 15px; }
             .map-container { height: 250px; }
+            
+            .calendar-table td { height: 50px; padding: 5px 1px; }
+            .cal-badge { font-size: 0.6em; padding: 2px; }
         }
     </style>
 </head>
@@ -152,6 +176,27 @@
             </section>
         </div>
 
+        <div class="section-wrapper">
+            <section class="calendar-section">
+                <h2 class="elegant-font">Schedule</h2>
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <button onclick="changeMonth(-1)">＜</button>
+                        <h3 id="calendarMonth" class="elegant-font">2026.03</h3>
+                        <button onclick="changeMonth(1)">＞</button>
+                    </div>
+                    <table class="calendar-table">
+                        <thead>
+                            <tr>
+                                <th style="color: #d9534f;">Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th style="color: #5b7da6;">Sat</th>
+                            </tr>
+                        </thead>
+                        <tbody id="calendarBody">
+                            </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
         <section class="concept-section section-wrapper" style="background: transparent; border: none; box-shadow: none; margin-bottom: 20px;">
             <h2 style="color: var(--text-main); font-size: 1.3em; border: none; margin-bottom: 30px; letter-spacing: 0.1em;">より自然で、価値のある出会いを。</h2>
             <div class="concept-text">
@@ -280,9 +325,16 @@
     <script>
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzQRAhDa8-BhxaB6IqsQ-hTmkAYLlu_x-5VK44U20hibIarUrgLSGz7wmZDgPgFsQKD6g/exec";
 
+        // カレンダー用変数
+        let calData = [];
+        let currDate = new Date();
+        let currYear = currDate.getFullYear();
+        let currMonth = currDate.getMonth(); // 0-11
+
         fetch(GAS_URL)
             .then(res => res.json())
             .then(data => {
+                // News表示
                 const newsList = document.getElementById('top-news-list');
                 if(newsList && data.news) {
                     newsList.innerHTML = '';
@@ -294,6 +346,7 @@
                     if(data.news.length === 0) newsList.innerHTML = '<li>現在お知らせはありません。</li>';
                 }
 
+                // Blog表示
                 const blogList = document.getElementById('top-blog-list');
                 if(blogList && data.blog) {
                     blogList.innerHTML = '';
@@ -306,11 +359,76 @@
                     });
                     if(data.blog.length === 0) blogList.innerHTML = '<p style="color:#666; font-size:0.9em;">現在投稿はありません。</p>';
                 }
+
+                // カレンダー表示
+                if(data.calendar) {
+                    calData = data.calendar;
+                    renderCalendar(currYear, currMonth);
+                }
             })
             .catch(err => {
+                console.log(err);
                 const newsList = document.getElementById('top-news-list');
                 if (newsList) newsList.innerHTML = '<li>データの取得に失敗しました。</li>';
+                document.getElementById('calendarBody').innerHTML = '<tr><td colspan="7">カレンダーの読み込みに失敗しました</td></tr>';
             });
+
+        // ▼ カレンダー生成関数 ▼
+        function renderCalendar(year, month) {
+            document.getElementById('calendarMonth').textContent = year + "." + String(month + 1).padStart(2, '0');
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            let tbody = document.getElementById('calendarBody');
+            tbody.innerHTML = '';
+            
+            let date = 1;
+            for (let i = 0; i < 6; i++) {
+                let row = document.createElement('tr');
+                let hasData = false;
+                for (let j = 0; j < 7; j++) {
+                    let cell = document.createElement('td');
+                    if (i === 0 && j < firstDay) {
+                        cell.innerHTML = "";
+                    } else if (date > daysInMonth) {
+                        break;
+                    } else {
+                        hasData = true;
+                        let fullDate = year + "-" + String(month + 1).padStart(2, '0') + "-" + String(date).padStart(2, '0');
+                        
+                        // 土日の色変え
+                        let dateColor = (j === 0) ? "#d9534f" : (j === 6) ? "#5b7da6" : "inherit";
+                        let cellHtml = `<span class="cal-date" style="color: ${dateColor}">${date}</span>`;
+                        
+                        // 予定のチェックとバッジ付与
+                        let todaysEvents = calData.filter(e => e.date === fullDate);
+                        todaysEvents.forEach(ev => {
+                            let badgeClass = "badge-event";
+                            if(ev.type === "休業日") badgeClass = "badge-closed";
+                            if(ev.type === "貸切") badgeClass = "badge-private";
+                            if(ev.type === "短縮営業") badgeClass = "badge-short";
+                            if(ev.type === "通常営業") badgeClass = "badge-normal";
+                            
+                            cellHtml += `<div class="cal-badge ${badgeClass}">${ev.type}</div>`;
+                        });
+                        
+                        cell.innerHTML = cellHtml;
+                        date++;
+                    }
+                    row.appendChild(cell);
+                }
+                if (hasData) tbody.appendChild(row);
+            }
+        }
+
+        // 月の切り替え
+        function changeMonth(offset) {
+            currMonth += offset;
+            if(currMonth < 0) { currMonth = 11; currYear--; }
+            if(currMonth > 11) { currMonth = 0; currYear++; }
+            renderCalendar(currYear, currMonth);
+        }
     </script>
 </body>
 </html>
