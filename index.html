@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Café & Bar Sereness | 今日の出会いから、価値ある繋がりへ。</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+
+    <style>
+        /* ベース設定 */
+        :root {
+            --primary-bg: #FAFAFA;
+            --text-main: #333333;
+            --accent-color: #A68B5B;
+            --section-bg: #F5F5F0;
+            --hero-bg: #1a1a1a;
+        }
+        body {
+            margin: 0; padding: 0;
+            font-family: "Noto Serif JP", "Hiragino Mincho ProN", serif;
+            color: var(--text-main); background-color: var(--primary-bg);
+            line-height: 1.8; letter-spacing: 0.05em;
+        }
+        h1, h2, h3 { text-align: center; font-weight: normal; }
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        
+        /* おしゃれな英字フォント用のクラス */
+        .elegant-font {
+            font-family: 'Playfair Display', serif;
+        }
+        /* 「&」だけ標準の明朝体に戻すためのクラス */
+        .normal-amp {
+            font-family: "Noto Serif JP", "Hiragino Mincho ProN", serif;
+        }
+
+        /* ヘッダー */
+        header { background-color: var(--text-main); padding: 20px; text-align: center; }
+        .header-title { 
+            color: #fff; 
+            font-size: 1.4em; 
+            letter-spacing: 0.1em; 
+            font-family: 'Playfair Display', serif; 
+            font-weight: 500;
+        }
+        
+        /* ヒーロー */
+        .hero {
+            background-color: var(--hero-bg);
+            color: white; 
+            text-align: center;
+            padding: 80px 20px;
+        }
+        .hero-logo { 
+            width: auto;
+            max-width: 600px;
+            height: auto;
+            display: inline-block;
+            margin-bottom: 20px;
+            opacity: 1; 
+            border-radius: 0; 
+            box-shadow: none; 
+        }
+        .hero p { 
+            font-size: 1.1em; 
+            font-weight: 300; 
+            margin: 0; 
+            letter-spacing: 0.1em;
+        }
+        
+        /* セクション共通 */
+        .system, .appeal-section, .info-section, .faq-section, .foryou-section {
+            background-color: white; border-radius: 0px; padding: 40px 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 50px; border: 1px solid #EAEAEA;
+        }
+        .system h2, .appeal-section h2, .info-section h2, .faq-section h2, .foryou-section h2 {
+            color: var(--accent-color); border-bottom: 1px solid var(--accent-color); padding-bottom: 15px; margin-bottom: 30px; font-size: 1.3em; display: inline-block;
+        }
+        .section-wrapper { text-align: center; }
+
+        /* Information */
+        .info-grid { display: grid; grid-template-columns: 1fr; gap: 40px; text-align: left; }
+        @media (min-width: 768px) { .info-grid { grid-template-columns: 1fr 1fr; gap: 30px; } }
+        .info-col-title { font-size: 1.1em; color: var(--text-main); border-bottom: 1px solid #DDD; padding-bottom: 10px; margin-bottom: 20px; }
+
+        /* News & Blog リスト */
+        .news-list, .blog-list { text-align: left; list-style: none; padding: 0; margin: 0; }
+        .news-list li { border-bottom: 1px dashed #DDD; padding: 12px 0; }
+        .news-list li:last-child { border-bottom: none; }
+        .news-date { color: var(--accent-color); font-size: 0.85em; display: block; margin-bottom: 3px; }
+        .news-title { color: var(--text-main); text-decoration: none; font-size: 0.95em; transition: color 0.3s; display: block; }
+        .news-title:hover { color: var(--accent-color); }
+        
+        /* ブログサムネイル */
+        .blog-item { display: flex; gap: 15px; margin-bottom: 15px; border-bottom: 1px dashed #DDD; padding-bottom: 15px; align-items: center; }
+        .blog-item:last-child { border-bottom: none; }
+        .blog-thumb { width: 70px; height: 70px; object-fit: cover; border-radius: 2px; background-color: #eee; flex-shrink: 0; }
+        .blog-info { flex: 1; }
+
+        /* ▼ How to enjoy (当店でできること) 文字特化セクション ▼ */
+        .enjoy-wrapper {
+            background-color: var(--text-main);
+            color: white;
+            padding: 70px 20px;
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        .enjoy-wrapper h2 {
+            color: var(--accent-color);
+            border-bottom: 1px solid var(--accent-color);
+            padding-bottom: 15px;
+            margin-bottom: 50px;
+            font-size: 1.5em;
+            display: inline-block;
+        }
+        .enjoy-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        @media (min-width: 600px) {
+            .enjoy-grid { grid-template-columns: 1fr 1fr; }
+        }
+        .enjoy-card {
+            background: #fff;
+            color: var(--text-main);
+            border-radius: 4px;
+            padding: 40px 30px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+            border-top: 4px solid var(--accent-color); 
+        }
+        .enjoy-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        .enjoy-step-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8em;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+            line-height: 1;
+        }
+        .enjoy-card h3 {
+            font-size: 1.15em;
+            margin-top: 0;
+            margin-bottom: 20px;
+            letter-spacing: 0.1em;
+            color: var(--text-main);
+        }
+        .enjoy-card p {
+            font-size: 0.95em;
+            line-height: 1.8;
+            margin: 0;
+            color: #555;
+            text-align: left; 
+        }
+
+        /* 料金システム */
+        .price-summary { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+        .price-box { flex: 1; min-width: 250px; padding: 25px; background-color: var(--section-bg); border-top: 3px solid var(--accent-color); text-align: left;}
+        .price-box h3 { text-align: left; margin-top: 0; font-size: 1.2em; color: var(--text-main); border-bottom: 1px solid #DDD; padding-bottom: 10px; margin-bottom: 15px; font-family: 'Playfair Display', serif;}
+        .price-list { list-style: none; padding: 0; margin: 0; font-size: 0.95em; }
+        .price-list li { margin-bottom: 10px; border-bottom: 1px dashed #DDD; padding-bottom: 5px; display: flex; justify-content: space-between;}
+
+        /* コンセプト等 */
+        .concept-text { text-align: left; max-width: 600px; margin: 0 auto; font-size: 0.95em; color: #444; }
+
+        /* FAQ */
+        .faq-list { text-align: left; }
+        .faq-item { margin-bottom: 25px; }
+        .faq-item:last-child { margin-bottom: 0; }
+        .faq-q { font-weight: bold; display: flex; gap: 10px; margin-bottom: 5px; }
+        .faq-q::before { content: "Q."; color: var(--accent-color); }
+        .faq-a { color: #555; font-size: 0.95em; padding-left: 28px; position: relative; line-height: 1.7; }
+        .faq-a::before { content: "A."; color: #999; font-weight: bold; position: absolute; left: 5px; }
+
+        /* ボタン */
+        .btn { display: block; width: 80%; max-width: 340px; margin: 30px auto 20px; padding: 18px 20px; text-align: center; text-decoration: none; font-size: 1.05em; border-radius: 2px; transition: 0.3s; }
+        .btn-menu { background-color: var(--accent-color); color: white; font-weight: bold; }
+        .btn-menu:hover { opacity: 0.8; }
+        .btn-line { background-color: #06C755; color: white; font-weight: bold; }
+        .btn-line:hover { opacity: 0.8; }
+        .btn-insta { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); color: white; font-weight: bold; }
+        .btn-insta:hover { opacity: 0.8; }
+
+        /* アクセス */
+        .access { background-color: var(--text-main); color: white; padding: 50px 20px; text-align: center; }
+        .access-info { max-width: 600px; margin: 0 auto 30px; font-size: 0.95em; line-height: 1.8; }
+        .map-container { max-width: 800px; margin: 0 auto; height: 350px; background-color: #eee; }
+        .map-container iframe { width: 100%; height: 100%; border: 0; }
+        
+        footer { text-align: center; padding: 25px; font-size: 12px; background-color: #222; color: #888; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title">Café <span class="normal-amp">&</span> Bar Sereness</div>
+    </header>
+
+    <div class="hero">
+        <img src="sereness_logo_compressed.jpg" alt="Sereness" class="hero-logo">
+        <p>飾らない自分のままで、新しい繋がりが生まれる場所</p>
+    </div>
+
+    <div class="container">
+        
+        <div class="section-wrapper">
+            <section class="info-section">
+                <h2 class="elegant-font">Information</h2>
+                <div class="info-grid">
+                    <div>
+                        <h3 class="info-col-title">News</h3>
+                        <ul class="news-list" id="top-news-list">
+                            <li><span style="color:#666; font-size:0.9em;">読み込み中...</span></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="info-col-title">今日のSereness</h3>
+                        <div class="blog-list" id="top-blog-list">
+                            <p style="color:#666; font-size:0.9em;">読み込み中...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <section class="concept-section section-wrapper" style="background: transparent; border: none; box-shadow: none; margin-bottom: 20px;">
+            <h2 style="color: var(--text-main); font-size: 1.4em; border: none; margin-bottom: 30px; letter-spacing: 0.1em;">より自然で、価値のある出会いを。</h2>
+            <div class="concept-text">
+                <p>セレネスが提供するのは、肩の力を抜いて、自然体で楽しめる出会いです。</p>
+                <p>美味しいお酒やゲームを楽しみながら、いつもの自分のままで自然な交流を。秋田で一番、自然なつながりを持てる場所。グラスを合わせて、ゲームで笑って。セレネスで新しい繋がりを見つけませんか？</p>
+            </div>
+        </section>
+    </div>
+
+    <div class="enjoy-wrapper">
+        <h2 class="elegant-font">How to enjoy</h2>
+        <div class="enjoy-grid">
+            
+            <div class="enjoy-card">
+                <div class="enjoy-step-num">01</div>
+                <h3>お酒を交えて、自然な相席を</h3>
+                <p>美味しいお酒を味わいながら、その日の出会いを楽しむ相席スタイル。リラックスした雰囲気の中で、自然と会話が弾みます。</p>
+            </div>
+
+            <div class="enjoy-card">
+                <div class="enjoy-step-num">02</div>
+                <h3>ゲームで一気に距離を縮める</h3>
+                <p>初対面での会話が苦手でも大丈夫。店内にはみんなで遊べるボードゲームやテレビゲームを完備。一緒に盛り上がれば、あっという間に仲良くなれます。</p>
+            </div>
+
+            <div class="enjoy-card">
+                <div class="enjoy-step-num">03</div>
+                <h3>カラオケで楽しく盛り上がる</h3>
+                <p>お酒が入って気分が高まったら、カラオケでさらに楽しい時間を。一緒に歌ったり手拍子をしたり、笑顔が溢れる一体感を味わうことができます。</p>
+            </div>
+
+            <div class="enjoy-card">
+                <div class="enjoy-step-num">04</div>
+                <h3>恋愛相談（無料）</h3>
+                <p>「どんな人が自分に合うかわからない」「話しかけるのが苦手」など、恋活や婚活のお悩みはお気軽に。あなたの素敵なご縁をサポートします。</p>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="section-wrapper">
+            <section class="system">
+                <h2 class="elegant-font">System <span class="normal-amp">&</span> Price</h2>
+                <div class="price-summary">
+                    <div class="price-box">
+                        <h3 class="elegant-font">Café (14:00 - 18:00)</h3>
+                        <ul class="price-list">
+                            <li><span>女性 (時間無制限)</span> <span>330円</span></li>
+                            <li><span>男性 (初回120分)</span> <span>1,100円〜</span></li>
+                        </ul>
+                    </div>
+                    <div class="price-box">
+                        <h3 class="elegant-font">Bar (20:00 - 25:00)</h3>
+                        <ul class="price-list">
+                            <li><span>女性 (時間無制限)</span> <span>550円</span></li>
+                            <li><span>男性 (初回30分)</span> <span>1,650円〜</span></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <a href="menu.html" class="btn btn-menu">料金表はこちら</a>
+                
+            </section>
+        </div>
+
+        <div class="section-wrapper">
+            <section class="faq-section">
+                <h2 class="elegant-font">FAQ</h2>
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <div class="faq-q">一人で行っても大丈夫ですか？</div>
+                        <div class="faq-a">もちろんです。おひとり様でのご来店を大歓迎しております。カウンター席でマスターとお話ししたり、他のお客様と自然に交流できるようサポートいたします。</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q">お酒が飲めなくても平気ですか？</div>
+                        <div class="faq-a">はい、大歓迎です。ノンアルコールメニューやソフトドリンクも豊富にご用意しておりますので、カフェ感覚でお気軽にお楽しみいただけます。</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q">どのような服装で行けば良いですか？</div>
+                        <div class="faq-a">ドレスコードはございません。お仕事帰りのスーツや、休日のカジュアルな服装など、普段通りのリラックスしたスタイルでお越しください。</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q">予約は必要ですか？</div>
+                        <div class="faq-a">ご予約なしでふらっとお立ち寄りいただけます。週末など混雑が気になる場合や、確実にお席を確保したい場合は、LINEやお電話での事前予約も承っております。</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q">クレジットカードや電子決済は使えますか？</div>
+                        <div class="faq-a">はい。各種クレジットカードのほか、PayPayなどの主要なQRコード決済、電子マネーにも対応しております。</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="contact-wrapper" style="margin-top: 60px; text-align: center;">
+            <h2 class="elegant-font" style="font-size: 1.2em; color: var(--text-main); margin-bottom: 20px; letter-spacing: 0.1em;">Reservation <span class="normal-amp">&</span> Contact</h2>
+            <div style="background-color: white; border: 1px solid #EAEAEA; padding: 20px; max-width: 400px; margin: 0 auto 40px; border-radius: 4px;">
+                <p style="margin: 10px 0; font-size: 1.1em;">TEL : <a href="tel:07011479049" style="color: var(--text-main); text-decoration: none;">070-1147-9049</a></p>
+                <p style="margin: 10px 0; font-size: 1.1em;">Mail : <a href="mailto:c.b.sereness@gmail.com" style="color: var(--text-main); text-decoration: none;">c.b.sereness@gmail.com</a></p>
+            </div>
+            
+            <h2 class="elegant-font" style="font-size: 1.2em; color: var(--text-main); margin-bottom: 10px; letter-spacing: 0.1em; margin-top: 50px;">Consultation</h2>
+            <p style="font-size: 0.9em; color: #666; margin-bottom: 20px;">マスターへの婚活・恋活相談はこちらからお気軽にどうぞ</p>
+            <a href="https://lin.ee/oP0e2Kf" target="_blank" class="btn btn-line">婚活・恋活相談はこちら</a>
+
+            <h2 class="elegant-font" style="font-size: 1.2em; color: var(--text-main); margin-bottom: 10px; letter-spacing: 0.1em; margin-top: 50px;">Official SNS</h2>
+            <p style="font-size: 0.9em; color: #666; margin-bottom: 20px;">最新情報や店内の雰囲気はこちらから</p>
+            <a href="https://www.instagram.com/sheep.6682388?igsh=dDdoNGk2YWx1cnpz" target="_blank" class="btn btn-insta">Instagram を見る</a>
+        </div>
+    </div>
+
+    <div class="access">
+        <h2 class="elegant-font" style="font-size:1.3em; margin-bottom:20px; color:#fff; font-weight: normal; letter-spacing: 0.1em;">Access <span class="normal-amp">&</span> Information</h2>
+        <div class="access-info">
+            <p><strong class="elegant-font" style="font-size: 1.2em;">Café <span class="normal-amp">&</span> Bar Sereness</strong><br>〒010-0000 秋田県秋田市〇〇町X-X-X</p>
+            <p style="margin-top: 15px;"><strong>【営業時間】</strong><br>Café： 14:00 - 18:00<br>Bar： 20:00 - 25:00</p>
+            <p style="margin-top: 15px; color:#ccc;">定休日: 〇曜日</p>
+        </div>
+        <div class="map-container">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m16!1m12!1m3!1d6138.107336855529!2d140.1099570448859!3d39.715976581215976!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1z56eL55Sw5biC5aSn55S6NeKIkjItNyBTQ-ODk-ODqzJG!5e0!3m2!1sja!2sjp!4v1774074001559!5m2!1sja!2sjp" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+    </div>
+
+    <footer class="elegant-font">© 2026 Café <span class="normal-amp">&</span> Bar Sereness. All rights reserved.</footer>
+
+    <script>
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzQRAhDa8-BhxaB6IqsQ-hTmkAYLlu_x-5VK44U20hibIarUrgLSGz7wmZDgPgFsQKD6g/exec";
+
+        fetch(GAS_URL)
+            .then(res => res.json())
+            .then(data => {
+                // News表示
+                const newsList = document.getElementById('top-news-list');
+                if(newsList && data.news) {
+                    newsList.innerHTML = '';
+                    data.news.slice(0, 3).forEach(article => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `<span class="news-date">${article.date}</span><a href="news.html?id=${article.id}" class="news-title">${article.title}</a>`;
+                        newsList.appendChild(li);
+                    });
+                    if(data.news.length === 0) newsList.innerHTML = '<li>現在お知らせはありません。</li>';
+                }
+
+                // Blog表示
+                const blogList = document.getElementById('top-blog-list');
+                if(blogList && data.blog) {
+                    blogList.innerHTML = '';
+                    data.blog.slice(0, 3).forEach(article => {
+                        const div = document.createElement('div');
+                        div.className = 'blog-item';
+                        const thumb = article.image ? `<img src="${article.image}" class="blog-thumb">` : `<div class="blog-thumb" style="background:#eee;"></div>`;
+                        div.innerHTML = `${thumb}<div class="blog-info"><span class="news-date">${article.date}</span><a href="news.html?id=${article.id}" class="news-title">${article.title}</a></div>`;
+                        blogList.appendChild(div);
+                    });
+                    if(data.blog.length === 0) blogList.innerHTML = '<p style="color:#666; font-size:0.9em;">現在投稿はありません。</p>';
+                }
+            })
+            .catch(err => {
+                const newsList = document.getElementById('top-news-list');
+                if (newsList) newsList.innerHTML = '<li>データの取得に失敗しました。</li>';
+            });
+    </script>
+</body>
+</html>
