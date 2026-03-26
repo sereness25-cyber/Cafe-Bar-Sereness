@@ -87,7 +87,7 @@
             <label>カテゴリ</label>
             <select id="menuCategory">
                 <option value="飲み放題">飲み放題</option>
-                <option value="アルコール">アルコール</option>
+                <option value="コーヒー">コーヒー</option> <option value="スペシャルドリンク">スペシャルドリンク</option> <option value="アルコール">アルコール</option>
                 <option value="ソフトドリンク">ソフトドリンク</option>
                 <option value="フード">フード</option>
                 <option disabled>──────────</option>
@@ -141,7 +141,7 @@
             <select id="filterCat" onchange="renderMenuList()">
                 <option value="all">全カテゴリ</option>
                 <option value="飲み放題">飲み放題</option>
-                <option value="アルコール">アルコール</option>
+                <option value="コーヒー">コーヒー</option> <option value="スペシャルドリンク">スペシャルドリンク</option> <option value="アルコール">アルコール</option>
                 <option value="ソフトドリンク">ソフトドリンク</option>
                 <option value="フード">フード</option>
                 <option value="クラフトStep1">クラフト Step1</option>
@@ -196,7 +196,6 @@
         container.innerHTML = '読み込み中...';
         
         fetch(GAS_URL).then(res => res.json()).then(data => {
-            // ▼ 修正ポイント：GASから送られてきた news と blog を1つの配列（article）にまとめる ▼
             let combinedArticles = [];
             
             if(data.news) {
@@ -212,7 +211,6 @@
                 });
             }
             
-            // まとめたデータを allData にセット
             allData = {
                 article: combinedArticles, 
                 menu: data.menu || [],
