@@ -6,7 +6,7 @@
     <title>【管理画面】セレネス統合管理</title>
     <style>
         body { font-family: sans-serif; background-color: #f4f4f4; padding: 20px; color: #333; }
-        .admin-box { background: #fff; max-width: 600px; margin: 0 auto 40px; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .admin-box { background: #fff; max-width: 700px; margin: 0 auto 40px; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         h1 { font-size: 1.2em; border-bottom: 2px solid #A68B5B; padding-bottom: 10px; margin-bottom: 20px; }
         
         .tab-wrapper { display: flex; gap: 5px; margin-bottom: 20px; flex-wrap: wrap;}
@@ -20,13 +20,25 @@
         .btn-danger { background-color: #d9534f; color: white; border: none; padding: 12px; margin-top: 10px; width: 100%; border-radius: 4px; cursor: pointer; font-weight: bold; }
         
         .menu-list-area { margin-top: 30px; border-top: 2px solid #eee; padding-top: 20px; }
-        .menu-item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; font-size: 0.9em; }
-        .menu-item-info { flex: 1; }
+        
+        .filter-container { display: flex; gap: 10px; margin-bottom: 15px; background: #f9f9f9; padding: 10px; border-radius: 4px; border: 1px solid #ddd; flex-wrap: wrap;}
+        .filter-container input, .filter-container select { margin-top: 0; padding: 8px; font-size: 0.85em; flex: 1; min-width: 120px;}
+        
+        .table-wrapper { max-height: 400px; overflow-y: auto; border: 1px solid #ccc; border-radius: 4px; }
+        .admin-table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
+        .admin-table th, .admin-table td { border-bottom: 1px solid #eee; padding: 10px; text-align: left; }
+        .admin-table th { background: #eee; position: sticky; top: 0; z-index: 1; font-weight: bold; }
+        .admin-table tr:hover { background-color: #fcfcfc; }
+        
         .btn-group { display: flex; gap: 5px; }
-        .edit-btn { background: #5cb85c; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; }
-        .del-btn-small { background: #d9534f; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; }
+        .btn-move { background: #f0ad4e; color: white; border: none; padding: 6px 10px; border-radius: 3px; cursor: pointer; font-size: 0.85em; }
+        .btn-move:disabled { background: #ccc; cursor: not-allowed; }
+        .edit-btn { background: #5cb85c; color: white; border: none; padding: 6px 10px; border-radius: 3px; cursor: pointer; font-size: 0.85em; }
+        .del-btn-small { background: #d9534f; color: white; border: none; padding: 6px 10px; border-radius: 3px; cursor: pointer; font-size: 0.85em; }
         
         #message { margin-top: 15px; text-align: center; font-weight: bold; }
+        .badge-day { background: #f0ad4e; color: #fff; padding: 2px 6px; border-radius: 3px; font-size: 0.8em; }
+        .badge-night { background: #5b7da6; color: #fff; padding: 2px 6px; border-radius: 3px; font-size: 0.8em; }
     </style>
 </head>
 <body>
@@ -63,7 +75,7 @@
                 <option value="クラフトStep3">クラフトメニュー: Step 3</option>
             </select>
             <label>商品名</label><input type="text" id="menuName">
-            <label>金額</label><input type="text" id="menuPrice">
+            <label>金額（例: 500円）</label><input type="text" id="menuPrice">
             <label>簡単な説明</label><input type="text" id="menuDesc">
         </div>
 
@@ -90,6 +102,26 @@
 
     <div id="list-container" class="menu-list-area" style="display: none;">
         <h3 id="list-title">登録済み一覧</h3>
+        
+        <div id="menu-filter-area" class="filter-container" style="display: none;">
+            <input type="text" id="searchMenu" placeholder="商品名で検索..." oninput="renderMenuList()">
+            <select id="filterTime" onchange="renderMenuList()">
+                <option value="all">昼/夜 すべて</option>
+                <option value="day">昼 (Cafe)</option>
+                <option value="night">夜 (Bar)</option>
+            </select>
+            <select id="filterCat" onchange="renderMenuList()">
+                <option value="all">全カテゴリ</option>
+                <option value="飲み放題">飲み放題</option>
+                <option value="アルコール">アルコール</option>
+                <option value="ソフトドリンク">ソフトドリンク</option>
+                <option value="フード">フード</option>
+                <option value="クラフトStep1">クラフト Step1</option>
+                <option value="クラフトStep2">クラフト Step2</option>
+                <option value="クラフトStep3">クラフト Step3</option>
+            </select>
+        </div>
+
         <div id="listItems">読み込み中...</div>
     </div>
 </div>
@@ -100,6 +132,7 @@
     
     let currentMode = 'article';
     let allData = { menu: [], calendar: [] };
+    let filteredMenuList = []; // 並び替え用に現在表示中のリストを記憶
 
     function switchTab(mode) {
         currentMode = mode;
@@ -113,6 +146,7 @@
         document.getElementById('calendar-section').style.display = mode === 'calendar' ? 'block' : 'none';
         
         document.getElementById('list-container').style.display = (mode === 'menu' || mode === 'calendar') ? 'block' : 'none';
+        document.getElementById('menu-filter-area').style.display = mode === 'menu' ? 'flex' : 'none';
         document.getElementById('calDelBtn').style.display = mode === 'calendar' ? 'block' : 'none';
         
         if(mode === 'menu' || mode === 'calendar') loadData();
@@ -125,39 +159,138 @@
         
         fetch(GAS_URL).then(res => res.json()).then(data => {
             allData = data;
-            container.innerHTML = '';
-            
+            // 管理用に元のインデックス番号を記録
+            if(allData.menu) {
+                allData.menu.forEach((m, idx) => m._originalIndex = idx);
+            }
+
             if (currentMode === 'menu') {
                 listTitle.textContent = "登録済みメニュー一覧";
-                if(data.menu.length === 0) { container.innerHTML = '登録なし'; return; }
-                data.menu.forEach((m, i) => {
-                    const div = document.createElement('div');
-                    div.className = 'menu-item-row';
-                    div.innerHTML = `<div class="menu-item-info"><strong>[${m.timeMode==='day'?'昼':'夜'}] ${m.name}</strong><br><small>${m.category} / ${m.price}</small></div>
-                                     <div class="btn-group"><button type="button" class="edit-btn" onclick="editMenu(${i})">編集</button><button type="button" class="del-btn-small" onclick="deleteMenu('${m.name}', '${m.timeMode}')">削除</button></div>`;
-                    container.appendChild(div);
-                });
+                renderMenuList();
             } else if (currentMode === 'calendar') {
                 listTitle.textContent = "登録済みカレンダー予定";
-                if(!data.calendar || data.calendar.length === 0) { container.innerHTML = '予定の登録はありません。'; return; }
-                
-                let calArray = data.calendar.sort((a,b) => new Date(a.date) - new Date(b.date));
-                calArray.forEach(c => {
-                    const div = document.createElement('div');
-                    div.className = 'menu-item-row';
-                    div.innerHTML = `<div class="menu-item-info"><strong>${c.date}</strong><br><span style="color:#d9534f; font-weight:bold;">${c.type}</span> <small>${c.note||''}</small></div>
-                                     <div class="btn-group"><button type="button" class="edit-btn" onclick="editCalendar('${c.date}', '${c.type}', '${c.note}')">選択</button></div>`;
-                    container.appendChild(div);
-                });
+                renderCalendarList();
             }
         }).catch(err => { container.innerHTML = '読み込み失敗'; });
+    }
+
+    // メニュー一覧の描画
+    function renderMenuList() {
+        const container = document.getElementById('listItems');
+        if(!allData.menu || allData.menu.length === 0) { 
+            container.innerHTML = '登録されたメニューはありません。'; 
+            return; 
+        }
+
+        const searchQuery = document.getElementById('searchMenu').value.toLowerCase();
+        const filterTime = document.getElementById('filterTime').value;
+        const filterCat = document.getElementById('filterCat').value;
+
+        // フィルター処理（※自動ソートはせず、実際のデータ順のまま表示します）
+        filteredMenuList = allData.menu.filter(m => {
+            const matchSearch = m.name.toLowerCase().includes(searchQuery);
+            const matchTime = (filterTime === 'all') || (m.timeMode === filterTime);
+            const matchCat = (filterCat === 'all') || (m.category === filterCat);
+            return matchSearch && matchTime && matchCat;
+        });
+
+        if (filteredMenuList.length === 0) {
+            container.innerHTML = '<div style="text-align:center; padding: 20px; color: #666;">該当するメニューが見つかりません。</div>';
+            return;
+        }
+
+        let html = '<div class="table-wrapper"><table class="admin-table">';
+        html += '<thead><tr><th>昼/夜</th><th>カテゴリ</th><th>商品名</th><th>金額</th><th>操作</th></tr></thead><tbody>';
+        
+        filteredMenuList.forEach((m, i) => {
+            const badge = m.timeMode === 'day' ? '<span class="badge-day">昼</span>' : '<span class="badge-night">夜</span>';
+            const isFirst = (i === 0);
+            const isLast = (i === filteredMenuList.length - 1);
+            
+            html += `<tr>
+                <td>${badge}</td>
+                <td>${m.category}</td>
+                <td><strong>${m.name}</strong></td>
+                <td>${m.price || '-'}</td>
+                <td>
+                    <div class="btn-group">
+                        <button type="button" class="btn-move" onclick="moveMenu(${m._originalIndex}, -1)" ${isFirst ? 'disabled' : ''}>▲</button>
+                        <button type="button" class="btn-move" onclick="moveMenu(${m._originalIndex}, 1)" ${isLast ? 'disabled' : ''}>▼</button>
+                        <button type="button" class="edit-btn" onclick="editMenu(${m._originalIndex})">編集</button>
+                        <button type="button" class="del-btn-small" onclick="deleteMenu('${m.name}', '${m.timeMode}')">削除</button>
+                    </div>
+                </td>
+            </tr>`;
+        });
+        html += '</tbody></table></div>';
+        
+        container.innerHTML = html;
+    }
+
+    // ▼ 今回追加：並び替え処理 ▼
+    function moveMenu(originalIndex, direction) {
+        // 現在見ているリストの中での位置を探す
+        const currentPos = filteredMenuList.findIndex(m => m._originalIndex === originalIndex);
+        if (currentPos === -1) return;
+        
+        // 入れ替え先（1つ上か、1つ下）の要素の元のインデックス番号を取得
+        const targetOriginalIndex = filteredMenuList[currentPos + direction]._originalIndex;
+        
+        // 全体データの中で場所を入れ替える
+        const temp = allData.menu[originalIndex];
+        allData.menu[originalIndex] = allData.menu[targetOriginalIndex];
+        allData.menu[targetOriginalIndex] = temp;
+        
+        // インデックス番号を振り直す
+        allData.menu.forEach((m, idx) => m._originalIndex = idx);
+        
+        // 画面を再描画（瞬時に入れ替わる）
+        renderMenuList();
+        
+        // GASに保存リクエストを投げる
+        const msg = document.getElementById('message');
+        msg.style.color = "blue"; 
+        msg.textContent = "並び順を保存中...";
+        
+        fetch(GAS_URL, { 
+            method: 'POST', 
+            body: JSON.stringify({ type: "menu_reorder", menuData: allData.menu }) 
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (res.status === "success") {
+                msg.style.color = "green"; msg.textContent = "並び順を更新しました！";
+            } else {
+                msg.style.color = "red"; msg.textContent = "保存中にエラーが発生しました";
+            }
+        }).catch(err => {
+            msg.style.color = "red"; msg.textContent = "通信エラーが発生しました";
+        });
+    }
+
+    // カレンダー一覧の描画
+    function renderCalendarList() {
+        const container = document.getElementById('listItems');
+        if(!allData.calendar || allData.calendar.length === 0) { container.innerHTML = '予定の登録はありません。'; return; }
+        
+        container.innerHTML = '';
+        let calArray = allData.calendar.sort((a,b) => new Date(a.date) - new Date(b.date));
+        calArray.forEach(c => {
+            const div = document.createElement('div');
+            div.className = 'menu-item-row';
+            div.style.borderBottom = "1px solid #ccc";
+            div.style.padding = "10px";
+            div.innerHTML = `<div class="menu-item-info"><strong>${c.date}</strong><br><span style="color:#d9534f; font-weight:bold;">${c.type}</span> <small>${c.note||''}</small></div>
+                             <div class="btn-group"><button type="button" class="edit-btn" onclick="editCalendar('${c.date}', '${c.type}', '${c.note}')">選択</button></div>`;
+            container.appendChild(div);
+        });
     }
 
     function editCalendar(date, type, note) {
         document.getElementById('calDate').value = date;
         document.getElementById('calType').value = type;
         document.getElementById('calNote').value = note || "";
-        window.scrollTo(0,0);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         document.getElementById('message').style.color = "blue";
         document.getElementById('message').textContent = "日付が選択されました。更新または削除が可能です。";
     }
@@ -180,7 +313,8 @@
         document.getElementById('menuName').value = m.name;
         document.getElementById('menuPrice').value = m.price;
         document.getElementById('menuDesc').value = m.description || "";
-        window.scrollTo(0,0);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.getElementById('message').style.color = "blue";
         document.getElementById('message').textContent = "編集モード：保存すると上書きされます";
     }
     
