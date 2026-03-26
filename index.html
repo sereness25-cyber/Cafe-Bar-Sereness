@@ -62,7 +62,7 @@
         .blog-thumb { width: 70px; height: 70px; object-fit: cover; border-radius: 2px; background-color: #eee; flex-shrink: 0; }
         .blog-info { flex: 1; }
 
-        /* ▼ カレンダー用スタイル ▼ */
+        /* カレンダー用スタイル */
         .calendar-container { max-width: 600px; margin: 0 auto; text-align: center; }
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .calendar-header button { background: none; border: 1px solid var(--accent-color); color: var(--accent-color); padding: 5px 15px; cursor: pointer; border-radius: 4px; font-weight: bold; transition: 0.3s; }
@@ -347,14 +347,17 @@
                     if(data.news.length === 0) newsList.innerHTML = '<li>現在お知らせはありません。</li>';
                 }
 
-                // Blog表示
+                // ▼ Blog表示（画像がない時は枠を出さないように変更） ▼
                 const blogList = document.getElementById('top-blog-list');
                 if(blogList && data.blog) {
                     blogList.innerHTML = '';
                     data.blog.slice(0, 3).forEach(article => {
                         const div = document.createElement('div');
                         div.className = 'blog-item';
-                        const thumb = article.image ? `<img src="${article.image}" class="blog-thumb">` : `<div class="blog-thumb" style="background:#eee;"></div>`;
+                        
+                        // 画像があればimgタグをセットし、なければ空文字にする（枠を出さない）
+                        const thumb = article.image ? `<img src="${article.image}" class="blog-thumb">` : ``;
+                        
                         div.innerHTML = `${thumb}<div class="blog-info"><span class="news-date">${article.date}</span><a href="news.html?id=${article.id}" class="news-title">${article.title}</a></div>`;
                         blogList.appendChild(div);
                     });
@@ -374,7 +377,7 @@
                 document.getElementById('calendarBody').innerHTML = '<tr><td colspan="7">カレンダーの読み込みに失敗しました</td></tr>';
             });
 
-        // ▼ カレンダー生成関数 ▼
+        // カレンダー生成関数
         function renderCalendar(year, month) {
             document.getElementById('calendarMonth').textContent = year + "." + String(month + 1).padStart(2, '0');
             

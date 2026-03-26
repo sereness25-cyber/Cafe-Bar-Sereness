@@ -38,14 +38,16 @@
         
         #message { margin-top: 15px; text-align: center; font-weight: bold; }
         
-        /* バッジのデザイン */
         .badge-day { background: #f0ad4e; color: #fff; padding: 2px 6px; border-radius: 3px; font-size: 0.8em; }
         .badge-night { background: #5b7da6; color: #fff; padding: 2px 6px; border-radius: 3px; font-size: 0.8em; }
         .badge-blog { background: #7c5ba6; color: #fff; padding: 2px 6px; border-radius: 3px; font-size: 0.8em; }
         .badge-news { background: #5ba68c; color: #fff; padding: 2px 6px; border-radius: 3px; font-size: 0.8em; }
+        .badge-image { background: #666; color: #fff; padding: 2px 6px; border-radius: 3px; font-size: 0.7em; margin-left: 5px; }
         
-        /* 本文プレビュー用 */
         .text-preview { max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; color: #666; font-size: 0.9em; }
+        
+        .file-upload-wrapper { margin-top: 15px; border: 1px dashed #ccc; padding: 15px; border-radius: 4px; background: #fafafa; }
+        .file-note { font-size: 0.8em; color: #888; margin-top: 5px; display: block; }
     </style>
 </head>
 <body>
@@ -65,6 +67,18 @@
             <label>日付</label><input type="date" id="date">
             <label>タイトル</label><input type="text" id="title">
             <label>本文</label><textarea id="content" rows="4"></textarea>
+            
+            <div class="file-upload-wrapper">
+                <label style="margin-top: 0;">画像（任意）</label>
+                <input type="file" id="imageFile" accept="image/*" style="border: none; padding: 0;">
+                
+                <label style="margin-top: 15px; display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                    <input type="checkbox" id="showImage" checked style="width: auto; margin: 0; cursor: pointer;"> 
+                    <span>サムネイル画像を表示する（チェックを外すと文字だけになります）</span>
+                </label>
+                
+                <span class="file-note">※編集時に新しい画像を選択すると上書きされます。<br>※画像を消したい場合はチェックを外して保存してください。</span>
+            </div>
         </div>
 
         <div id="menu-section" style="display: none;">
@@ -148,7 +162,6 @@
     let allData = { article: [], menu: [], calendar: [] };
     let filteredMenuList = []; 
 
-    // 初回読み込み
     window.onload = () => {
         loadData();
     };
@@ -168,9 +181,10 @@
         document.getElementById('menu-filter-area').style.display = mode === 'menu' ? 'flex' : 'none';
         document.getElementById('calDelBtn').style.display = mode === 'calendar' ? 'block' : 'none';
         
-        // フォームのリセットと表示更新
         document.getElementById('postForm').reset();
         document.getElementById('oldArticleTitle').value = ""; 
+        document.getElementById('imageFile').value = ""; 
+        document.getElementById('showImage').checked = true; 
         
         if(mode === 'article') renderArticleList();
         else if(mode === 'menu') renderMenuList();
@@ -182,33 +196,42 @@
         container.innerHTML = '読み込み中...';
         
         fetch(GAS_URL).then(res => res.json()).then(data => {
-            // GASからのデータ構成（article, menu, calendarが含まれる想定）
+            // ▼ 修正ポイント：GASから送られてきた news と blog を1つの配列（article）にまとめる ▼
+            let combinedArticles = [];
+            
+            if(data.news) {
+                data.news.forEach(n => {
+                    n.type = 'news';
+                    combinedArticles.push(n);
+                });
+            }
+            if(data.blog) {
+                data.blog.forEach(b => {
+                    b.type = 'blog';
+                    combinedArticles.push(b);
+                });
+            }
+            
+            // まとめたデータを allData にセット
             allData = {
-                article: data.article || data.articles || [], 
+                article: combinedArticles, 
                 menu: data.menu || [],
                 calendar: data.calendar || []
             };
 
-            if(allData.menu) {
-                allData.menu.forEach((m, idx) => m._originalIndex = idx);
-            }
-            if(allData.article) {
-                allData.article.forEach((a, idx) => a._originalIndex = idx);
-            }
+            if(allData.menu) allData.menu.forEach((m, idx) => m._originalIndex = idx);
+            if(allData.article) allData.article.forEach((a, idx) => a._originalIndex = idx);
 
-            // 現在のタブに合わせてリストを描画
             switchTab(currentMode);
-
         }).catch(err => { container.innerHTML = '読み込み失敗'; });
     }
 
-    /* ＝＝＝＝＝ 記事（ブログ・News）の描画 ＝＝＝＝＝ */
     function renderArticleList() {
         const container = document.getElementById('listItems');
         document.getElementById('list-title').textContent = "投稿済み記事一覧";
 
         if(!allData.article || allData.article.length === 0) { 
-            container.innerHTML = '投稿された記事はありません。'; 
+            container.innerHTML = '<div style="text-align:center; padding: 20px; color: #666;">投稿された記事はありません。</div>'; 
             return; 
         }
 
@@ -227,14 +250,14 @@
         
         filteredArticles.forEach(a => {
             const badge = a.type === 'news' ? '<span class="badge-news">News</span>' : '<span class="badge-blog">ブログ</span>';
-            // 本文のプレビュー作成（改行削除など）
+            const imgBadge = a.image ? '<span class="badge-image">📷画像あり</span>' : '';
             const preview = a.content ? a.content.replace(/\n/g, ' ').substring(0, 30) + '...' : '';
 
             html += `<tr>
                 <td>${badge}</td>
                 <td>${a.date}</td>
                 <td>
-                    <strong>${a.title}</strong><br>
+                    <strong>${a.title}</strong> ${imgBadge}<br>
                     <span class="text-preview">${preview}</span>
                 </td>
                 <td>
@@ -254,16 +277,16 @@
         const a = allData.article[index];
         document.getElementById('type').value = a.type || 'blog';
         
-        // 日付フォーマットの変換 (YYYY.MM.DD -> YYYY-MM-DD)
         if(a.date) {
             document.getElementById('date').value = a.date.replace(/\./g, '-');
         }
         
         document.getElementById('title').value = a.title;
         document.getElementById('content').value = a.content;
-        
-        // 編集元のタイトルを隠しフィールドに記憶（GASで上書き対象を探すため）
         document.getElementById('oldArticleTitle').value = a.title;
+        document.getElementById('imageFile').value = "";
+        
+        document.getElementById('showImage').checked = a.image ? true : false;
         
         window.scrollTo({ top: 0, behavior: 'smooth' });
         document.getElementById('message').style.color = "blue";
@@ -275,7 +298,6 @@
         sendData({ type: "article_delete", title: title });
     }
 
-    /* ＝＝＝＝＝ メニューの描画 ＝＝＝＝＝ */
     function renderMenuList() {
         const container = document.getElementById('listItems');
         document.getElementById('list-title').textContent = "登録済みメニュー一覧";
@@ -369,13 +391,12 @@
         sendData({ type: "menu_delete", name: name, timeMode: timeMode });
     }
 
-    /* ＝＝＝＝＝ カレンダーの描画 ＝＝＝＝＝ */
     function renderCalendarList() {
         const container = document.getElementById('listItems');
         document.getElementById('list-title').textContent = "登録済みカレンダー予定";
 
         if(!allData.calendar || allData.calendar.length === 0) { 
-            container.innerHTML = '予定の登録はありません。'; 
+            container.innerHTML = '<div style="text-align:center; padding: 20px; color: #666;">予定の登録はありません。</div>'; 
             return; 
         }
         
@@ -410,43 +431,74 @@
         sendData({ type: "calendar", action: "delete", date: d });
     }
 
-    /* ＝＝＝＝＝ データ送信処理 ＝＝＝＝＝ */
     document.getElementById('postForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        let payload = {};
+        const btn = document.getElementById('submitBtn');
+        const msg = document.getElementById('message');
         
         if (currentMode === 'article') {
             const rawDate = document.getElementById('date').value;
-            payload = { 
-                type: "article_save", // GAS側で判定するためのキー
-                articleType: document.getElementById('type').value, // 'blog' or 'news'
+            let payload = { 
+                type: "article_save", 
+                articleType: document.getElementById('type').value, 
                 date: rawDate ? rawDate.replace(/-/g, '.') : "", 
                 title: document.getElementById('title').value, 
                 content: document.getElementById('content').value,
-                oldTitle: document.getElementById('oldArticleTitle').value // 編集用
+                oldTitle: document.getElementById('oldArticleTitle').value,
+                showImage: document.getElementById('showImage').checked 
             };
+
+            const fileInput = document.getElementById('imageFile');
+            
+            if (fileInput.files.length > 0) {
+                msg.style.color = "blue"; 
+                msg.textContent = "画像をアップロード中...（少し時間がかかります）";
+                btn.disabled = true;
+                
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    payload.image = event.target.result;
+                    payload.mimeType = file.type;
+                    payload.filename = file.name;
+                    sendData(payload);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                sendData(payload);
+            }
+            
         } else if (currentMode === 'menu') {
-            payload = { type: "menu", timeMode: document.getElementById('timeMode').value, category: document.getElementById('menuCategory').value, name: document.getElementById('menuName').value, price: document.getElementById('menuPrice').value, description: document.getElementById('menuDesc').value };
+            let payload = { type: "menu", timeMode: document.getElementById('timeMode').value, category: document.getElementById('menuCategory').value, name: document.getElementById('menuName').value, price: document.getElementById('menuPrice').value, description: document.getElementById('menuDesc').value };
+            sendData(payload);
+            
         } else if (currentMode === 'calendar') {
             const d = document.getElementById('calDate').value;
             if(!d) { alert("日付を入力してください"); return; }
-            payload = { type: "calendar", action: "save", date: d, calType: document.getElementById('calType').value, note: document.getElementById('calNote').value };
+            let payload = { type: "calendar", action: "save", date: d, calType: document.getElementById('calType').value, note: document.getElementById('calNote').value };
+            sendData(payload);
         }
-        sendData(payload);
     });
 
     function sendData(payload) {
         const btn = document.getElementById('submitBtn');
         const msg = document.getElementById('message');
-        btn.disabled = true; btn.textContent = "処理中...";
+        btn.disabled = true; 
+        if(msg.textContent !== "画像をアップロード中...（少し時間がかかります）") {
+            msg.style.color = "blue"; msg.textContent = "処理中...";
+        }
         
         fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) })
         .then(res => res.json()).then(res => {
             if (res.status === "success") {
                 msg.style.color = "green"; msg.textContent = "完了しました！";
                 document.getElementById('postForm').reset();
-                if(currentMode === 'article') document.getElementById('oldArticleTitle').value = "";
-                loadData(); // データを再読み込みして一覧を最新にする
+                if(currentMode === 'article') {
+                    document.getElementById('oldArticleTitle').value = "";
+                    document.getElementById('imageFile').value = "";
+                    document.getElementById('showImage').checked = true;
+                }
+                loadData(); 
             } else { 
                 msg.style.color = "red"; msg.textContent = "エラーが発生しました"; 
             }
