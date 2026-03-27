@@ -48,6 +48,7 @@
         .th-male { border-top: 3px solid var(--male-color); }
         .th-female { border-top: 3px solid var(--female-color); }
         .price-highlight { font-size: 1.2em; font-weight: bold; color: var(--text-main); }
+        .small-note { font-size: 0.75em; color: #666; line-height: 1.4; display: block; margin-top: 4px;}
 
         .plan-title { background-color: var(--text-main); color: white; padding: 10px; text-align: center; margin-top: 30px; margin-bottom: 15px; font-size: 1.1em; letter-spacing: 0.1em; }
         
@@ -59,17 +60,13 @@
         .btn-back:hover { opacity: 0.8; }
         footer { text-align: center; padding: 20px; font-size: 13px; background-color: #222; color: #888; }
 
-        /* ▼ スマホ用最適化（画面幅767px以下） ▼ */
         @media (max-width: 767px) {
             .container { padding: 30px 15px; }
             .time-section { padding: 25px 15px; margin-bottom: 30px; }
             .section-header h3 { font-size: 1.4em; }
-            
-            /* テーブルの最適化（はみ出さないように） */
             table { font-size: 0.85em; }
             th, td { padding: 8px 5px; }
             .price-highlight { font-size: 1.1em; }
-            
             .notice-box { padding: 15px; font-size: 0.85em; }
             .free-options { gap: 10px; margin-top: 20px; }
             .option-tag { padding: 6px 12px; font-size: 0.8em; }
@@ -96,7 +93,7 @@
             <div class="section-header">
                 <h3>Café</h3>
                 <p>14:00 - 18:00</p>
-                <p style="color: var(--accent-color); font-weight: normal; margin-top: 10px; font-size: 0.85em;">★相席あり / ソフトドリンク飲み放題（有料メニューを除く）</p>
+                <p style="color: var(--accent-color); font-weight: normal; margin-top: 10px; font-size: 0.85em;">★相席あり / ソフトドリンク飲み放題</p>
             </div>
             
             <div class="table-responsive">
@@ -109,7 +106,7 @@
                     <tr>
                         <th>初回120分</th>
                         <td><span class="price-highlight">1,100円</span></td>
-                        <td rowspan="2"><span class="price-highlight">330円</span><br><span style="font-size: 0.8em; color: #666;">（時間無制限）</span></td>
+                        <td rowspan="2"><span class="price-highlight">330円</span><br><span class="small-note">（時間無制限）</span></td>
                     </tr>
                     <tr>
                         <th>以降30分毎</th>
@@ -126,7 +123,10 @@
             </div>
 
             <div class="plan-title">MATCHING PLANS</div>
-            <p style="text-align: center; color: var(--accent-color); font-size: 0.85em; margin-bottom: 15px;">★相席あり / 飲み放題（有料メニューを除く）</p>
+            <p style="text-align: center; color: var(--accent-color); font-size: 0.85em; margin-bottom: 15px; line-height: 1.6;">
+                ★相席あり / 飲み放題（有料メニュー除く）<br>
+                <span style="color: #d9534f; font-weight: bold;">※男性の「STANBY(待合)」中は飲み放題対象外です</span>
+            </p>
             
             <div class="table-responsive">
                 <table>
@@ -138,13 +138,16 @@
                     <tr>
                         <th>STANBY<br><span style="font-size: 0.8em;">(待合)</span></th>
                         <th></th>
-                        <td><span class="price-highlight">550円</span><br><span style="font-size: 0.8em; color: #666;">(40分毎)</span></td>
-                        <td rowspan="3"><span class="price-highlight">550円</span><br><span style="font-size: 0.8em; color: #666;">（時間無制限）</span></td>
+                        <td>
+                            <span class="price-highlight">550円</span><br>
+                            <span class="small-note">※40分毎に1オーダー必須<br>（飲み放題不可）</span>
+                        </td>
+                        <td rowspan="3"><span class="price-highlight">550円</span><br><span class="small-note">（時間無制限）</span></td>
                     </tr>
                     <tr>
                         <th rowspan="2">MATCHING<br><span style="font-size: 0.8em;">(相席)</span></th>
                         <th>初回30分</th>
-                        <td><span class="price-highlight">1,650円</span></td>
+                        <td><span class="price-highlight">1,650円</span><br><span class="small-note">（ここから飲み放題）</span></td>
                     </tr>
                     <tr>
                         <th>以降10分毎</th>
@@ -181,7 +184,7 @@
             </div>
         </section>
 
-       <section class="time-section" style="padding: 30px 15px; text-align: center;">
+        <section class="time-section" style="padding: 30px 15px; text-align: center;">
             <h3 style="color: var(--accent-color); margin-top: 0; margin-bottom: 20px; font-size: 1.2em; letter-spacing: 0.1em;">Free Services & Amenities</h3>
             <p style="font-size: 0.9em; color: #555;">カラオケ・ボードゲーム・テレビゲームをご用意しております。<br>ご自由にお楽しみください。</p>
             
