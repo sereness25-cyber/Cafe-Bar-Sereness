@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Café & Bar Sereness | 今日の出会いから、価値ある繋がりへ。</title>
     
-　　<meta name="description" content="秋田市の相席カフェ＆バー「Sereness（セレネス）」。お酒やボードゲーム、カラオケを楽しみながら、飾らない自然体での出会いと繋がりを提供します。マスターへの無料恋愛相談も受付中。">
+    <meta name="description" content="秋田市の相席カフェ＆バー「Sereness（セレネス）」。お酒やボードゲーム、カラオケを楽しみながら、飾らない自然体での出会いと繋がりを提供します。マスターへの無料恋愛相談も受付中。">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
@@ -71,16 +71,27 @@
         
         .calendar-table { width: 100%; border-collapse: collapse; font-size: 0.9em; table-layout: fixed; }
         .calendar-table th { padding: 10px 0; color: #888; font-weight: normal; border-bottom: 2px solid var(--accent-color); }
-        .calendar-table td { padding: 10px 2px; border-bottom: 1px dotted #eee; vertical-align: top; height: 70px; }
+        .calendar-table td { padding: 10px 2px; border-bottom: 1px dotted #eee; vertical-align: top; height: 70px; position: relative; }
         .cal-date { display: block; font-weight: bold; margin-bottom: 5px; color: var(--text-main); }
         
-        /* カレンダー内のバッジ */
         .cal-badge { display: inline-block; padding: 2px 4px; font-size: 0.65em; border-radius: 3px; color: white; line-height: 1.2; word-break: keep-all; margin-bottom: 2px; letter-spacing: 0; }
         .badge-closed { background-color: #d9534f; }
         .badge-event { background-color: #A68B5B; }
         .badge-private { background-color: #5b7da6; }
         .badge-short { background-color: #f0ad4e; }
         .badge-normal { background-color: #5cb85c; }
+        
+        .clickable-cell { cursor: pointer; transition: background-color 0.2s; }
+        .clickable-cell:hover { background-color: #f9f9f9; }
+        
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: #fff; padding: 30px; border-radius: 8px; width: 90%; max-width: 400px; position: relative; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+        .modal-close { position: absolute; top: 15px; right: 15px; font-size: 24px; cursor: pointer; line-height: 1; color: #666; width: 30px; height: 30px; text-align: center;}
+        .modal-date { font-size: 1.2em; color: var(--accent-color); border-bottom: 2px solid var(--accent-color); padding-bottom: 5px; margin-bottom: 20px; font-family: 'Playfair Display', serif; text-align: center;}
+        .modal-event-list { list-style: none; padding: 0; margin: 0; text-align: left; }
+        .modal-event-item { margin-bottom: 15px; border-bottom: 1px dashed #eee; padding-bottom: 10px; }
+        .modal-event-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .modal-event-type { display: inline-block; padding: 3px 8px; border-radius: 3px; color: white; font-size: 0.8em; margin-bottom: 5px; font-weight: bold; }
 
         /* How to enjoy セクション */
         .enjoy-wrapper { background-color: var(--text-main); color: white; padding: 70px 20px; text-align: center; margin-bottom: 50px; }
@@ -118,7 +129,8 @@
         .map-container { max-width: 800px; margin: 0 auto; height: 350px; background-color: #eee; }
         .map-container iframe { width: 100%; height: 100%; border: 0; }
         
-        footer { text-align: center; padding: 25px; font-size: 12px; background-color: #222; color: #888; }
+        footer { text-align: center; padding: 25px; font-size: 12px; background-color: #222; color: #888; line-height: 1.5; }
+        .footer-operator { margin-bottom: 10px; font-size: 1.1em; font-family: "Noto Serif JP", "Hiragino Mincho ProN", serif; letter-spacing: 0.05em; color: #ccc;}
 
         /* スマホ用最適化 */
         @media (max-width: 767px) {
@@ -180,6 +192,7 @@
         <div class="section-wrapper">
             <section class="calendar-section">
                 <h2 class="elegant-font">Schedule</h2>
+                <p style="font-size: 0.85em; color: #666; margin-top: -15px; margin-bottom: 20px;">予定がある日をタップすると詳細が表示されます</p>
                 <div class="calendar-container">
                     <div class="calendar-header">
                         <button onclick="changeMonth(-1)">＜</button>
@@ -193,11 +206,12 @@
                             </tr>
                         </thead>
                         <tbody id="calendarBody">
-                            </tbody>
+                        </tbody>
                     </table>
                 </div>
             </section>
         </div>
+        
         <section class="concept-section section-wrapper" style="background: transparent; border: none; box-shadow: none; margin-bottom: 20px;">
             <h2 style="color: var(--text-main); font-size: 1.3em; border: none; margin-bottom: 30px; letter-spacing: 0.1em;">より自然で、価値のある出会いを。</h2>
             <div class="concept-text">
@@ -210,31 +224,26 @@
     <div class="enjoy-wrapper">
         <h2 class="elegant-font">How to enjoy</h2>
         <div class="enjoy-grid">
-            
             <div class="enjoy-card">
                 <div class="enjoy-step-num">01</div>
                 <h3>お酒を交えて、自然な相席を</h3>
                 <p>美味しいお酒を味わいながら、その日の出会いを楽しむ相席スタイル。リラックスした雰囲気の中で、自然と会話が弾みます。</p>
             </div>
-
             <div class="enjoy-card">
                 <div class="enjoy-step-num">02</div>
                 <h3>ゲームで一気に距離を縮める</h3>
                 <p>初対面での会話が苦手でも大丈夫。店内にはみんなで遊べるボードゲームやテレビゲームを完備。一緒に盛り上がれば、あっという間に仲良くなれます。</p>
             </div>
-
             <div class="enjoy-card">
                 <div class="enjoy-step-num">03</div>
                 <h3>カラオケで楽しく盛り上がる</h3>
                 <p>お酒が入って気分が高まったら、カラオケでさらに楽しい時間を。一緒に歌ったり手拍子をしたり、笑顔が溢れる一体感を味わうことができます。</p>
             </div>
-
             <div class="enjoy-card">
                 <div class="enjoy-step-num">04</div>
                 <h3>恋愛相談（無料）</h3>
                 <p>「どんな人が自分に合うかわからない」「話しかけるのが苦手」など、恋活や婚活のお悩みはお気軽に。あなたの素敵なご縁をサポートします。</p>
             </div>
-
         </div>
     </div>
 
@@ -258,9 +267,7 @@
                         </ul>
                     </div>
                 </div>
-                
                 <a href="menu.html" class="btn btn-menu">料金表はこちら</a>
-                
             </section>
         </div>
 
@@ -320,21 +327,42 @@
             <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3166.3508111617766!2d140.11386434680165!3d39.71467402408248!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x5f8fc3f059987ce1%3A0xde0b0aac7e93622c!2sCaf%C3%A9%20%26%20Bar%20Sereness!5e0!3m2!1sja!2sjp!4v1774617400490!5m2!1sja!2sjp" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         </div>
     </div>
-    <footer class="elegant-font">© 2026 Café <span class="normal-amp">&</span> Bar Sereness. All rights reserved.</footer>
+    
+    <footer class="elegant-font">
+        <div class="footer-operator">運営元：再婚活相談所セレネス</div>
+        © 2026 Café <span class="normal-amp">&</span> Bar Sereness. All rights reserved.
+    </footer>
+
+    <div id="calModal" class="modal-overlay" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-close" onclick="closeModal()">×</div>
+            <div class="modal-date" id="modalDate"></div>
+            <ul class="modal-event-list" id="modalEventList"></ul>
+        </div>
+    </div>
 
     <script>
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzQRAhDa8-BhxaB6IqsQ-hTmkAYLlu_x-5VK44U20hibIarUrgLSGz7wmZDgPgFsQKD6g/exec";
 
-        // カレンダー用変数
         let calData = [];
         let currDate = new Date();
         let currYear = currDate.getFullYear();
-        let currMonth = currDate.getMonth(); // 0-11
+        let currMonth = currDate.getMonth(); 
+
+        function autoLink(text) {
+            if (!text) return '';
+            let safeText = text.replace(/[&<>"']/g, function(match) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[match];
+            });
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            return safeText.replace(urlRegex, function(url) {
+                return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #A68B5B; text-decoration: underline; word-break: break-all;">${url}</a>`;
+            });
+        }
 
         fetch(GAS_URL)
             .then(res => res.json())
             .then(data => {
-                // News表示
                 const newsList = document.getElementById('top-news-list');
                 if(newsList && data.news) {
                     newsList.innerHTML = '';
@@ -346,24 +374,19 @@
                     if(data.news.length === 0) newsList.innerHTML = '<li>現在お知らせはありません。</li>';
                 }
 
-                // ▼ Blog表示（画像がない時は枠を出さないように変更） ▼
                 const blogList = document.getElementById('top-blog-list');
                 if(blogList && data.blog) {
                     blogList.innerHTML = '';
                     data.blog.slice(0, 3).forEach(article => {
                         const div = document.createElement('div');
                         div.className = 'blog-item';
-                        
-                        // 画像があればimgタグをセットし、なければ空文字にする（枠を出さない）
                         const thumb = article.image ? `<img src="${article.image}" class="blog-thumb">` : ``;
-                        
                         div.innerHTML = `${thumb}<div class="blog-info"><span class="news-date">${article.date}</span><a href="news.html?id=${article.id}" class="news-title">${article.title}</a></div>`;
                         blogList.appendChild(div);
                     });
                     if(data.blog.length === 0) blogList.innerHTML = '<p style="color:#666; font-size:0.9em;">現在投稿はありません。</p>';
                 }
 
-                // カレンダー表示
                 if(data.calendar) {
                     calData = data.calendar;
                     renderCalendar(currYear, currMonth);
@@ -376,10 +399,8 @@
                 document.getElementById('calendarBody').innerHTML = '<tr><td colspan="7">カレンダーの読み込みに失敗しました</td></tr>';
             });
 
-        // カレンダー生成関数
         function renderCalendar(year, month) {
             document.getElementById('calendarMonth').textContent = year + "." + String(month + 1).padStart(2, '0');
-            
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             
@@ -399,12 +420,9 @@
                     } else {
                         hasData = true;
                         let fullDate = year + "-" + String(month + 1).padStart(2, '0') + "-" + String(date).padStart(2, '0');
-                        
-                        // 土日の色変え
                         let dateColor = (j === 0) ? "#d9534f" : (j === 6) ? "#5b7da6" : "inherit";
                         let cellHtml = `<span class="cal-date" style="color: ${dateColor}">${date}</span>`;
                         
-                        // 予定のチェックとバッジ付与
                         let todaysEvents = calData.filter(e => e.date === fullDate);
                         todaysEvents.forEach(ev => {
                             let badgeClass = "badge-event";
@@ -417,6 +435,12 @@
                         });
                         
                         cell.innerHTML = cellHtml;
+                        
+                        if (todaysEvents.length > 0) {
+                            cell.classList.add('clickable-cell');
+                            cell.setAttribute('onclick', `showModal('${fullDate}')`);
+                        }
+                        
                         date++;
                     }
                     row.appendChild(cell);
@@ -425,12 +449,42 @@
             }
         }
 
-        // 月の切り替え
         function changeMonth(offset) {
             currMonth += offset;
             if(currMonth < 0) { currMonth = 11; currYear--; }
             if(currMonth > 11) { currMonth = 0; currYear++; }
             renderCalendar(currYear, currMonth);
+        }
+
+        function showModal(dateStr) {
+            const events = calData.filter(e => e.date === dateStr);
+            if(events.length === 0) return;
+            
+            document.getElementById('modalDate').textContent = dateStr.replace(/-/g, '.');
+            const list = document.getElementById('modalEventList');
+            list.innerHTML = '';
+            
+            events.forEach(ev => {
+                let badgeClass = "badge-event";
+                if(ev.type === "休業日") badgeClass = "badge-closed";
+                if(ev.type === "貸切") badgeClass = "badge-private";
+                if(ev.type === "短縮営業") badgeClass = "badge-short";
+                if(ev.type === "通常営業") badgeClass = "badge-normal";
+                
+                let noteHtml = ev.note ? autoLink(ev.note) : '詳細はありません';
+                
+                list.innerHTML += `
+                    <li class="modal-event-item">
+                        <span class="modal-event-type ${badgeClass}">${ev.type}</span>
+                        <div style="font-size: 0.95em; color: #333; margin-top: 5px;">${noteHtml}</div>
+                    </li>`;
+            });
+            
+            document.getElementById('calModal').style.display = 'flex';
+        }
+        
+        function closeModal() {
+            document.getElementById('calModal').style.display = 'none';
         }
     </script>
 </body>

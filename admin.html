@@ -35,6 +35,8 @@
         .btn-move:disabled { background: #ccc; cursor: not-allowed; }
         .edit-btn { background: #5cb85c; color: white; border: none; padding: 6px 10px; border-radius: 3px; cursor: pointer; font-size: 0.85em; }
         .del-btn-small { background: #d9534f; color: white; border: none; padding: 6px 10px; border-radius: 3px; cursor: pointer; font-size: 0.85em; }
+        /* ▼ コピーボタン用のスタイルを追加 ▼ */
+        .copy-btn { background: #5bc0de; color: white; border: none; padding: 6px 10px; border-radius: 3px; cursor: pointer; font-size: 0.85em; }
         
         #message { margin-top: 15px; text-align: center; font-weight: bold; }
         
@@ -62,7 +64,8 @@
 
     <form id="postForm">
         <div id="article-section">
-            <input type="hidden" id="oldArticleTitle"> <label>投稿先</label>
+            <input type="hidden" id="oldArticleTitle"> 
+            <label>投稿先</label>
             <select id="type"><option value="blog">ブログ</option><option value="news">News</option></select>
             <label>日付</label><input type="date" id="date">
             <label>タイトル</label><input type="text" id="title">
@@ -71,12 +74,10 @@
             <div class="file-upload-wrapper">
                 <label style="margin-top: 0;">画像（任意）</label>
                 <input type="file" id="imageFile" accept="image/*" style="border: none; padding: 0;">
-                
                 <label style="margin-top: 15px; display: flex; align-items: center; gap: 5px; cursor: pointer;">
                     <input type="checkbox" id="showImage" checked style="width: auto; margin: 0; cursor: pointer;"> 
-                    <span>サムネイル画像を表示する（チェックを外すと文字だけになります）</span>
+                    <span>サムネイル画像を表示する</span>
                 </label>
-                
                 <span class="file-note">※編集時に新しい画像を選択すると上書きされます。<br>※画像を消したい場合はチェックを外して保存してください。</span>
             </div>
         </div>
@@ -87,9 +88,13 @@
             <label>カテゴリ</label>
             <select id="menuCategory">
                 <option value="飲み放題">飲み放題</option>
-                <option value="コーヒー">コーヒー</option> <option value="スペシャルドリンク">スペシャルドリンク</option> <option value="アルコール">アルコール</option>
+                <option value="コーヒー">コーヒー</option>
+                <option value="スペシャルドリンク">スペシャルドリンク</option>
+                <option value="アルコール">アルコール</option>
                 <option value="ソフトドリンク">ソフトドリンク</option>
                 <option value="フード">フード</option>
+                <option value="缶">缶</option>
+                <option value="おつまみ">おつまみ</option>
                 <option disabled>──────────</option>
                 <option value="クラフトStep1">クラフトメニュー: Step 1</option>
                 <option value="クラフトStep2">クラフトメニュー: Step 2</option>
@@ -101,6 +106,10 @@
         </div>
 
         <div id="calendar-section" style="display: none;">
+            <input type="hidden" id="oldCalDate">
+            <input type="hidden" id="oldCalType">
+            <input type="hidden" id="oldCalNote">
+            
             <label>予定日</label>
             <input type="date" id="calDate">
             <label>区分</label>
@@ -113,7 +122,6 @@
             </select>
             <label>詳細・備考（任意）</label>
             <input type="text" id="calNote" placeholder="例：18時オープン、〇〇パーティ開催 等">
-            <button type="button" class="btn-danger" id="calDelBtn" onclick="deleteCalendar()" style="display:none;">この日の予定を削除する</button>
         </div>
 
         <button type="submit" class="btn-primary" id="submitBtn">保存・更新する</button>
@@ -141,9 +149,13 @@
             <select id="filterCat" onchange="renderMenuList()">
                 <option value="all">全カテゴリ</option>
                 <option value="飲み放題">飲み放題</option>
-                <option value="コーヒー">コーヒー</option> <option value="スペシャルドリンク">スペシャルドリンク</option> <option value="アルコール">アルコール</option>
+                <option value="コーヒー">コーヒー</option>
+                <option value="スペシャルドリンク">スペシャルドリンク</option>
+                <option value="アルコール">アルコール</option>
                 <option value="ソフトドリンク">ソフトドリンク</option>
                 <option value="フード">フード</option>
+                <option value="缶">缶</option>
+                <option value="おつまみ">おつまみ</option>
                 <option value="クラフトStep1">クラフト Step1</option>
                 <option value="クラフトStep2">クラフト Step2</option>
                 <option value="クラフトStep3">クラフト Step3</option>
@@ -155,16 +167,13 @@
 </div>
 
 <script>
-    // ★重要：ご自身のGASのURLを貼り付けてください★
     const GAS_URL = "https://script.google.com/macros/s/AKfycbzQRAhDa8-BhxaB6IqsQ-hTmkAYLlu_x-5VK44U20hibIarUrgLSGz7wmZDgPgFsQKD6g/exec";
     
     let currentMode = 'article';
     let allData = { article: [], menu: [], calendar: [] };
     let filteredMenuList = []; 
 
-    window.onload = () => {
-        loadData();
-    };
+    window.onload = () => { loadData(); };
 
     function switchTab(mode) {
         currentMode = mode;
@@ -179,10 +188,12 @@
         
         document.getElementById('article-filter-area').style.display = mode === 'article' ? 'flex' : 'none';
         document.getElementById('menu-filter-area').style.display = mode === 'menu' ? 'flex' : 'none';
-        document.getElementById('calDelBtn').style.display = mode === 'calendar' ? 'block' : 'none';
         
         document.getElementById('postForm').reset();
         document.getElementById('oldArticleTitle').value = ""; 
+        document.getElementById('oldCalDate').value = ""; 
+        document.getElementById('oldCalType').value = ""; 
+        document.getElementById('oldCalNote').value = ""; 
         document.getElementById('imageFile').value = ""; 
         document.getElementById('showImage').checked = true; 
         
@@ -197,26 +208,10 @@
         
         fetch(GAS_URL).then(res => res.json()).then(data => {
             let combinedArticles = [];
+            if(data.news) { data.news.forEach(n => { n.type = 'news'; combinedArticles.push(n); }); }
+            if(data.blog) { data.blog.forEach(b => { b.type = 'blog'; combinedArticles.push(b); }); }
             
-            if(data.news) {
-                data.news.forEach(n => {
-                    n.type = 'news';
-                    combinedArticles.push(n);
-                });
-            }
-            if(data.blog) {
-                data.blog.forEach(b => {
-                    b.type = 'blog';
-                    combinedArticles.push(b);
-                });
-            }
-            
-            allData = {
-                article: combinedArticles, 
-                menu: data.menu || [],
-                calendar: data.calendar || []
-            };
-
+            allData = { article: combinedArticles, menu: data.menu || [], calendar: data.calendar || [] };
             if(allData.menu) allData.menu.forEach((m, idx) => m._originalIndex = idx);
             if(allData.article) allData.article.forEach((a, idx) => a._originalIndex = idx);
 
@@ -227,70 +222,34 @@
     function renderArticleList() {
         const container = document.getElementById('listItems');
         document.getElementById('list-title').textContent = "投稿済み記事一覧";
-
-        if(!allData.article || allData.article.length === 0) { 
-            container.innerHTML = '<div style="text-align:center; padding: 20px; color: #666;">投稿された記事はありません。</div>'; 
-            return; 
-        }
+        if(!allData.article || allData.article.length === 0) { container.innerHTML = '<div style="text-align:center; padding: 20px; color: #666;">投稿された記事はありません。</div>'; return; }
 
         const filterType = document.getElementById('filterArticleType').value;
-        const filteredArticles = allData.article.filter(a => {
-            return (filterType === 'all') || (a.type === filterType);
-        });
+        const filteredArticles = allData.article.filter(a => { return (filterType === 'all') || (a.type === filterType); });
+        if (filteredArticles.length === 0) { container.innerHTML = '<div style="text-align:center; padding: 20px; color: #666;">該当する記事がありません。</div>'; return; }
 
-        if (filteredArticles.length === 0) {
-            container.innerHTML = '<div style="text-align:center; padding: 20px; color: #666;">該当する記事がありません。</div>';
-            return;
-        }
-
-        let html = '<div class="table-wrapper"><table class="admin-table">';
-        html += '<thead><tr><th>区分</th><th>日付</th><th>タイトル・本文</th><th>操作</th></tr></thead><tbody>';
-        
+        let html = '<div class="table-wrapper"><table class="admin-table"><thead><tr><th>区分</th><th>日付</th><th>タイトル・本文</th><th>操作</th></tr></thead><tbody>';
         filteredArticles.forEach(a => {
             const badge = a.type === 'news' ? '<span class="badge-news">News</span>' : '<span class="badge-blog">ブログ</span>';
             const imgBadge = a.image ? '<span class="badge-image">📷画像あり</span>' : '';
             const preview = a.content ? a.content.replace(/\n/g, ' ').substring(0, 30) + '...' : '';
-
-            html += `<tr>
-                <td>${badge}</td>
-                <td>${a.date}</td>
-                <td>
-                    <strong>${a.title}</strong> ${imgBadge}<br>
-                    <span class="text-preview">${preview}</span>
-                </td>
-                <td>
-                    <div class="btn-group">
-                        <button type="button" class="edit-btn" onclick="editArticle(${a._originalIndex})">編集</button>
-                        <button type="button" class="del-btn-small" onclick="deleteArticle('${a.title}')">削除</button>
-                    </div>
-                </td>
-            </tr>`;
+            html += `<tr><td>${badge}</td><td>${a.date}</td><td><strong>${a.title}</strong> ${imgBadge}<br><span class="text-preview">${preview}</span></td><td><div class="btn-group"><button type="button" class="edit-btn" onclick="editArticle(${a._originalIndex})">編集</button><button type="button" class="del-btn-small" onclick="deleteArticle('${a.title}')">削除</button></div></td></tr>`;
         });
         html += '</tbody></table></div>';
-        
         container.innerHTML = html;
     }
-
     function editArticle(index) {
         const a = allData.article[index];
         document.getElementById('type').value = a.type || 'blog';
-        
-        if(a.date) {
-            document.getElementById('date').value = a.date.replace(/\./g, '-');
-        }
-        
+        if(a.date) document.getElementById('date').value = a.date.replace(/\./g, '-');
         document.getElementById('title').value = a.title;
         document.getElementById('content').value = a.content;
         document.getElementById('oldArticleTitle').value = a.title;
         document.getElementById('imageFile').value = "";
-        
         document.getElementById('showImage').checked = a.image ? true : false;
-        
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        document.getElementById('message').style.color = "blue";
-        document.getElementById('message').textContent = "記事編集モード：保存すると上書きされます";
+        document.getElementById('message').style.color = "blue"; document.getElementById('message').textContent = "記事編集モード：保存すると上書きされます";
     }
-
     function deleteArticle(title) {
         if(!confirm(`「${title}」の記事を削除しますか？`)) return;
         sendData({ type: "article_delete", title: title });
@@ -299,11 +258,7 @@
     function renderMenuList() {
         const container = document.getElementById('listItems');
         document.getElementById('list-title').textContent = "登録済みメニュー一覧";
-
-        if(!allData.menu || allData.menu.length === 0) { 
-            container.innerHTML = '登録されたメニューはありません。'; 
-            return; 
-        }
+        if(!allData.menu || allData.menu.length === 0) { container.innerHTML = '登録されたメニューはありません。'; return; }
 
         const searchQuery = document.getElementById('searchMenu').value.toLowerCase();
         const filterTime = document.getElementById('filterTime').value;
@@ -315,80 +270,47 @@
             const matchCat = (filterCat === 'all') || (m.category === filterCat);
             return matchSearch && matchTime && matchCat;
         });
+        if (filteredMenuList.length === 0) { container.innerHTML = '<div style="text-align:center; padding: 20px; color: #666;">該当するメニューが見つかりません。</div>'; return; }
 
-        if (filteredMenuList.length === 0) {
-            container.innerHTML = '<div style="text-align:center; padding: 20px; color: #666;">該当するメニューが見つかりません。</div>';
-            return;
-        }
-
-        let html = '<div class="table-wrapper"><table class="admin-table">';
-        html += '<thead><tr><th>昼/夜</th><th>カテゴリ</th><th>商品名</th><th>金額</th><th>操作</th></tr></thead><tbody>';
-        
+        let html = '<div class="table-wrapper"><table class="admin-table"><thead><tr><th>昼/夜</th><th>カテゴリ</th><th>商品名</th><th>金額</th><th>操作</th></tr></thead><tbody>';
         filteredMenuList.forEach((m, i) => {
             const badge = m.timeMode === 'day' ? '<span class="badge-day">昼</span>' : '<span class="badge-night">夜</span>';
-            const isFirst = (i === 0);
-            const isLast = (i === filteredMenuList.length - 1);
-            
-            html += `<tr>
-                <td>${badge}</td>
-                <td>${m.category}</td>
-                <td><strong>${m.name}</strong></td>
-                <td>${m.price || '-'}</td>
-                <td>
-                    <div class="btn-group">
-                        <button type="button" class="btn-move" onclick="moveMenu(${m._originalIndex}, -1)" ${isFirst ? 'disabled' : ''}>▲</button>
-                        <button type="button" class="btn-move" onclick="moveMenu(${m._originalIndex}, 1)" ${isLast ? 'disabled' : ''}>▼</button>
-                        <button type="button" class="edit-btn" onclick="editMenu(${m._originalIndex})">編集</button>
-                        <button type="button" class="del-btn-small" onclick="deleteMenu('${m.name}', '${m.timeMode}')">削除</button>
-                    </div>
-                </td>
-            </tr>`;
+            const isFirst = (i === 0); const isLast = (i === filteredMenuList.length - 1);
+            html += `<tr><td>${badge}</td><td>${m.category}</td><td><strong>${m.name}</strong></td><td>${m.price || '-'}</td><td><div class="btn-group"><button type="button" class="btn-move" onclick="moveMenu(${m._originalIndex}, -1)" ${isFirst ? 'disabled' : ''}>▲</button><button type="button" class="btn-move" onclick="moveMenu(${m._originalIndex}, 1)" ${isLast ? 'disabled' : ''}>▼</button><button type="button" class="edit-btn" onclick="editMenu(${m._originalIndex})">編集</button><button type="button" class="del-btn-small" onclick="deleteMenu('${m.name}', '${m.timeMode}')">削除</button></div></td></tr>`;
         });
         html += '</tbody></table></div>';
-        
         container.innerHTML = html;
     }
-
     function moveMenu(originalIndex, direction) {
         const currentPos = filteredMenuList.findIndex(m => m._originalIndex === originalIndex);
         if (currentPos === -1) return;
         const targetOriginalIndex = filteredMenuList[currentPos + direction]._originalIndex;
-        
         const temp = allData.menu[originalIndex];
         allData.menu[originalIndex] = allData.menu[targetOriginalIndex];
         allData.menu[targetOriginalIndex] = temp;
-        
         allData.menu.forEach((m, idx) => m._originalIndex = idx);
         renderMenuList();
-        
-        const msg = document.getElementById('message');
-        msg.style.color = "blue"; msg.textContent = "並び順を保存中...";
+        const msg = document.getElementById('message'); msg.style.color = "blue"; msg.textContent = "並び順を保存中...";
         fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ type: "menu_reorder", menuData: allData.menu }) })
-        .then(res => res.json()).then(res => {
-            if (res.status === "success") { msg.style.color = "green"; msg.textContent = "並び順を更新しました！"; } 
-            else { msg.style.color = "red"; msg.textContent = "保存中にエラーが発生しました"; }
-        });
+        .then(res => res.json()).then(res => { if (res.status === "success") { msg.style.color = "green"; msg.textContent = "並び順を更新しました！"; } else { msg.style.color = "red"; msg.textContent = "保存中にエラーが発生しました"; } });
     }
-
     function editMenu(index) {
         const m = allData.menu[index];
         document.getElementById('timeMode').value = m.timeMode;
-        let cat = m.category;
-        if(cat === '単品ドリンク') cat = 'アルコール'; 
+        let cat = m.category; if(cat === '単品ドリンク') cat = 'アルコール'; 
         document.getElementById('menuCategory').value = cat;
         document.getElementById('menuName').value = m.name;
         document.getElementById('menuPrice').value = m.price;
         document.getElementById('menuDesc').value = m.description || "";
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        document.getElementById('message').style.color = "blue";
-        document.getElementById('message').textContent = "メニュー編集モード：保存すると上書きされます";
+        document.getElementById('message').style.color = "blue"; document.getElementById('message').textContent = "メニュー編集モード：保存すると上書きされます";
     }
-    
     function deleteMenu(name, timeMode) {
         if(!confirm(name + ' を削除しますか？')) return;
         sendData({ type: "menu_delete", name: name, timeMode: timeMode });
     }
 
+    // --- カレンダー関連の関数 ---
     function renderCalendarList() {
         const container = document.getElementById('listItems');
         document.getElementById('list-title').textContent = "登録済みカレンダー予定";
@@ -408,27 +330,51 @@
             div.style.justifyContent = "space-between";
             div.innerHTML = `
                 <div><strong>${c.date}</strong><br><span style="color:#d9534f; font-weight:bold; font-size:0.9em;">${c.type}</span> <small>${c.note||''}</small></div>
-                <div><button type="button" class="edit-btn" onclick="editCalendar('${c.date}', '${c.type}', '${c.note}')">選択</button></div>`;
+                <div class="btn-group">
+                    <button type="button" class="copy-btn" onclick="copyCalendar('${c.date}', '${c.type}', '${c.note}')">コピー</button>
+                    <button type="button" class="edit-btn" onclick="editCalendar('${c.date}', '${c.type}', '${c.note}')">編集</button>
+                    <button type="button" class="del-btn-small" onclick="deleteCalendar('${c.date}', '${c.type}', '${c.note}')">削除</button>
+                </div>`;
             container.appendChild(div);
         });
+    }
+
+    // ▼ 新規追加：カレンダーのコピー機能 ▼
+    function copyCalendar(date, type, note) {
+        document.getElementById('calDate').value = date;
+        document.getElementById('calType').value = type;
+        document.getElementById('calNote').value = note || "";
+        
+        // コピーなので「上書き用の過去データ」は空っぽ（リセット）にする
+        document.getElementById('oldCalDate').value = "";
+        document.getElementById('oldCalType').value = "";
+        document.getElementById('oldCalNote').value = "";
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.getElementById('message').style.color = "blue";
+        document.getElementById('message').textContent = "予定をコピーしました！日付などを変更して保存してください。";
     }
 
     function editCalendar(date, type, note) {
         document.getElementById('calDate').value = date;
         document.getElementById('calType').value = type;
         document.getElementById('calNote').value = note || "";
+        
+        document.getElementById('oldCalDate').value = date;
+        document.getElementById('oldCalType').value = type;
+        document.getElementById('oldCalNote').value = note || "";
+        
         window.scrollTo({ top: 0, behavior: 'smooth' });
         document.getElementById('message').style.color = "blue";
-        document.getElementById('message').textContent = "日付が選択されました。更新または削除が可能です。";
+        document.getElementById('message').textContent = "カレンダー編集モード：保存すると上書きされます";
     }
 
-    function deleteCalendar() {
-        const d = document.getElementById('calDate').value;
-        if(!d) { alert("削除する日付を選択してください。"); return; }
-        if(!confirm(d + ' の予定を削除しますか？')) return;
-        sendData({ type: "calendar", action: "delete", date: d });
+    function deleteCalendar(d, type, note) {
+        if(!confirm(`${d} の「${type}」の予定を削除しますか？`)) return;
+        sendData({ type: "calendar", action: "delete", date: d, calType: type, note: note });
     }
 
+    // --- データ送信処理 ---
     document.getElementById('postForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
@@ -445,35 +391,35 @@
                 oldTitle: document.getElementById('oldArticleTitle').value,
                 showImage: document.getElementById('showImage').checked 
             };
-
             const fileInput = document.getElementById('imageFile');
-            
             if (fileInput.files.length > 0) {
-                msg.style.color = "blue"; 
-                msg.textContent = "画像をアップロード中...（少し時間がかかります）";
+                msg.style.color = "blue"; msg.textContent = "画像をアップロード中...（少し時間がかかります）";
                 btn.disabled = true;
-                
                 const file = fileInput.files[0];
                 const reader = new FileReader();
                 reader.onload = function(event) {
-                    payload.image = event.target.result;
-                    payload.mimeType = file.type;
-                    payload.filename = file.name;
+                    payload.image = event.target.result; payload.mimeType = file.type; payload.filename = file.name;
                     sendData(payload);
                 };
                 reader.readAsDataURL(file);
             } else {
                 sendData(payload);
             }
-            
         } else if (currentMode === 'menu') {
             let payload = { type: "menu", timeMode: document.getElementById('timeMode').value, category: document.getElementById('menuCategory').value, name: document.getElementById('menuName').value, price: document.getElementById('menuPrice').value, description: document.getElementById('menuDesc').value };
             sendData(payload);
-            
         } else if (currentMode === 'calendar') {
             const d = document.getElementById('calDate').value;
             if(!d) { alert("日付を入力してください"); return; }
-            let payload = { type: "calendar", action: "save", date: d, calType: document.getElementById('calType').value, note: document.getElementById('calNote').value };
+            let payload = { 
+                type: "calendar", action: "save", 
+                date: d, 
+                calType: document.getElementById('calType').value, 
+                note: document.getElementById('calNote').value,
+                oldCalDate: document.getElementById('oldCalDate').value,
+                oldCalType: document.getElementById('oldCalType').value,
+                oldNote: document.getElementById('oldCalNote').value
+            };
             sendData(payload);
         }
     });
@@ -482,9 +428,7 @@
         const btn = document.getElementById('submitBtn');
         const msg = document.getElementById('message');
         btn.disabled = true; 
-        if(msg.textContent !== "画像をアップロード中...（少し時間がかかります）") {
-            msg.style.color = "blue"; msg.textContent = "処理中...";
-        }
+        if(msg.textContent !== "画像をアップロード中...（少し時間がかかります）") { msg.style.color = "blue"; msg.textContent = "処理中..."; }
         
         fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) })
         .then(res => res.json()).then(res => {
@@ -492,19 +436,14 @@
                 msg.style.color = "green"; msg.textContent = "完了しました！";
                 document.getElementById('postForm').reset();
                 if(currentMode === 'article') {
-                    document.getElementById('oldArticleTitle').value = "";
-                    document.getElementById('imageFile').value = "";
-                    document.getElementById('showImage').checked = true;
+                    document.getElementById('oldArticleTitle').value = ""; document.getElementById('imageFile').value = ""; document.getElementById('showImage').checked = true;
+                } else if(currentMode === 'calendar') {
+                    document.getElementById('oldCalDate').value = ""; document.getElementById('oldCalType').value = ""; document.getElementById('oldCalNote').value = "";
                 }
                 loadData(); 
-            } else { 
-                msg.style.color = "red"; msg.textContent = "エラーが発生しました"; 
-            }
-        }).catch(err => {
-            msg.style.color = "red"; msg.textContent = "通信エラーが発生しました";
-        }).finally(() => { 
-            btn.disabled = false; btn.textContent = "保存・更新する"; 
-        });
+            } else { msg.style.color = "red"; msg.textContent = "エラーが発生しました"; }
+        }).catch(err => { msg.style.color = "red"; msg.textContent = "通信エラーが発生しました";
+        }).finally(() => { btn.disabled = false; btn.textContent = "保存・更新する"; });
     }
 </script>
 </body>
