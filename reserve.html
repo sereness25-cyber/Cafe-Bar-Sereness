@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WEB予約 | Café & Bar Sereness</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600&display=swap" rel="stylesheet">
+    <style>
+        :root { --accent-color: #A68B5B; --text-main: #333; --bg-color: #FAFAFA; }
+        body { margin: 0; padding: 0; font-family: "Noto Serif JP", serif; color: var(--text-main); background-color: var(--bg-color); line-height: 1.6; }
+        header { background-color: var(--text-main); color: #fff; padding: 15px 20px; text-align: center; display: flex; justify-content: space-between; align-items: center;}
+        header a { color: var(--accent-color); text-decoration: none; font-size: 0.9em; }
+        
+        .container { max-width: 600px; margin: 40px auto; padding: 30px; background: white; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #EAEAEA;}
+        h2 { text-align: center; color: var(--accent-color); font-size: 1.5em; margin-bottom: 20px; font-family: 'Playfair Display', serif; letter-spacing: 0.1em; }
+        
+        .cancel-notice { text-align: center; font-size: 0.85em; color: #d9534f; margin-bottom: 30px; padding: 12px; background: #fff3f3; border-radius: 4px; border: 1px solid #ffcccc; line-height: 1.8;}
+        .cancel-notice a { color: #d9534f; font-weight: bold; text-decoration: none; font-size: 1.1em;}
+
+        .form-group { margin-bottom: 25px; }
+        label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 0.95em; }
+        .required { color: #d9534f; font-size: 0.8em; margin-left: 5px; }
+        
+        /* iOSの自動ズームを防ぐため font-size: 16px を指定 */
+        input[type="text"], input[type="tel"], input[type="date"], input[type="time"], input[type="number"], textarea {
+            width: 100%; padding: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; font-family: inherit; background-color: #fff;
+            -webkit-appearance: none;
+        }
+        
+        /* 人数入力欄の最適化 */
+        .people-inputs { display: flex; gap: 15px; }
+        .people-input-box { flex: 1; display: flex; align-items: center; justify-content: space-between; background: #f9f9f9; border: 1px solid #ddd; padding: 10px 15px; border-radius: 4px; }
+        .people-input-box span { font-weight: bold; color: #555; }
+        .people-input-box input[type="number"] { width: 70px; padding: 8px; text-align: center; border: 1px solid #ccc; margin: 0; }
+        
+        .submit-btn { width: 100%; background: var(--accent-color); color: white; padding: 18px; border: none; border-radius: 4px; font-size: 1.1em; font-weight: bold; cursor: pointer; transition: 0.3s; letter-spacing: 0.1em; margin-top: 10px; -webkit-appearance: none;}
+        .submit-btn:hover { opacity: 0.8; }
+        .submit-btn:disabled { background: #ccc; cursor: not-allowed; }
+        
+        #loadingMsg, #successMsg { display: none; text-align: center; margin-top: 20px; font-weight: bold; }
+        #successMsg { color: #5cb85c; padding: 30px; background: #f9fff9; border: 1px solid #5cb85c; border-radius: 4px; line-height: 1.8;}
+        
+        /* スマホ向けメディアクエリ */
+        @media (max-width: 600px) {
+            .container { margin: 20px 15px; padding: 25px 15px; }
+            h2 { font-size: 1.3em; }
+            
+            /* スマホでは人数入力を縦並びにして押しやすくする */
+            .people-inputs { flex-direction: column; gap: 10px; }
+            .people-input-box { padding: 12px 20px; }
+            .people-input-box input[type="number"] { width: 80px; padding: 10px; }
+            
+            .form-group { margin-bottom: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div style="width: 60px;"></div> 
+        <div>Cafe & Bar セレネス</div>
+        <a href="index.html" style="width: 60px; text-align: right;">Topへ</a>
+    </header>
+
+    <div class="container">
+        <h2>Reservation</h2>
+        
+        <div class="cancel-notice">
+            当日のご予約キャンセルや人数の変更につきましては、<br>必ずお電話（<a href="tel:07011479049">070-1147-9049</a>）にてご連絡をお願いいたします。
+        </div>
+
+        <div id="formContainer">
+            <form id="reserveForm">
+                <div class="form-group">
+                    <label>ご予約日 <span class="required">必須</span></label>
+                    <input type="date" id="resDate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>ご来店時間 <span class="required">必須</span></label>
+                    <input type="time" id="resTime" required>
+                    <span style="font-size:0.8em; color:#888; margin-top:5px; display:block;">※Cafe 14:00-18:00 / Bar 20:00-25:00</span>
+                </div>
+
+                <div class="form-group">
+                    <label>お名前（フルネーム） <span class="required">必須</span></label>
+                    <input type="text" id="resName" placeholder="例：山田 太郎" required>
+                </div>
+
+                <div class="form-group">
+                    <label>お電話番号 <span class="required">必須</span></label>
+                    <input type="tel" id="resPhone" placeholder="例：090-1234-5678" required>
+                </div>
+
+                <div class="form-group">
+                    <label>ご来店人数 <span class="required">必須</span></label>
+                    <div class="people-inputs">
+                        <div class="people-input-box">
+                            <span>男性</span>
+                            <input type="number" id="resMale" value="0" min="0">
+                        </div>
+                        <div class="people-input-box">
+                            <span>女性</span>
+                            <input type="number" id="resFemale" value="0" min="0">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>備考・ご要望など</label>
+                    <textarea id="resNote" rows="4" placeholder="例：〇〇のイベントに参加希望です、等"></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">予約を送信する</button>
+            </form>
+            <div id="loadingMsg" style="color:var(--accent-color);">送信中...しばらくお待ちください。</div>
+        </div>
+
+        <div id="successMsg">
+            ご予約リクエストを送信しました！<br>
+            ご来店を心よりお待ちしております。<br><br>
+            <span style="font-size: 0.85em; color: #d9534f; font-weight: normal;">※ご予約のキャンセルや人数の変更はお電話（<a href="tel:07011479049" style="color: #d9534f; font-weight: bold; text-decoration: none;">070-1147-9049</a>）にてご連絡をお願いいたします。</span><br><br>
+            <a href="index.html" style="display:inline-block; margin-top:15px; color:var(--text-main); text-decoration:underline; font-weight: normal;">トップページへ戻る</a>
+        </div>
+    </div>
+
+    <script>
+        // ★重要：ご自身のGASのURL（新しくデプロイし直したもの）を貼り付けてください★
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzQRAhDa8-BhxaB6IqsQ-hTmkAYLlu_x-5VK44U20hibIarUrgLSGz7wmZDgPgFsQKD6g/exec";
+
+        // URLから日付を受け取って自動入力する
+        const urlParams = new URLSearchParams(window.location.search);
+        const passedDate = urlParams.get('date');
+        if(passedDate) {
+            document.getElementById('resDate').value = passedDate;
+        }
+
+        document.getElementById('reserveForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loadingMsg');
+            
+            btn.disabled = true;
+            btn.style.display = 'none';
+            loading.style.display = 'block';
+
+            const payload = {
+                type: "reservation",
+                date: document.getElementById('resDate').value,
+                time: document.getElementById('resTime').value,
+                name: document.getElementById('resName').value,
+                phone: document.getElementById('resPhone').value,
+                male: document.getElementById('resMale').value,
+                female: document.getElementById('resFemale').value,
+                note: document.getElementById('resNote').value
+            };
+
+            fetch(GAS_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'text/plain',
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === "success") {
+                    document.getElementById('formContainer').style.display = 'none';
+                    document.getElementById('successMsg').style.display = 'block';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    alert("エラーが発生しました。お手数ですが、お電話にてご連絡ください。\\n詳細: " + (data.message || "不明なエラー"));
+                    btn.disabled = false;
+                    btn.style.display = 'block';
+                    loading.style.display = 'none';
+                }
+            })
+            .catch(err => {
+                alert("通信エラーが発生しました。お手数ですがお電話にてご予約をお願いいたします。");
+                btn.disabled = false;
+                btn.style.display = 'block';
+                loading.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>

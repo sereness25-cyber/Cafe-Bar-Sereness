@@ -35,7 +35,6 @@
         .btn-move:disabled { background: #ccc; cursor: not-allowed; }
         .edit-btn { background: #5cb85c; color: white; border: none; padding: 6px 10px; border-radius: 3px; cursor: pointer; font-size: 0.85em; }
         .del-btn-small { background: #d9534f; color: white; border: none; padding: 6px 10px; border-radius: 3px; cursor: pointer; font-size: 0.85em; }
-        /* ▼ コピーボタン用のスタイルを追加 ▼ */
         .copy-btn { background: #5bc0de; color: white; border: none; padding: 6px 10px; border-radius: 3px; cursor: pointer; font-size: 0.85em; }
         
         #message { margin-top: 15px; text-align: center; font-weight: bold; }
@@ -55,7 +54,7 @@
 <body>
 
 <div class="admin-box">
-    <h1>セレネス 管理画面</h1>
+    <h1>セレネス 管理画面 [cite: 1]</h1>
     <div class="tab-wrapper">
         <button class="tab-btn active" onclick="switchTab('article')">記事投稿</button>
         <button class="tab-btn" onclick="switchTab('menu')">メニュー管理</button>
@@ -114,7 +113,8 @@
             <input type="date" id="calDate">
             <label>区分</label>
             <select id="calType">
-                <option value="通常営業">通常営業</option>
+                <option value="通常営業">通常営業（バッジを表示する）</option>
+                <option value="通常営業（表示なし）">通常営業（カレンダーは空白にする）</option>
                 <option value="休業日">休業日 (定休日など)</option>
                 <option value="イベント">イベント</option>
                 <option value="貸切">貸切</option>
@@ -310,7 +310,6 @@
         sendData({ type: "menu_delete", name: name, timeMode: timeMode });
     }
 
-    // --- カレンダー関連の関数 ---
     function renderCalendarList() {
         const container = document.getElementById('listItems');
         document.getElementById('list-title').textContent = "登録済みカレンダー予定";
@@ -339,13 +338,10 @@
         });
     }
 
-    // ▼ 新規追加：カレンダーのコピー機能 ▼
     function copyCalendar(date, type, note) {
         document.getElementById('calDate').value = date;
         document.getElementById('calType').value = type;
         document.getElementById('calNote').value = note || "";
-        
-        // コピーなので「上書き用の過去データ」は空っぽ（リセット）にする
         document.getElementById('oldCalDate').value = "";
         document.getElementById('oldCalType').value = "";
         document.getElementById('oldCalNote').value = "";
@@ -374,7 +370,6 @@
         sendData({ type: "calendar", action: "delete", date: d, calType: type, note: note });
     }
 
-    // --- データ送信処理 ---
     document.getElementById('postForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');

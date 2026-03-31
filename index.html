@@ -84,6 +84,11 @@
         .clickable-cell { cursor: pointer; transition: background-color 0.2s; }
         .clickable-cell:hover { background-color: #f9f9f9; }
         
+        /* ▼ 予定がない日の斜線スタイル（赤色） ▼ */
+        .slash-cell {
+            background-image: linear-gradient(to top right, transparent calc(50% - 1px), #d9534f calc(50%), transparent calc(50% + 1px));
+        }
+        
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: #fff; padding: 30px; border-radius: 8px; width: 90%; max-width: 400px; position: relative; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
         .modal-close { position: absolute; top: 15px; right: 15px; font-size: 24px; cursor: pointer; line-height: 1; color: #666; width: 30px; height: 30px; text-align: center;}
@@ -192,7 +197,7 @@
         <div class="section-wrapper">
             <section class="calendar-section">
                 <h2 class="elegant-font">Schedule</h2>
-                <p style="font-size: 0.85em; color: #666; margin-top: -15px; margin-bottom: 20px;">予定がある日をタップすると詳細が表示されます</p>
+                <p style="font-size: 0.85em; color: #666; margin-top: -15px; margin-bottom: 20px;">日付をタップすると詳細・予約画面が開きます</p>
                 <div class="calendar-container">
                     <div class="calendar-header">
                         <button onclick="changeMonth(-1)">＜</button>
@@ -283,17 +288,13 @@
                         <div class="faq-q">お酒が飲めなくても平気ですか？</div>
                         <div class="faq-a">はい、大歓迎です。ノンアルコールメニューやソフトドリンクも豊富にご用意しておりますので、カフェ感覚でお気軽にお楽しみいただけます。</div>
                     </div>
- <div class="faq-item">
-                        <div class="faq-q">マッチングアプリや婚活パーティーが苦手なんですが…</div>
-                        <div class="faq-a">そのような方こそ、むしろ向いております。出会いを探しに来なくても大丈夫です。まずは楽しみにお越しください、自然と出会えます。</div>
-                    </div>
                     <div class="faq-item">
                         <div class="faq-q">どのような服装で行けば良いですか？</div>
                         <div class="faq-a">ドレスコードはございません。お仕事帰りのスーツや、休日のカジュアルな服装など、普段通りのリラックスしたスタイルでお越しください。</div>
                     </div>
                     <div class="faq-item">
                         <div class="faq-q">予約は必要ですか？</div>
-                        <div class="faq-a">ご予約なしでふらっとお立ち寄りいただけます。週末など混雑が気になる場合や、確実にお席を確保したい場合は、お電話やメールでの事前予約も承っております。</div>
+                        <div class="faq-a">ご予約なしでふらっとお立ち寄りいただけます。週末など混雑が気になる場合や、確実にお席を確保したい場合は、WEB予約またはLINE・お電話での事前予約も承っております。</div>
                     </div>
                     <div class="faq-item">
                         <div class="faq-q">クレジットカードや電子決済は使えますか？</div>
@@ -353,10 +354,17 @@
         let currYear = currDate.getFullYear();
         let currMonth = currDate.getMonth(); 
 
+        // ▼ 【修正箇所】ここで構文エラーが起きていたのを直しました ▼
         function autoLink(text) {
             if (!text) return '';
             let safeText = text.replace(/[&<>"']/g, function(match) {
-                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[match];
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                }[match];
             });
             const urlRegex = /(https?:\/\/[^\s]+)/g;
             return safeText.replace(urlRegex, function(url) {
@@ -364,43 +372,59 @@
             });
         }
 
+        function renderPageData(data) {
+            const newsList = document.getElementById('top-news-list');
+            if(newsList && data.news) {
+                newsList.innerHTML = '';
+                data.news.slice(0, 3).forEach(article => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<span class="news-date">${article.date}</span><a href="news.html?id=${article.id}" class="news-title">${article.title}</a>`;
+                    newsList.appendChild(li);
+                });
+                if(data.news.length === 0) newsList.innerHTML = '<li>現在お知らせはありません。</li>';
+            }
+
+            const blogList = document.getElementById('top-blog-list');
+            if(blogList && data.blog) {
+                blogList.innerHTML = '';
+                data.blog.slice(0, 3).forEach(article => {
+                    const div = document.createElement('div');
+                    div.className = 'blog-item';
+                    const thumb = article.image ? `<img src="${article.image}" class="blog-thumb">` : ``;
+                    div.innerHTML = `${thumb}<div class="blog-info"><span class="news-date">${article.date}</span><a href="news.html?id=${article.id}" class="news-title">${article.title}</a></div>`;
+                    blogList.appendChild(div);
+                });
+                if(data.blog.length === 0) blogList.innerHTML = '<p style="color:#666; font-size:0.9em;">現在投稿はありません。</p>';
+            }
+
+            if(data.calendar) {
+                calData = data.calendar;
+                renderCalendar(currYear, currMonth);
+            }
+        }
+
+        const CACHE_KEY = "sereness_data_cache";
+        const cachedData = localStorage.getItem(CACHE_KEY);
+
+        if (cachedData) {
+            try {
+                renderPageData(JSON.parse(cachedData));
+            } catch(e) {}
+        }
+
         fetch(GAS_URL)
             .then(res => res.json())
             .then(data => {
-                const newsList = document.getElementById('top-news-list');
-                if(newsList && data.news) {
-                    newsList.innerHTML = '';
-                    data.news.slice(0, 3).forEach(article => {
-                        const li = document.createElement('li');
-                        li.innerHTML = `<span class="news-date">${article.date}</span><a href="news.html?id=${article.id}" class="news-title">${article.title}</a>`;
-                        newsList.appendChild(li);
-                    });
-                    if(data.news.length === 0) newsList.innerHTML = '<li>現在お知らせはありません。</li>';
-                }
-
-                const blogList = document.getElementById('top-blog-list');
-                if(blogList && data.blog) {
-                    blogList.innerHTML = '';
-                    data.blog.slice(0, 3).forEach(article => {
-                        const div = document.createElement('div');
-                        div.className = 'blog-item';
-                        const thumb = article.image ? `<img src="${article.image}" class="blog-thumb">` : ``;
-                        div.innerHTML = `${thumb}<div class="blog-info"><span class="news-date">${article.date}</span><a href="news.html?id=${article.id}" class="news-title">${article.title}</a></div>`;
-                        blogList.appendChild(div);
-                    });
-                    if(data.blog.length === 0) blogList.innerHTML = '<p style="color:#666; font-size:0.9em;">現在投稿はありません。</p>';
-                }
-
-                if(data.calendar) {
-                    calData = data.calendar;
-                    renderCalendar(currYear, currMonth);
-                }
+                localStorage.setItem(CACHE_KEY, JSON.stringify(data)); 
+                renderPageData(data); 
             })
             .catch(err => {
                 console.log(err);
-                const newsList = document.getElementById('top-news-list');
-                if (newsList) newsList.innerHTML = '<li>データの取得に失敗しました。</li>';
-                document.getElementById('calendarBody').innerHTML = '<tr><td colspan="7">カレンダーの読み込みに失敗しました</td></tr>';
+                if (!cachedData) {
+                    const newsList = document.getElementById('top-news-list');
+                    if (newsList) newsList.innerHTML = '<li>データの取得に失敗しました。</li>';
+                    document.getElementById('calendarBody').innerHTML = '<tr><td colspan="7">カレンダーの読み込みに失敗しました</td></tr>';
+                }
             });
 
         function renderCalendar(year, month) {
@@ -428,23 +452,27 @@
                         let cellHtml = `<span class="cal-date" style="color: ${dateColor}">${date}</span>`;
                         
                         let todaysEvents = calData.filter(e => e.date === fullDate);
-                        todaysEvents.forEach(ev => {
-                            let badgeClass = "badge-event";
-                            if(ev.type === "休業日") badgeClass = "badge-closed";
-                            if(ev.type === "貸切") badgeClass = "badge-private";
-                            if(ev.type === "短縮営業") badgeClass = "badge-short";
-                            if(ev.type === "通常営業") badgeClass = "badge-normal";
+                        
+                        if (todaysEvents.length === 0) {
+                            cell.classList.add('slash-cell');
+                        } else {
+                            todaysEvents.forEach(ev => {
+                                if (ev.type !== "通常営業（表示なし）") {
+                                    let badgeClass = "badge-event";
+                                    if(ev.type === "休業日") badgeClass = "badge-closed";
+                                    if(ev.type === "貸切") badgeClass = "badge-private";
+                                    if(ev.type === "短縮営業") badgeClass = "badge-short";
+                                    if(ev.type === "通常営業") badgeClass = "badge-normal";
+                                    
+                                    cellHtml += `<div class="cal-badge ${badgeClass}">${ev.type}</div>`;
+                                }
+                            });
                             
-                            cellHtml += `<div class="cal-badge ${badgeClass}">${ev.type}</div>`;
-                        });
-                        
-                        cell.innerHTML = cellHtml;
-                        
-                        if (todaysEvents.length > 0) {
                             cell.classList.add('clickable-cell');
                             cell.setAttribute('onclick', `showModal('${fullDate}')`);
                         }
                         
+                        cell.innerHTML = cellHtml;
                         date++;
                     }
                     row.appendChild(cell);
@@ -461,28 +489,37 @@
         }
 
         function showModal(dateStr) {
-            const events = calData.filter(e => e.date === dateStr);
-            if(events.length === 0) return;
-            
             document.getElementById('modalDate').textContent = dateStr.replace(/-/g, '.');
             const list = document.getElementById('modalEventList');
             list.innerHTML = '';
+
+            const events = calData.filter(e => e.date === dateStr);
             
-            events.forEach(ev => {
-                let badgeClass = "badge-event";
-                if(ev.type === "休業日") badgeClass = "badge-closed";
-                if(ev.type === "貸切") badgeClass = "badge-private";
-                if(ev.type === "短縮営業") badgeClass = "badge-short";
-                if(ev.type === "通常営業") badgeClass = "badge-normal";
-                
-                let noteHtml = ev.note ? autoLink(ev.note) : '詳細はありません';
-                
-                list.innerHTML += `
-                    <li class="modal-event-item">
-                        <span class="modal-event-type ${badgeClass}">${ev.type}</span>
-                        <div style="font-size: 0.95em; color: #333; margin-top: 5px;">${noteHtml}</div>
-                    </li>`;
-            });
+            if (events.length > 0) {
+                events.forEach(ev => {
+                    let displayType = ev.type === "通常営業（表示なし）" ? "通常営業" : ev.type;
+                    
+                    let badgeClass = "badge-event";
+                    if(ev.type === "休業日") badgeClass = "badge-closed";
+                    if(ev.type === "貸切") badgeClass = "badge-private";
+                    if(ev.type === "短縮営業") badgeClass = "badge-short";
+                    if(ev.type.includes("通常営業")) badgeClass = "badge-normal";
+                    
+                    let noteHtml = ev.note ? autoLink(ev.note) : '詳細はありません';
+                    
+                    list.innerHTML += `
+                        <li class="modal-event-item">
+                            <span class="modal-event-type ${badgeClass}">${displayType}</span>
+                            <div style="font-size: 0.95em; color: #333; margin-top: 5px;">${noteHtml}</div>
+                        </li>`;
+                });
+            }
+
+            list.innerHTML += `
+                <div style="text-align: center; margin-top: 25px;">
+                    <a href="reserve.html?date=${dateStr}" style="display: block; background: #A68B5B; color: white; padding: 12px; border-radius: 4px; text-decoration: none; font-weight: bold; letter-spacing: 0.1em; transition: 0.3s;">この日で予約する</a>
+                </div>
+            `;
             
             document.getElementById('calModal').style.display = 'flex';
         }
