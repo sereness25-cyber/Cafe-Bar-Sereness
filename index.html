@@ -84,7 +84,6 @@
         .clickable-cell { cursor: pointer; transition: background-color 0.2s; }
         .clickable-cell:hover { background-color: #f9f9f9; }
         
-        /* ▼ 予定がない日の斜線スタイル（赤色） ▼ */
         .slash-cell {
             background-image: linear-gradient(to top right, transparent calc(50% - 1px), #d9534f calc(50%), transparent calc(50% + 1px));
         }
@@ -236,8 +235,8 @@
             </div>
             <div class="enjoy-card">
                 <div class="enjoy-step-num">02</div>
-                <h3>ゲームで一気に距離を縮める</h3>
-                <p>初対面での会話が苦手でも大丈夫。店内にはみんなで遊べるボードゲームやテレビゲームを完備。一緒に盛り上がれば、あっという間に仲良くなれます。</p>
+                <h3>ゲームやドリンクで距離を縮める</h3>
+                <p>初対面での会話が苦手でも大丈夫。店内にはみんなで遊べるボードゲームを完備。また、選んで作れるオリジナルのクラフトドリンクもご用意。一緒に作って味わえば、自然と距離が縮まります。</p>
             </div>
             <div class="enjoy-card">
                 <div class="enjoy-step-num">03</div>
@@ -354,9 +353,10 @@
         let currYear = currDate.getFullYear();
         let currMonth = currDate.getMonth(); 
 
-        // ▼ 【修正箇所】ここで構文エラーが起きていたのを直しました ▼
         function autoLink(text) {
             if (!text) return '';
+            
+            // 安全なHTMLに変換するための処理（エラー防止策）
             let safeText = text.replace(/[&<>"']/g, function(match) {
                 return {
                     '&': '&amp;',
@@ -366,6 +366,7 @@
                     "'": '&#39;'
                 }[match];
             });
+            
             const urlRegex = /(https?:\/\/[^\s]+)/g;
             return safeText.replace(urlRegex, function(url) {
                 return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #A68B5B; text-decoration: underline; word-break: break-all;">${url}</a>`;
