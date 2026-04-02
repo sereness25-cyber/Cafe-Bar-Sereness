@@ -16,7 +16,8 @@
         label { display: block; margin-top: 15px; font-weight: bold; font-size: 0.85em; }
         select, input, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         
-        .btn-primary { background-color: #A68B5B; color: white; border: none; padding: 12px; margin-top: 20px; width: 100%; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-primary { background-color: #A68B5B; color: white; border: none; padding: 15px; margin-top: 20px; width: 100%; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 1.05em; transition: 0.3s;}
+        .btn-primary:hover { opacity: 0.8; }
         .btn-danger { background-color: #d9534f; color: white; border: none; padding: 12px; margin-top: 10px; width: 100%; border-radius: 4px; cursor: pointer; font-weight: bold; }
         
         .menu-list-area { margin-top: 30px; border-top: 2px solid #eee; padding-top: 20px; }
@@ -49,12 +50,40 @@
         
         .file-upload-wrapper { margin-top: 15px; border: 1px dashed #ccc; padding: 15px; border-radius: 4px; background: #fafafa; }
         .file-note { font-size: 0.8em; color: #888; margin-top: 5px; display: block; }
+
+        /* ▼ カレンダー管理用のスタイル ▼ */
+        .admin-calendar-container { max-width: 100%; margin: 0 auto; text-align: center; }
+        .admin-calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .admin-calendar-header button { padding: 8px 15px; cursor: pointer; border: 1px solid #A68B5B; background: white; color: #A68B5B; border-radius: 4px; font-weight: bold;}
+        .admin-calendar-header button:hover { background: #A68B5B; color: white; }
+        .admin-calendar-table { width: 100%; border-collapse: collapse; font-size: 0.85em; table-layout: fixed; background: #fff; }
+        .admin-calendar-table th, .admin-calendar-table td { border: 1px solid #ddd; }
+        .admin-calendar-table td { height: 80px; vertical-align: top; padding: 5px; cursor: pointer; transition: 0.2s; }
+        .admin-calendar-table td:hover { background: #f9f9f9; box-shadow: inset 0 0 8px rgba(0,0,0,0.05); }
+        .admin-cal-date { font-weight: bold; display: block; text-align: left; margin-bottom: 5px; color: #333;}
+        .admin-cal-badge { display: block; padding: 4px; font-size: 0.75em; border-radius: 3px; color: white; margin-bottom: 3px; text-align: left; word-break: break-all; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.2);}
+        .admin-cal-badge:hover { opacity: 0.8; transform: scale(1.02); }
+        
+        .action-buttons { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;}
+        .btn-cancel { background-color: #999; color: white; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%;}
+        
+        .badge-closed { background-color: #d9534f; }
+        .badge-event { background-color: #A68B5B; }
+        .badge-private { background-color: #5b7da6; }
+        .badge-short { background-color: #f0ad4e; }
+        .badge-normal { background-color: #5cb85c; }
+        
+        /* スマホ向け調整 */
+        @media (max-width: 600px) {
+            .admin-calendar-table td { height: 60px; padding: 2px; }
+            .admin-cal-badge { font-size: 0.65em; padding: 2px; }
+        }
     </style>
 </head>
 <body>
 
 <div class="admin-box">
-    <h1>セレネス 管理画面 [cite: 1]</h1>
+    <h1>セレネス 管理画面</h1>
     <div class="tab-wrapper">
         <button class="tab-btn active" onclick="switchTab('article')">記事投稿</button>
         <button class="tab-btn" onclick="switchTab('menu')">メニュー管理</button>
@@ -91,6 +120,9 @@
                 <option value="スペシャルドリンク">スペシャルドリンク</option>
                 <option value="アルコール">アルコール</option>
                 <option value="ソフトドリンク">ソフトドリンク</option>
+                <option value="スムージー">スムージー</option>
+                <option value="アイス">アイス</option>
+                <option value="デザート">デザート</option>
                 <option value="フード">フード</option>
                 <option value="缶">缶</option>
                 <option value="おつまみ">おつまみ</option>
@@ -105,12 +137,19 @@
         </div>
 
         <div id="calendar-section" style="display: none;">
+            <div style="background: #eef8f8; padding: 15px; border-radius: 4px; margin-bottom: 15px; border: 1px solid #bce8f1; font-size: 0.9em; line-height: 1.6;">
+                💡 <strong>操作方法：</strong><br>
+                下のカレンダーの「空白の日付」をタップすると新規追加、<br>
+                「登録済みの予定(色のついたバッジ)」をタップすると編集・コピー・削除ができます。
+            </div>
+
             <input type="hidden" id="oldCalDate">
             <input type="hidden" id="oldCalType">
             <input type="hidden" id="oldCalNote">
             
             <label>予定日</label>
             <input type="date" id="calDate">
+            
             <label>区分</label>
             <select id="calType">
                 <option value="通常営業">通常営業（バッジを表示する）</option>
@@ -120,8 +159,15 @@
                 <option value="貸切">貸切</option>
                 <option value="短縮営業">短縮営業</option>
             </select>
+            
             <label>詳細・備考（任意）</label>
             <input type="text" id="calNote" placeholder="例：18時オープン、〇〇パーティ開催 等">
+
+            <div id="calActionButtons" class="action-buttons" style="display: none;">
+                <button type="button" class="copy-btn" style="flex: 1 1 45%; padding: 12px; font-size: 1em;" onclick="doCopyCalendar()">コピーして別日に登録</button>
+                <button type="button" class="btn-danger" style="flex: 1 1 45%; margin-top: 0; padding: 12px; font-size: 1em;" onclick="doDeleteCalendar()">この予定を削除</button>
+                <button type="button" class="btn-cancel" onclick="resetCalendarForm()">キャンセル（入力をクリア）</button>
+            </div>
         </div>
 
         <button type="submit" class="btn-primary" id="submitBtn">保存・更新する</button>
@@ -153,6 +199,9 @@
                 <option value="スペシャルドリンク">スペシャルドリンク</option>
                 <option value="アルコール">アルコール</option>
                 <option value="ソフトドリンク">ソフトドリンク</option>
+                <option value="スムージー">スムージー</option>
+                <option value="アイス">アイス</option>
+                <option value="デザート">デザート</option>
                 <option value="フード">フード</option>
                 <option value="缶">缶</option>
                 <option value="おつまみ">おつまみ</option>
@@ -167,11 +216,16 @@
 </div>
 
 <script>
+    // ★重要：ご自身のGASのURL（新しくデプロイし直したもの）を貼り付けてください★
     const GAS_URL = "https://script.google.com/macros/s/AKfycbzQRAhDa8-BhxaB6IqsQ-hTmkAYLlu_x-5VK44U20hibIarUrgLSGz7wmZDgPgFsQKD6g/exec";
     
     let currentMode = 'article';
     let allData = { article: [], menu: [], calendar: [] };
     let filteredMenuList = []; 
+
+    // カレンダーUI用の変数
+    let adminYear = new Date().getFullYear();
+    let adminMonth = new Date().getMonth();
 
     window.onload = () => { loadData(); };
 
@@ -190,16 +244,21 @@
         document.getElementById('menu-filter-area').style.display = mode === 'menu' ? 'flex' : 'none';
         
         document.getElementById('postForm').reset();
-        document.getElementById('oldArticleTitle').value = ""; 
-        document.getElementById('oldCalDate').value = ""; 
-        document.getElementById('oldCalType').value = ""; 
-        document.getElementById('oldCalNote').value = ""; 
-        document.getElementById('imageFile').value = ""; 
-        document.getElementById('showImage').checked = true; 
+        document.getElementById('message').textContent = "";
         
-        if(mode === 'article') renderArticleList();
-        else if(mode === 'menu') renderMenuList();
-        else if(mode === 'calendar') renderCalendarList();
+        if(mode === 'article') {
+            document.getElementById('oldArticleTitle').value = ""; 
+            document.getElementById('imageFile').value = ""; 
+            document.getElementById('showImage').checked = true; 
+            document.getElementById('submitBtn').textContent = "記事を投稿・更新する";
+            renderArticleList();
+        } else if(mode === 'menu') {
+            document.getElementById('submitBtn').textContent = "メニューを保存・更新する";
+            renderMenuList();
+        } else if(mode === 'calendar') {
+            resetCalendarForm();
+            renderCalendarList();
+        }
     }
 
     function loadData() {
@@ -216,9 +275,10 @@
             if(allData.article) allData.article.forEach((a, idx) => a._originalIndex = idx);
 
             switchTab(currentMode);
-        }).catch(err => { container.innerHTML = '読み込み失敗'; });
+        }).catch(err => { container.innerHTML = 'データの読み込みに失敗しました。'; });
     }
 
+    // --- 記事関連 ---
     function renderArticleList() {
         const container = document.getElementById('listItems');
         document.getElementById('list-title').textContent = "投稿済み記事一覧";
@@ -255,6 +315,7 @@
         sendData({ type: "article_delete", title: title });
     }
 
+    // --- メニュー関連 ---
     function renderMenuList() {
         const container = document.getElementById('listItems');
         document.getElementById('list-title').textContent = "登録済みメニュー一覧";
@@ -310,47 +371,118 @@
         sendData({ type: "menu_delete", name: name, timeMode: timeMode });
     }
 
-    function renderCalendarList() {
-        const container = document.getElementById('listItems');
-        document.getElementById('list-title').textContent = "登録済みカレンダー予定";
-
-        if(!allData.calendar || allData.calendar.length === 0) { 
-            container.innerHTML = '<div style="text-align:center; padding: 20px; color: #666;">予定の登録はありません。</div>'; 
-            return; 
-        }
+    // --- カレンダー関連（新UI） ---
+    
+    // フォームをリセットして「新規追加」状態に戻す関数
+    function resetCalendarForm(dateStr = "") {
+        document.getElementById('calDate').value = dateStr;
+        document.getElementById('calType').value = "通常営業";
+        document.getElementById('calNote').value = "";
         
-        container.innerHTML = '';
-        let calArray = allData.calendar.sort((a,b) => new Date(a.date) - new Date(b.date));
-        calArray.forEach(c => {
-            const div = document.createElement('div');
-            div.style.borderBottom = "1px solid #ccc";
-            div.style.padding = "10px";
-            div.style.display = "flex";
-            div.style.justifyContent = "space-between";
-            div.innerHTML = `
-                <div><strong>${c.date}</strong><br><span style="color:#d9534f; font-weight:bold; font-size:0.9em;">${c.type}</span> <small>${c.note||''}</small></div>
-                <div class="btn-group">
-                    <button type="button" class="copy-btn" onclick="copyCalendar('${c.date}', '${c.type}', '${c.note}')">コピー</button>
-                    <button type="button" class="edit-btn" onclick="editCalendar('${c.date}', '${c.type}', '${c.note}')">編集</button>
-                    <button type="button" class="del-btn-small" onclick="deleteCalendar('${c.date}', '${c.type}', '${c.note}')">削除</button>
-                </div>`;
-            container.appendChild(div);
-        });
-    }
-
-    function copyCalendar(date, type, note) {
-        document.getElementById('calDate').value = date;
-        document.getElementById('calType').value = type;
-        document.getElementById('calNote').value = note || "";
         document.getElementById('oldCalDate').value = "";
         document.getElementById('oldCalType').value = "";
         document.getElementById('oldCalNote').value = "";
         
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        document.getElementById('message').style.color = "blue";
-        document.getElementById('message').textContent = "予定をコピーしました！日付などを変更して保存してください。";
+        document.getElementById('calActionButtons').style.display = 'none';
+        document.getElementById('submitBtn').textContent = "カレンダーに予定を追加する";
+        document.getElementById('message').textContent = "";
     }
 
+    // カレンダーのUIを生成する関数
+    function renderCalendarList() {
+        const container = document.getElementById('listItems');
+        document.getElementById('list-title').textContent = "カレンダーから編集・追加";
+
+        let html = `
+            <div class="admin-calendar-container">
+                <div class="admin-calendar-header">
+                    <button type="button" onclick="changeAdminMonth(-1)">＜ 前月</button>
+                    <h3 id="adminCalMonth">${adminYear}.${String(adminMonth + 1).padStart(2, '0')}</h3>
+                    <button type="button" onclick="changeAdminMonth(1)">次月 ＞</button>
+                </div>
+                <table class="admin-calendar-table">
+                    <thead>
+                        <tr>
+                            <th style="color: #d9534f; background:#fdf2f2;">日</th>
+                            <th style="background:#f9f9f9;">月</th>
+                            <th style="background:#f9f9f9;">火</th>
+                            <th style="background:#f9f9f9;">水</th>
+                            <th style="background:#f9f9f9;">木</th>
+                            <th style="background:#f9f9f9;">金</th>
+                            <th style="color: #5b7da6; background:#f2f5fd;">土</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminCalendarBody"></tbody>
+                </table>
+            </div>
+        `;
+        container.innerHTML = html;
+        drawAdminCalendarGrid();
+    }
+
+    // 月を切り替える関数
+    function changeAdminMonth(offset) {
+        adminMonth += offset;
+        if(adminMonth < 0) { adminMonth = 11; adminYear--; }
+        if(adminMonth > 11) { adminMonth = 0; adminYear++; }
+        document.getElementById('adminCalMonth').textContent = adminYear + "." + String(adminMonth + 1).padStart(2, '0');
+        drawAdminCalendarGrid();
+    }
+
+    // カレンダーの中身を描画する関数
+    function drawAdminCalendarGrid() {
+        const firstDay = new Date(adminYear, adminMonth, 1).getDay();
+        const daysInMonth = new Date(adminYear, adminMonth + 1, 0).getDate();
+        
+        let tbody = document.getElementById('adminCalendarBody');
+        tbody.innerHTML = '';
+        
+        let date = 1;
+        for (let i = 0; i < 6; i++) {
+            let row = document.createElement('tr');
+            let hasData = false;
+            for (let j = 0; j < 7; j++) {
+                let cell = document.createElement('td');
+                if (i === 0 && j < firstDay) {
+                    cell.innerHTML = "";
+                } else if (date > daysInMonth) {
+                    cell.innerHTML = "";
+                } else {
+                    hasData = true;
+                    let fullDate = adminYear + "-" + String(adminMonth + 1).padStart(2, '0') + "-" + String(date).padStart(2, '0');
+                    let dateColor = (j === 0) ? "#d9534f" : (j === 6) ? "#5b7da6" : "inherit";
+                    
+                    let cellHtml = `<span class="admin-cal-date" style="color: ${dateColor}">${date}</span>`;
+                    
+                    let todaysEvents = allData.calendar.filter(e => e.date === fullDate);
+                    
+                    todaysEvents.forEach(ev => {
+                        let badgeClass = "badge-event";
+                        if(ev.type === "休業日") badgeClass = "badge-closed";
+                        if(ev.type === "貸切") badgeClass = "badge-private";
+                        if(ev.type === "短縮営業") badgeClass = "badge-short";
+                        if(ev.type.includes("通常営業")) badgeClass = "badge-normal";
+                        
+                        // エラー回避のためクォーテーションを安全な文字に変換
+                        let safeNote = (ev.note || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                        
+                        // バッジタップ時の処理 (バッジを押したときはセルの処理を止める)
+                        cellHtml += `<div class="admin-cal-badge ${badgeClass}" onclick="event.stopPropagation(); editCalendar('${fullDate}', '${ev.type}', '${safeNote}')">${ev.type}</div>`;
+                    });
+                    
+                    cell.innerHTML = cellHtml;
+                    // セル全体タップ時の処理（新規追加）
+                    cell.setAttribute('onclick', `resetCalendarForm('${fullDate}'); window.scrollTo({ top: 0, behavior: 'smooth' }); document.getElementById('message').style.color='blue'; document.getElementById('message').textContent='${fullDate.replace(/-/g, '/')} に新規予定を追加します';`);
+                    
+                    date++;
+                }
+                row.appendChild(cell);
+            }
+            if (hasData) tbody.appendChild(row);
+        }
+    }
+
+    // カレンダーのバッジを押したときの編集モード関数
     function editCalendar(date, type, note) {
         document.getElementById('calDate').value = date;
         document.getElementById('calType').value = type;
@@ -360,16 +492,41 @@
         document.getElementById('oldCalType').value = type;
         document.getElementById('oldCalNote').value = note || "";
         
+        // 編集時専用のボタン（コピー・削除・キャンセル）を表示
+        document.getElementById('calActionButtons').style.display = 'flex';
+        document.getElementById('submitBtn').textContent = "この内容で上書き更新する";
+        
         window.scrollTo({ top: 0, behavior: 'smooth' });
         document.getElementById('message').style.color = "blue";
-        document.getElementById('message').textContent = "カレンダー編集モード：保存すると上書きされます";
+        document.getElementById('message').textContent = "編集モード：予定を変更できます";
     }
 
-    function deleteCalendar(d, type, note) {
-        if(!confirm(`${d} の「${type}」の予定を削除しますか？`)) return;
+    // コピーボタンを押したときの関数
+    function doCopyCalendar() {
+        document.getElementById('oldCalDate').value = "";
+        document.getElementById('oldCalType').value = "";
+        document.getElementById('oldCalNote').value = "";
+        
+        document.getElementById('calActionButtons').style.display = 'none';
+        document.getElementById('submitBtn').textContent = "コピーした予定を追加する";
+        
+        document.getElementById('message').style.color = "blue";
+        document.getElementById('message').textContent = "コピーモード：日付などを変更して保存してください";
+    }
+
+    // 削除ボタンを押したときの関数
+    function doDeleteCalendar() {
+        const d = document.getElementById('oldCalDate').value;
+        const type = document.getElementById('oldCalType').value;
+        const note = document.getElementById('oldCalNote').value;
+        
+        if(!d) return;
+        if(!confirm(`${d.replace(/-/g, '/')} の「${type}」の予定を削除しますか？`)) return;
+        
         sendData({ type: "calendar", action: "delete", date: d, calType: type, note: note });
     }
 
+    // --- データ送信共通処理 ---
     document.getElementById('postForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const btn = document.getElementById('submitBtn');
@@ -430,15 +587,21 @@
             if (res.status === "success") {
                 msg.style.color = "green"; msg.textContent = "完了しました！";
                 document.getElementById('postForm').reset();
+                
                 if(currentMode === 'article') {
                     document.getElementById('oldArticleTitle').value = ""; document.getElementById('imageFile').value = ""; document.getElementById('showImage').checked = true;
                 } else if(currentMode === 'calendar') {
-                    document.getElementById('oldCalDate').value = ""; document.getElementById('oldCalType').value = ""; document.getElementById('oldCalNote').value = "";
+                    resetCalendarForm();
                 }
                 loadData(); 
             } else { msg.style.color = "red"; msg.textContent = "エラーが発生しました"; }
         }).catch(err => { msg.style.color = "red"; msg.textContent = "通信エラーが発生しました";
-        }).finally(() => { btn.disabled = false; btn.textContent = "保存・更新する"; });
+        }).finally(() => { 
+            btn.disabled = false; 
+            if(currentMode === 'article') btn.textContent = "記事を投稿・更新する";
+            if(currentMode === 'menu') btn.textContent = "メニューを保存・更新する";
+            if(currentMode === 'calendar') btn.textContent = "カレンダーに予定を追加する";
+        });
     }
 </script>
 </body>
