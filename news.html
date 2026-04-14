@@ -22,6 +22,12 @@
         /* 戻るボタン */
         .btn-back { display: inline-block; margin-top: 40px; color: var(--text-main); text-decoration: none; border: 1px solid #ccc; padding: 10px 20px; border-radius: 2px; transition: all 0.3s; }
         .btn-back:hover { background-color: #f5f5f5; border-color: var(--text-main); }
+
+        /* スマホ対応 */
+        @media (max-width: 600px) {
+            .container { margin: 20px auto; padding: 20px; }
+            h1 { font-size: 1.3em; }
+        }
     </style>
 </head>
 <body>
@@ -37,6 +43,7 @@
     </div>
 
 <script>
+    // ★GASのURL★
     const GAS_URL = "https://script.google.com/macros/s/AKfycbzQRAhDa8-BhxaB6IqsQ-hTmkAYLlu_x-5VK44U20hibIarUrgLSGz7wmZDgPgFsQKD6g/exec";
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -46,15 +53,25 @@
     fetch(GAS_URL)
         .then(response => response.json())
         .then(data => {
-            // NewsとBlogの両方のデータから該当するIDの記事を探す
             let article = data.news.find(item => item.id === targetId);
             if (!article) {
                 article = data.blog.find(item => item.id === targetId);
             }
             
             if (article) {
-                // 画像URLが存在する場合は、imgタグを生成
-                const imageHtml = article.image ? `<img src="${article.image}" alt="記事画像" class="article-image">` : '';
+                let imageUrl = article.image;
+                
+                // ▼ 修正：最新のセキュリティに引っかからない「サムネイル用URL」へ自動変換 ▼
+                if (imageUrl && imageUrl.includes('drive.google.com')) {
+                    const fileIdMatch = imageUrl.match(/[-\w]{25,}/);
+                    if (fileIdMatch) {
+                        // thumbnail API を使用し、sz=w1000 で高画質表示を指定
+                        imageUrl = `https://drive.google.com/thumbnail?id=${fileIdMatch[0]}&sz=w1000`;
+                    }
+                }
+                
+                // referrerpolicy="no-referrer" は残しておく（より確実に表示させるため）
+                const imageHtml = imageUrl ? `<img src="${imageUrl}" alt="記事画像" class="article-image" referrerpolicy="no-referrer">` : '';
                 
                 container.innerHTML = `
                     <span class="news-date">${article.date}</span>
