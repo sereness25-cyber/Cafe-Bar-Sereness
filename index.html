@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta name="google-site-verification" content="6d9lbssVPS23uCvW-Fy3Q73u2G1zxa8_6zKHp9f3xQE" />
@@ -52,18 +53,13 @@
         @media (min-width: 768px) { .info-grid { grid-template-columns: 1fr 1fr; gap: 30px; } }
         .info-col-title { font-size: 1.1em; color: var(--text-main); border-bottom: 1px solid #DDD; padding-bottom: 10px; margin-bottom: 20px; }
 
+        /* NewsとBlogを共通のリストデザインに修正 */
         .news-list, .blog-list { text-align: left; list-style: none; padding: 0; margin: 0; }
-        .news-list li { border-bottom: 1px dashed #DDD; padding: 12px 0; }
-        .news-list li:last-child { border-bottom: none; }
+        .news-list li, .blog-list li { border-bottom: 1px dashed #DDD; padding: 12px 0; }
+        .news-list li:last-child, .blog-list li:last-child { border-bottom: none; }
         .news-date { color: var(--accent-color); font-size: 0.85em; display: block; margin-bottom: 3px; }
         .news-title { color: var(--text-main); text-decoration: none; font-size: 0.95em; transition: color 0.3s; display: block; }
         
-        .blog-item { display: flex; gap: 15px; margin-bottom: 15px; border-bottom: 1px dashed #DDD; padding-bottom: 15px; align-items: center; }
-        .blog-item:last-child { border-bottom: none; }
-        .blog-thumb { width: 70px; height: 70px; object-fit: cover; border-radius: 2px; background-color: #eee; flex-shrink: 0; }
-        .blog-info { flex: 1; }
-
-        /* ▼ 追加：「すべて見る」ボタンのスタイル ▼ */
         .btn-more {
             display: block; width: 100%; padding: 10px; margin-top: 15px;
             background: transparent; border: 1px solid var(--accent-color); color: var(--accent-color);
@@ -197,9 +193,9 @@
                     </div>
                     <div>
                         <h3 class="info-col-title">ブログ</h3>
-                        <div class="blog-list" id="top-blog-list">
-                            <p style="color:#666; font-size:0.9em;">読み込み中...</p>
-                        </div>
+                        <ul class="blog-list" id="top-blog-list">
+                            <li><span style="color:#666; font-size:0.9em;">読み込み中...</span></li>
+                        </ul>
                         <div id="blog-more-container" style="display: none;">
                             <button id="blog-more-btn" class="btn-more" onclick="toggleBlog()">すべて見る</button>
                         </div>
@@ -369,7 +365,6 @@
         let currYear = currDate.getFullYear();
         let currMonth = currDate.getMonth(); 
 
-        // ▼ 追加：お知らせ・ブログ全件保持用変数 ▼
         let allNews = [];
         let allBlog = [];
         let newsShowingAll = false;
@@ -378,13 +373,12 @@
         function autoLink(text) {
             if (!text) return '';
             
-            // 安全なHTMLに変換するための処理（エラーを完全に修正しました）
             let safeText = text.replace(/[&<>"']/g, function(match) {
                 return {
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    '"': '&quot;',
+                    '&': '&',
+                    '<': '<',
+                    '>': '>',
+                    '"': '"',
                     "'": '&#39;'
                 }[match];
             });
@@ -396,7 +390,6 @@
         }
 
         function renderPageData(data) {
-            // データを日付が新しい順に並び替え
             if(data.news) {
                 allNews = data.news.sort((a, b) => (b.date > a.date) ? 1 : -1);
             }
@@ -413,7 +406,6 @@
             }
         }
 
-        // ▼ 追加：News一覧を表示する関数 ▼
         function renderNewsList() {
             const newsList = document.getElementById('top-news-list');
             const btnContainer = document.getElementById('news-more-container');
@@ -428,7 +420,6 @@
                 return;
             }
 
-            // showingAllがtrueなら全件、falseなら3件だけ表示
             const itemsToShow = newsShowingAll ? allNews : allNews.slice(0, 3);
             
             itemsToShow.forEach(article => {
@@ -437,7 +428,6 @@
                 newsList.appendChild(li);
             });
 
-            // 4件以上ある場合はボタンを表示
             if(allNews.length > 3) {
                 btnContainer.style.display = 'block';
                 btn.innerText = newsShowingAll ? '閉じる' : 'すべて見る';
@@ -446,7 +436,7 @@
             }
         }
 
-        // ▼ 追加：Blog一覧を表示する関数 ▼
+        // ▼ 修正：Blogリストからサムネイル画像の表示処理を削除 ▼
         function renderBlogList() {
             const blogList = document.getElementById('top-blog-list');
             const btnContainer = document.getElementById('blog-more-container');
@@ -456,23 +446,20 @@
             blogList.innerHTML = '';
             
             if(allBlog.length === 0) {
-                blogList.innerHTML = '<p style="color:#666; font-size:0.9em;">現在投稿はありません。</p>';
+                blogList.innerHTML = '<li><span style="color:#666; font-size:0.9em;">現在投稿はありません。</span></li>';
                 btnContainer.style.display = 'none';
                 return;
             }
 
-            // showingAllがtrueなら全件、falseなら3件だけ表示
             const itemsToShow = blogShowingAll ? allBlog : allBlog.slice(0, 3);
             
             itemsToShow.forEach(article => {
-                const div = document.createElement('div');
-                div.className = 'blog-item';
-                const thumb = article.image ? `<img src="${article.image}" class="blog-thumb">` : ``;
-                div.innerHTML = `${thumb}<div class="blog-info"><span class="news-date">${article.date}</span><a href="news.html?id=${article.id}" class="news-title">${article.title}</a></div>`;
-                blogList.appendChild(div);
+                // Newsリストと全く同じ形式のリスト要素(li)を作成して追加します
+                const li = document.createElement('li');
+                li.innerHTML = `<span class="news-date">${article.date}</span><a href="news.html?id=${article.id}" class="news-title">${article.title}</a>`;
+                blogList.appendChild(li);
             });
 
-            // 4件以上ある場合はボタンを表示
             if(allBlog.length > 3) {
                 btnContainer.style.display = 'block';
                 btn.innerText = blogShowingAll ? '閉じる' : 'すべて見る';
@@ -481,7 +468,6 @@
             }
         }
 
-        // ▼ 追加：ボタンを押した時の切り替え処理 ▼
         function toggleNews() {
             newsShowingAll = !newsShowingAll;
             renderNewsList();
