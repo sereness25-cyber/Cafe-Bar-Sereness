@@ -34,9 +34,27 @@
         header { background-color: var(--text-main); padding: 20px; text-align: center; }
         .header-title { color: #fff; font-size: 1.4em; letter-spacing: 0.1em; font-family: 'Playfair Display', serif; font-weight: 500; }
         
-        .hero { background-color: var(--hero-bg); color: white; text-align: center; padding: 80px 20px; }
+        .hero { 
+            position: relative; 
+            background-color: var(--hero-bg); 
+            background-image: url('hero_background.jpg'); 
+            background-size: cover; 
+            background-position: center; 
+            color: white; 
+            text-align: center; 
+            padding: 80px 20px; 
+            z-index: 1;
+        }
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6); 
+            z-index: -1;
+        }
+
         .hero-logo { width: 100%; max-width: 500px; height: auto; display: inline-block; margin-bottom: 20px; opacity: 1; }
-        .hero p { font-size: 1.1em; font-weight: 300; margin: 0; letter-spacing: 0.1em; }
+        .hero p { font-size: 1.1em; font-weight: 300; margin: 0; letter-spacing: 0.1em; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         
         .system, .appeal-section, .info-section, .faq-section, .foryou-section, .calendar-section {
             background-color: white; border-radius: 0px; padding: 40px 30px;
@@ -230,6 +248,10 @@
             <div class="concept-text">
                 <p>ひとりでじっくりお酒を味わうのも、仲間とワイワイ盛り上がるのも自由。</p>
                 <p>そして時には、その「楽しい」時間を他のお客様とシェアすることで、自然な交流が生まれます。<br>秋田の夜を彩る、あなたの新しい居場所へようこそ。</p>
+                <p style="margin-top: 20px; font-weight: bold; color: var(--accent-color); border: 1px dashed var(--accent-color); padding: 15px; border-radius: 4px; text-align: center;">
+                    ☕️ お酒を飲まない「夜カフェ利用」も大歓迎！<br>
+                    <span style="font-size: 0.85em; font-weight: normal; color: #555;">コーヒーやノンアルコールドリンク、スイーツも豊富にご用意しております。お仕事帰りや夜のリフレッシュに、ぜひお気軽にお立ち寄りください。</span>
+                </p>
             </div>
         </section>
     </div>
@@ -278,12 +300,6 @@
                         <ul class="price-list">
                             <li><span>女性 (時間無制限)</span> <span>1,100円</span></li>
                             <li><span>男性 (90分)</span> <span>2,650円</span></li>
-                        </ul>
-                    </div>
-                    <div class="price-box" style="min-width: 100%;">
-                        <h3 class="elegant-font">COUPLE PLAN</h3>
-                        <ul class="price-list">
-                            <li><span>男女ペア (120分)</span> <span>3,300円</span></li>
                         </ul>
                     </div>
                 </div>
