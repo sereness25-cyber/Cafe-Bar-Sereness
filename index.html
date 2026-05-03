@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta name="google-site-verification" content="6d9lbssVPS23uCvW-Fy3Q73u2G1zxa8_6zKHp9f3xQE" />
@@ -7,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Café & Bar Sereness | 今日の出会いから、価値ある繋がりへ。</title>
     
-    <meta name="description" content="秋田市の相席カフェ＆バー「Sereness（セレネス）」。お酒やボードゲーム、カラオケを楽しみながら、飾らない自然体での出会いと繋がりを提供します。マスターへの無料恋愛相談も受付中。">
+    <meta name="description" content="秋田市のエンタメカフェ＆バー「Sereness（セレネス）」。お酒やボードゲーム、カラオケを楽しみながら、癒しとエンタメを提供します。マスターへの無料恋愛相談も受付中。">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
@@ -48,18 +47,21 @@
         }
         .section-wrapper { text-align: center; }
 
-        /* Information */
         .info-grid { display: grid; grid-template-columns: 1fr; gap: 40px; text-align: left; }
         @media (min-width: 768px) { .info-grid { grid-template-columns: 1fr 1fr; gap: 30px; } }
         .info-col-title { font-size: 1.1em; color: var(--text-main); border-bottom: 1px solid #DDD; padding-bottom: 10px; margin-bottom: 20px; }
 
-        /* NewsとBlogを共通のリストデザインに修正 */
         .news-list, .blog-list { text-align: left; list-style: none; padding: 0; margin: 0; }
-        .news-list li, .blog-list li { border-bottom: 1px dashed #DDD; padding: 12px 0; }
-        .news-list li:last-child, .blog-list li:last-child { border-bottom: none; }
+        .news-list li { border-bottom: 1px dashed #DDD; padding: 12px 0; }
+        .news-list li:last-child { border-bottom: none; }
         .news-date { color: var(--accent-color); font-size: 0.85em; display: block; margin-bottom: 3px; }
         .news-title { color: var(--text-main); text-decoration: none; font-size: 0.95em; transition: color 0.3s; display: block; }
         
+        .blog-item { display: flex; gap: 15px; margin-bottom: 15px; border-bottom: 1px dashed #DDD; padding-bottom: 15px; align-items: center; }
+        .blog-item:last-child { border-bottom: none; }
+        .blog-thumb { width: 70px; height: 70px; object-fit: cover; border-radius: 2px; background-color: #eee; flex-shrink: 0; }
+        .blog-info { flex: 1; }
+
         .btn-more {
             display: block; width: 100%; padding: 10px; margin-top: 15px;
             background: transparent; border: 1px solid var(--accent-color); color: var(--accent-color);
@@ -67,7 +69,6 @@
         }
         .btn-more:hover { background: var(--accent-color); color: white; }
 
-        /* カレンダー用スタイル */
         .calendar-container { max-width: 600px; margin: 0 auto; text-align: center; }
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .calendar-header button { background: none; border: 1px solid var(--accent-color); color: var(--accent-color); padding: 5px 15px; cursor: pointer; border-radius: 4px; font-weight: bold; transition: 0.3s; }
@@ -89,9 +90,7 @@
         .clickable-cell { cursor: pointer; transition: background-color 0.2s; }
         .clickable-cell:hover { background-color: #f9f9f9; }
         
-        .slash-cell {
-            background-image: linear-gradient(to top right, transparent calc(50% - 1px), #d9534f calc(50%), transparent calc(50% + 1px));
-        }
+        .slash-cell { background-image: linear-gradient(to top right, transparent calc(50% - 1px), #d9534f calc(50%), transparent calc(50% + 1px)); }
         
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: #fff; padding: 30px; border-radius: 8px; width: 90%; max-width: 400px; position: relative; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
@@ -102,7 +101,6 @@
         .modal-event-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
         .modal-event-type { display: inline-block; padding: 3px 8px; border-radius: 3px; color: white; font-size: 0.8em; margin-bottom: 5px; font-weight: bold; }
 
-        /* How to enjoy セクション */
         .enjoy-wrapper { background-color: var(--text-main); color: white; padding: 70px 20px; text-align: center; margin-bottom: 50px; }
         .enjoy-wrapper h2 { color: var(--accent-color); border-bottom: 1px solid var(--accent-color); padding-bottom: 15px; margin-bottom: 50px; font-size: 1.5em; display: inline-block; }
         .enjoy-grid { display: grid; grid-template-columns: 1fr; gap: 25px; max-width: 900px; margin: 0 auto; }
@@ -141,7 +139,6 @@
         footer { text-align: center; padding: 25px; font-size: 12px; background-color: #222; color: #888; line-height: 1.5; }
         .footer-operator { margin-bottom: 10px; font-size: 1.1em; font-family: "Noto Serif JP", "Hiragino Mincho ProN", serif; letter-spacing: 0.05em; color: #ccc;}
 
-        /* スマホ用最適化 */
         @media (max-width: 767px) {
             .container { padding: 30px 15px; }
             .header-title { font-size: 1.2em; }
@@ -193,9 +190,9 @@
                     </div>
                     <div>
                         <h3 class="info-col-title">ブログ</h3>
-                        <ul class="blog-list" id="top-blog-list">
-                            <li><span style="color:#666; font-size:0.9em;">読み込み中...</span></li>
-                        </ul>
+                        <div class="blog-list" id="top-blog-list">
+                            <p style="color:#666; font-size:0.9em;">読み込み中...</p>
+                        </div>
                         <div id="blog-more-container" style="display: none;">
                             <button id="blog-more-btn" class="btn-more" onclick="toggleBlog()">すべて見る</button>
                         </div>
@@ -224,15 +221,15 @@
                         </tbody>
                     </table>
                 </div>
-                <a href="https://sereness25-cyber.github.io/serene-event/" target="_blank" class="btn btn-menu" style="margin-top: 30px;">恋活イベントのスケジュール・詳細はこちら</a>
+                <a href="https://sereness25-cyber.github.io/serene-event/" target="_blank" class="btn btn-menu" style="margin-top: 30px;">イベントのスケジュール・詳細はこちら</a>
             </section>
         </div>
         
         <section class="concept-section section-wrapper" style="background: transparent; border: none; box-shadow: none; margin-bottom: 20px;">
-            <h2 style="color: var(--text-main); font-size: 1.3em; border: none; margin-bottom: 30px; letter-spacing: 0.1em;">より自然で、価値のある出会いを。</h2>
+            <h2 style="color: var(--text-main); font-size: 1.3em; border: none; margin-bottom: 30px; letter-spacing: 0.1em;">「楽しい」をシェアする、新しい夜の過ごし方。</h2>
             <div class="concept-text">
-                <p>セレネスが提供するのは、肩の力を抜いて、自然体で楽しめる出会いです。</p>
-                <p>美味しいお酒やゲームを楽しみながら、いつもの自分のままで自然な交流を。秋田で一番、自然なつながりを持てる場所。グラスを合わせて、ゲームで笑って。セレネスで新しい繋がりを見つけませんか？</p>
+                <p>ひとりでじっくりお酒を味わうのも、仲間とワイワイ盛り上がるのも自由。</p>
+                <p>そして時には、その「楽しい」時間を他のお客様とシェアすることで、自然な交流が生まれます。<br>秋田の夜を彩る、あなたの新しい居場所へようこそ。</p>
             </div>
         </section>
     </div>
@@ -242,23 +239,23 @@
         <div class="enjoy-grid">
             <div class="enjoy-card">
                 <div class="enjoy-step-num">01</div>
-                <h3>お酒を交えて、自然な相席を</h3>
-                <p>美味しいお酒を味わいながら、その日の出会いを楽しむ相席スタイル。リラックスした雰囲気の中で、自然と会話が弾みます。</p>
+                <h3>遊ぶ</h3>
+                <p>多彩なゲームをご用意。周りを気にせず、自由に盛り上がれます。</p>
             </div>
             <div class="enjoy-card">
                 <div class="enjoy-step-num">02</div>
-                <h3>ゲームやドリンクで距離を縮める</h3>
-                <p>初対面での会話が苦手でも大丈夫。店内にはみんなで遊べるボードゲームを完備。また、選んで作れるオリジナルのクラフトドリンクもご用意。一緒に作って味わえば、自然と距離が縮まります。</p>
+                <h3>飲む</h3>
+                <p>美味しいお酒とともにリラックス。ふらっと1人でも、仲間とでも気兼ねなく過ごせる空間です。</p>
             </div>
             <div class="enjoy-card">
                 <div class="enjoy-step-num">03</div>
-                <h3>カラオケで楽しく盛り上がる</h3>
-                <p>お酒が入って気分が高まったら、カラオケでさらに楽しい時間を。一緒に歌ったり手拍子をしたり、笑顔が溢れる一体感を味わうことができます。</p>
+                <h3>歌う</h3>
+                <p>歌っても、聴くだけでもOK。音楽と一緒にステキな時間を楽しめます。</p>
             </div>
             <div class="enjoy-card">
                 <div class="enjoy-step-num">04</div>
-                <h3>恋愛相談（無料）</h3>
-                <p>「どんな人が自分に合うかわからない」「話しかけるのが苦手」など、恋活や婚活のお悩みはお気軽に。あなたの素敵なご縁をサポートします。</p>
+                <h3>恋愛相談</h3>
+                <p>「どんな人が自分に合うかわからない」「話しかけるのが苦手」など、恋活や婚活のお悩みはお気軽に。</p>
             </div>
         </div>
     </div>
@@ -267,23 +264,31 @@
         <div class="section-wrapper">
             <section class="system">
                 <h2 class="elegant-font">System <span class="normal-amp">&</span> Price</h2>
+                
                 <div class="price-summary">
                     <div class="price-box">
-                        <h3 class="elegant-font">Café (14:00 - 18:00)</h3>
+                        <h3 class="elegant-font">Café PLAN</h3>
                         <ul class="price-list">
-                            <li><span>女性 (時間無制限)</span> <span>330円</span></li>
-                            <li><span>男性 (初回120分)</span> <span>1,100円〜</span></li>
+                            <li><span>女性 (時間無制限)</span> <span>550円</span></li>
+                            <li><span>男性 (120分)</span> <span>1,100円</span></li>
                         </ul>
                     </div>
                     <div class="price-box">
-                        <h3 class="elegant-font">Bar (20:00 - 25:00)</h3>
+                        <h3 class="elegant-font">Bar PLAN</h3>
                         <ul class="price-list">
-                            <li><span>女性 (時間無制限)</span> <span>550円</span></li>
-                            <li><span>男性 (初回30分)</span> <span>1,650円〜</span></li>
+                            <li><span>女性 (時間無制限)</span> <span>1,100円</span></li>
+                            <li><span>男性 (90分)</span> <span>2,650円</span></li>
+                        </ul>
+                    </div>
+                    <div class="price-box" style="min-width: 100%;">
+                        <h3 class="elegant-font">COUPLE PLAN</h3>
+                        <ul class="price-list">
+                            <li><span>男女ペア (120分)</span> <span>3,300円</span></li>
                         </ul>
                     </div>
                 </div>
-                <a href="menu.html" class="btn btn-menu">料金表はこちら</a>
+                
+                <a href="menu.html" class="btn btn-menu" style="margin-top: 30px;">料金表の詳細はこちら</a>
             </section>
         </div>
 
@@ -336,7 +341,7 @@
         <h2 class="elegant-font" style="font-size:1.3em; margin-bottom:20px; color:#fff; font-weight: normal; letter-spacing: 0.1em;">Access <span class="normal-amp">&</span> Information</h2>
         <div class="access-info">
             <p><strong class="elegant-font" style="font-size: 1.2em;">Café <span class="normal-amp">&</span> Bar Sereness</strong><br>〒010-0921 秋田県秋田市大町5-2-7 SCビル2F</p>
-            <p style="margin-top: 15px;"><strong>【営業時間】</strong><br>Café： 14:00 - 18:00<br>Bar： 20:00 - 25:00</p>
+            <p style="margin-top: 15px;"><strong>【営業時間】</strong><br>19:00 - 25:00</p>
             <p style="margin-top: 15px; color:#ccc;">定休日: 水曜日</p>
         </div>
         <div class="map-container">
@@ -372,17 +377,15 @@
 
         function autoLink(text) {
             if (!text) return '';
-            
             let safeText = text.replace(/[&<>"']/g, function(match) {
                 return {
-                    '&': '&',
-                    '<': '<',
-                    '>': '>',
-                    '"': '"',
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
                     "'": '&#39;'
                 }[match];
             });
-            
             const urlRegex = /(https?:\/\/[^\s]+)/g;
             return safeText.replace(urlRegex, function(url) {
                 return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #A68B5B; text-decoration: underline; word-break: break-all;">${url}</a>`;
@@ -436,7 +439,6 @@
             }
         }
 
-        // ▼ 修正：Blogリストからサムネイル画像の表示処理を削除 ▼
         function renderBlogList() {
             const blogList = document.getElementById('top-blog-list');
             const btnContainer = document.getElementById('blog-more-container');
@@ -446,7 +448,7 @@
             blogList.innerHTML = '';
             
             if(allBlog.length === 0) {
-                blogList.innerHTML = '<li><span style="color:#666; font-size:0.9em;">現在投稿はありません。</span></li>';
+                blogList.innerHTML = '<p style="color:#666; font-size:0.9em;">現在投稿はありません。</p>';
                 btnContainer.style.display = 'none';
                 return;
             }
@@ -454,10 +456,11 @@
             const itemsToShow = blogShowingAll ? allBlog : allBlog.slice(0, 3);
             
             itemsToShow.forEach(article => {
-                // Newsリストと全く同じ形式のリスト要素(li)を作成して追加します
-                const li = document.createElement('li');
-                li.innerHTML = `<span class="news-date">${article.date}</span><a href="news.html?id=${article.id}" class="news-title">${article.title}</a>`;
-                blogList.appendChild(li);
+                const div = document.createElement('div');
+                div.className = 'blog-item';
+                const thumb = article.image ? `<img src="${article.image}" class="blog-thumb">` : ``;
+                div.innerHTML = `${thumb}<div class="blog-info"><span class="news-date">${article.date}</span><a href="news.html?id=${article.id}" class="news-title">${article.title}</a></div>`;
+                blogList.appendChild(div);
             });
 
             if(allBlog.length > 3) {

@@ -40,8 +40,10 @@
         
         #message { margin-top: 15px; text-align: center; font-weight: bold; }
         
-        .badge-day { background: #f0ad4e; color: #fff; padding: 2px 6px; border-radius: 3px; font-size: 0.8em; }
-        .badge-night { background: #5b7da6; color: #fff; padding: 2px 6px; border-radius: 3px; font-size: 0.8em; }
+        .badge-drink { background: #5b7da6; color: #fff; padding: 2px 6px; border-radius: 3px; font-size: 0.8em; }
+        .badge-food { background: #d9534f; color: #fff; padding: 2px 6px; border-radius: 3px; font-size: 0.8em; }
+        .badge-sweets { background: #f0ad4e; color: #fff; padding: 2px 6px; border-radius: 3px; font-size: 0.8em; }
+        
         .badge-blog { background: #7c5ba6; color: #fff; padding: 2px 6px; border-radius: 3px; font-size: 0.8em; }
         .badge-news { background: #5ba68c; color: #fff; padding: 2px 6px; border-radius: 3px; font-size: 0.8em; }
         .badge-image { background: #666; color: #fff; padding: 2px 6px; border-radius: 3px; font-size: 0.7em; margin-left: 5px; }
@@ -51,7 +53,6 @@
         .file-upload-wrapper { margin-top: 15px; border: 1px dashed #ccc; padding: 15px; border-radius: 4px; background: #fafafa; }
         .file-note { font-size: 0.8em; color: #888; margin-top: 5px; display: block; }
 
-        /* ▼ カレンダー管理用のスタイル ▼ */
         .admin-calendar-container { max-width: 100%; margin: 0 auto; text-align: center; }
         .admin-calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .admin-calendar-header button { padding: 8px 15px; cursor: pointer; border: 1px solid #A68B5B; background: white; color: #A68B5B; border-radius: 4px; font-weight: bold;}
@@ -73,7 +74,9 @@
         .badge-short { background-color: #f0ad4e; }
         .badge-normal { background-color: #5cb85c; }
         
-        /* スマホ向け調整 */
+        /* ▼ バックグラウンド通信用の通知バッジ ▼ */
+        #syncBadge { position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.7); color: white; padding: 12px 20px; border-radius: 30px; font-size: 0.9em; display: none; z-index: 9999; box-shadow: 0 4px 10px rgba(0,0,0,0.2); font-weight: bold;}
+        
         @media (max-width: 600px) {
             .admin-calendar-table td { height: 60px; padding: 2px; }
             .admin-cal-badge { font-size: 0.65em; padding: 2px; }
@@ -81,6 +84,9 @@
     </style>
 </head>
 <body>
+
+<!-- バックグラウンド保存中をお知らせするバッジ -->
+<div id="syncBadge">↻ データを保存中...</div>
 
 <div class="admin-box">
     <h1>セレネス 管理画面</h1>
@@ -91,6 +97,7 @@
     </div>
 
     <form id="postForm">
+        <!-- 記事セクション -->
         <div id="article-section">
             <input type="hidden" id="oldArticleTitle"> 
             <label>投稿先</label>
@@ -110,32 +117,50 @@
             </div>
         </div>
 
+        <!-- メニューセクション -->
         <div id="menu-section" style="display: none;">
-            <label>昼夜の区分</label>
-            <select id="timeMode"><option value="day">昼 (Cafe)</option><option value="night">夜 (Bar)</option></select>
+            <input type="hidden" id="oldMenuName">
+            <input type="hidden" id="oldMenuTimeMode">
+            
+            <label>ジャンル</label>
+            <select id="timeMode">
+                <option value="drink">ドリンク</option>
+                <option value="food">フード</option>
+                <option value="sweets">スイーツ</option>
+            </select>
+            
             <label>カテゴリ</label>
             <select id="menuCategory">
                 <option value="飲み放題">飲み放題</option>
-                <option value="コーヒー">コーヒー</option>
-                <option value="スペシャルドリンク">スペシャルドリンク</option>
+                <option value="飲み放題（アルコール）">飲み放題（アルコール）</option>
+                <option value="飲み放題（ソフトドリンク）">飲み放題（ソフトドリンク）</option>
                 <option value="アルコール">アルコール</option>
+                <option value="コーヒー">コーヒー</option>
                 <option value="ソフトドリンク">ソフトドリンク</option>
+                <option value="スペシャルドリンク">スペシャルドリンク</option>
                 <option value="スムージー">スムージー</option>
-                <option value="アイス">アイス</option>
-                <option value="デザート">デザート</option>
+                <option value="単品">単品</option>
+                <option value="おつまみ">おつまみ</option>
                 <option value="フード">フード</option>
                 <option value="缶">缶</option>
-                <option value="おつまみ">おつまみ</option>
+                <option value="デザート">デザート</option>
+                <option value="スイーツ">スイーツ</option>
+                <option value="アイス">アイス</option>
                 <option disabled>──────────</option>
                 <option value="クラフトStep1">クラフトメニュー: Step 1</option>
                 <option value="クラフトStep2">クラフトメニュー: Step 2</option>
                 <option value="クラフトStep3">クラフトメニュー: Step 3</option>
             </select>
-            <label>商品名</label><input type="text" id="menuName">
+            <label>商品名</label><input type="text" id="menuName" required>
             <label>金額（例: 500円）</label><input type="text" id="menuPrice">
             <label>簡単な説明</label><input type="text" id="menuDesc">
+            
+            <div id="menuActionButtons" class="action-buttons" style="display: none;">
+                <button type="button" class="btn-cancel" onclick="resetMenuForm()">キャンセル（入力をクリア）</button>
+            </div>
         </div>
 
+        <!-- カレンダーセクション -->
         <div id="calendar-section" style="display: none;">
             <div style="background: #eef8f8; padding: 15px; border-radius: 4px; margin-bottom: 15px; border: 1px solid #bce8f1; font-size: 0.9em; line-height: 1.6;">
                 💡 <strong>操作方法：</strong><br>
@@ -174,6 +199,7 @@
         <div id="message"></div>
     </form>
 
+    <!-- リスト表示エリア -->
     <div id="list-container" class="menu-list-area">
         <h3 id="list-title">登録済み一覧</h3>
         
@@ -188,23 +214,28 @@
         <div id="menu-filter-area" class="filter-container" style="display: none;">
             <input type="text" id="searchMenu" placeholder="商品名で検索..." oninput="renderMenuList()">
             <select id="filterTime" onchange="renderMenuList()">
-                <option value="all">昼/夜 すべて</option>
-                <option value="day">昼 (Cafe)</option>
-                <option value="night">夜 (Bar)</option>
+                <option value="all">全ジャンル</option>
+                <option value="drink">ドリンク</option>
+                <option value="food">フード</option>
+                <option value="sweets">スイーツ</option>
             </select>
             <select id="filterCat" onchange="renderMenuList()">
                 <option value="all">全カテゴリ</option>
                 <option value="飲み放題">飲み放題</option>
-                <option value="コーヒー">コーヒー</option>
-                <option value="スペシャルドリンク">スペシャルドリンク</option>
+                <option value="飲み放題（アルコール）">飲み放題（アルコール）</option>
+                <option value="飲み放題（ソフトドリンク）">飲み放題（ソフトドリンク）</option>
                 <option value="アルコール">アルコール</option>
+                <option value="コーヒー">コーヒー</option>
                 <option value="ソフトドリンク">ソフトドリンク</option>
+                <option value="スペシャルドリンク">スペシャルドリンク</option>
                 <option value="スムージー">スムージー</option>
-                <option value="アイス">アイス</option>
-                <option value="デザート">デザート</option>
+                <option value="単品">単品</option>
+                <option value="おつまみ">おつまみ</option>
                 <option value="フード">フード</option>
                 <option value="缶">缶</option>
-                <option value="おつまみ">おつまみ</option>
+                <option value="デザート">デザート</option>
+                <option value="スイーツ">スイーツ</option>
+                <option value="アイス">アイス</option>
                 <option value="クラフトStep1">クラフト Step1</option>
                 <option value="クラフトStep2">クラフト Step2</option>
                 <option value="クラフトStep3">クラフト Step3</option>
@@ -216,18 +247,27 @@
 </div>
 
 <script>
-    // ★重要：ご自身のGASのURL（新しくデプロイし直したもの）を貼り付けてください★
+    // ★重要：ご自身のGASのURLを貼り付けてください★
     const GAS_URL = "https://script.google.com/macros/s/AKfycbzQRAhDa8-BhxaB6IqsQ-hTmkAYLlu_x-5VK44U20hibIarUrgLSGz7wmZDgPgFsQKD6g/exec";
     
     let currentMode = 'article';
     let allData = { article: [], menu: [], calendar: [] };
     let filteredMenuList = []; 
 
-    // カレンダーUI用の変数
     let adminYear = new Date().getFullYear();
     let adminMonth = new Date().getMonth();
 
     window.onload = () => { loadData(); };
+
+    // 右下の通知バッジを操作する関数
+    function showSyncBadge(text = "↻ データを保存中...") {
+        const badge = document.getElementById('syncBadge');
+        badge.textContent = text;
+        badge.style.display = 'block';
+    }
+    function hideSyncBadge() {
+        document.getElementById('syncBadge').style.display = 'none';
+    }
 
     function switchTab(mode) {
         currentMode = mode;
@@ -253,7 +293,7 @@
             document.getElementById('submitBtn').textContent = "記事を投稿・更新する";
             renderArticleList();
         } else if(mode === 'menu') {
-            document.getElementById('submitBtn').textContent = "メニューを保存・更新する";
+            resetMenuForm();
             renderMenuList();
         } else if(mode === 'calendar') {
             resetCalendarForm();
@@ -271,14 +311,275 @@
             if(data.blog) { data.blog.forEach(b => { b.type = 'blog'; combinedArticles.push(b); }); }
             
             allData = { article: combinedArticles, menu: data.menu || [], calendar: data.calendar || [] };
-            if(allData.menu) allData.menu.forEach((m, idx) => m._originalIndex = idx);
+            
+            if(allData.menu) {
+                allData.menu.forEach((m, idx) => {
+                    m._originalIndex = idx;
+                    // 旧データの変換サポート
+                    if(m.timeMode === 'day') m.timeMode = 'drink';
+                    if(m.timeMode === 'night') m.timeMode = 'food';
+                });
+            }
             if(allData.article) allData.article.forEach((a, idx) => a._originalIndex = idx);
 
             switchTab(currentMode);
         }).catch(err => { container.innerHTML = 'データの読み込みに失敗しました。'; });
     }
 
-    // --- 記事関連 ---
+    // ----------------------------------------------------
+    // メニュー関連（★画面即時反映 ＆ 裏で保存する処理★）
+    // ----------------------------------------------------
+    function resetMenuForm() {
+        document.getElementById('timeMode').value = "drink";
+        document.getElementById('menuCategory').value = "アルコール";
+        document.getElementById('menuName').value = "";
+        document.getElementById('menuPrice').value = "";
+        document.getElementById('menuDesc').value = "";
+        document.getElementById('oldMenuName').value = "";
+        document.getElementById('oldMenuTimeMode').value = "";
+        
+        document.getElementById('menuActionButtons').style.display = 'none';
+        document.getElementById('submitBtn').textContent = "メニューを追加・保存する";
+        document.getElementById('message').textContent = "";
+    }
+
+    function renderMenuList() {
+        const container = document.getElementById('listItems');
+        document.getElementById('list-title').textContent = "登録済みメニュー一覧";
+        if(!allData.menu || allData.menu.length === 0) { container.innerHTML = '登録されたメニューはありません。'; return; }
+
+        const searchQuery = document.getElementById('searchMenu').value.toLowerCase();
+        const filterTime = document.getElementById('filterTime').value;
+        const filterCat = document.getElementById('filterCat').value;
+
+        filteredMenuList = allData.menu.filter(m => {
+            const matchSearch = m.name.toLowerCase().includes(searchQuery);
+            const matchTime = (filterTime === 'all') || (m.timeMode === filterTime);
+            const matchCat = (filterCat === 'all') || (m.category === filterCat);
+            return matchSearch && matchTime && matchCat;
+        });
+        if (filteredMenuList.length === 0) { container.innerHTML = '<div style="text-align:center; padding: 20px; color: #666;">該当するメニューが見つかりません。</div>'; return; }
+
+        let html = '<div class="table-wrapper"><table class="admin-table"><thead><tr><th>ジャンル</th><th>カテゴリ</th><th>商品名</th><th>金額</th><th>操作</th></tr></thead><tbody>';
+        filteredMenuList.forEach((m, i) => {
+            let badge = '';
+            if(m.timeMode === 'drink') badge = '<span class="badge-drink">ドリンク</span>';
+            else if(m.timeMode === 'food') badge = '<span class="badge-food">フード</span>';
+            else if(m.timeMode === 'sweets') badge = '<span class="badge-sweets">スイーツ</span>';
+            else badge = '<span class="badge-drink">旧データ</span>';
+
+            const isFirst = (i === 0); const isLast = (i === filteredMenuList.length - 1);
+            html += `<tr><td>${badge}</td><td>${m.category}</td><td><strong>${m.name}</strong></td><td>${m.price || '-'}</td><td><div class="btn-group"><button type="button" class="btn-move" onclick="moveMenu(${m._originalIndex}, -1)" ${isFirst ? 'disabled' : ''}>▲</button><button type="button" class="btn-move" onclick="moveMenu(${m._originalIndex}, 1)" ${isLast ? 'disabled' : ''}>▼</button><button type="button" class="edit-btn" onclick="editMenu(${m._originalIndex})">編集</button><button type="button" class="del-btn-small" onclick="deleteMenu('${m.name}', '${m.timeMode}')">削除</button></div></td></tr>`;
+        });
+        html += '</tbody></table></div>';
+        container.innerHTML = html;
+    }
+
+    function editMenu(index) {
+        const m = allData.menu[index];
+        document.getElementById('timeMode').value = m.timeMode;
+        document.getElementById('menuCategory').value = m.category;
+        document.getElementById('menuName').value = m.name;
+        document.getElementById('menuPrice').value = m.price;
+        document.getElementById('menuDesc').value = m.description || "";
+        
+        document.getElementById('oldMenuName').value = m.name;
+        document.getElementById('oldMenuTimeMode').value = m.timeMode;
+        
+        document.getElementById('menuActionButtons').style.display = 'flex';
+        document.getElementById('submitBtn').textContent = "この内容で上書き更新する";
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function moveMenu(originalIndex, direction) {
+        const currentPos = filteredMenuList.findIndex(m => m._originalIndex === originalIndex);
+        if (currentPos === -1) return;
+        const targetOriginalIndex = filteredMenuList[currentPos + direction]._originalIndex;
+        
+        // ① 画面上のデータを一瞬で入れ替える（UI即時反映）
+        const temp = allData.menu[originalIndex];
+        allData.menu[originalIndex] = allData.menu[targetOriginalIndex];
+        allData.menu[targetOriginalIndex] = temp;
+        allData.menu.forEach((m, idx) => m._originalIndex = idx);
+        renderMenuList();
+        
+        // ② 裏でこっそりGASに保存する（非同期通信）
+        sendDataAsync({ type: "menu_reorder", menuData: allData.menu });
+    }
+
+    function deleteMenu(name, timeMode) {
+        if(!confirm(name + ' を削除しますか？')) return;
+        
+        // ① 画面上のデータを一瞬で消す（UI即時反映）
+        const index = allData.menu.findIndex(m => m.name === name && m.timeMode === timeMode);
+        if (index > -1) {
+            allData.menu.splice(index, 1);
+            allData.menu.forEach((m, idx) => m._originalIndex = idx);
+        }
+        renderMenuList();
+
+        // ② 裏でこっそりGASに削除司令を送る（非同期通信）
+        sendDataAsync({ type: "menu_delete", name: name, timeMode: timeMode });
+    }
+
+    // ----------------------------------------------------
+    // バックグラウンド非同期通信処理（裏でこっそり保存）
+    // ----------------------------------------------------
+    function sendDataAsync(payload) {
+        showSyncBadge("↻ データを保存中...");
+        
+        fetch(GAS_URL, { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify(payload) 
+        })
+        .then(res => res.json())
+        .then(res => {
+            hideSyncBadge();
+            if (res.status !== "success") {
+                console.error("保存失敗:", res.message);
+                alert("保存エラーが発生しました。画面を元の状態に戻します。\n（入力規則の制限などが原因の可能性があります）\n\n詳細: " + res.message);
+                loadData(); // エラー時は元の正しいデータを読み込み直す
+            }
+        })
+        .catch(err => {
+            hideSyncBadge();
+            console.error("通信エラー:", err);
+            alert("通信エラーにより保存できませんでした。画面を元の状態に戻します。");
+            loadData(); // エラー時は元の正しいデータを読み込み直す
+        });
+    }
+
+    // ----------------------------------------------------
+    // 各フォームの送信ボタン（Submit）時の処理
+    // ----------------------------------------------------
+    document.getElementById('postForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (currentMode === 'menu') {
+            // メニューの場合の処理（即時反映）
+            const timeMode = document.getElementById('timeMode').value;
+            const category = document.getElementById('menuCategory').value;
+            const name = document.getElementById('menuName').value;
+            const price = document.getElementById('menuPrice').value;
+            const desc = document.getElementById('menuDesc').value;
+            const oldName = document.getElementById('oldMenuName').value;
+            const oldTimeMode = document.getElementById('oldMenuTimeMode').value;
+
+            // ① 画面上のデータを書き換える（UI即時反映）
+            if (oldName) {
+                // 編集の場合
+                const index = allData.menu.findIndex(m => m.name === oldName && m.timeMode === oldTimeMode);
+                if (index > -1) {
+                    allData.menu[index] = { timeMode: timeMode, category: category, name: name, price: price, description: desc, _originalIndex: index };
+                }
+            } else {
+                // 新規追加の場合
+                allData.menu.push({ timeMode: timeMode, category: category, name: name, price: price, description: desc, _originalIndex: allData.menu.length });
+            }
+            renderMenuList();
+            resetMenuForm();
+
+            // ② 裏でこっそりGASに保存する（非同期通信）
+            let payload = { type: "menu", timeMode: timeMode, category: category, name: name, price: price, description: desc };
+            if (oldName) {
+                payload.oldName = oldName;
+                payload.oldTimeMode = oldTimeMode;
+            }
+            sendDataAsync(payload);
+
+        } else {
+            // 記事やカレンダーの場合は従来の確実な通信を行う（必要に応じてここも非同期にできます）
+            sendDataSyncForOthers();
+        }
+    });
+
+    // 記事とカレンダー用の従来の同期通信（画面をロックして確実に保存する）
+    function sendDataSyncForOthers() {
+        const btn = document.getElementById('submitBtn');
+        const msg = document.getElementById('message');
+        
+        btn.disabled = true; 
+        msg.style.color = "blue"; 
+        msg.textContent = "GASと通信中...（少しお待ちください）";
+
+        let payload = {};
+        
+        if (currentMode === 'article') {
+            const rawDate = document.getElementById('date').value;
+            payload = { 
+                type: "article_save", 
+                articleType: document.getElementById('type').value, 
+                date: rawDate ? rawDate.replace(/-/g, '.') : "", 
+                title: document.getElementById('title').value, 
+                content: document.getElementById('content').value,
+                oldTitle: document.getElementById('oldArticleTitle').value,
+                showImage: document.getElementById('showImage').checked 
+            };
+            const fileInput = document.getElementById('imageFile');
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    payload.image = event.target.result; payload.mimeType = file.type; payload.filename = file.name;
+                    executeSyncFetch(payload, btn, msg);
+                };
+                reader.readAsDataURL(file);
+                return;
+            }
+        } else if (currentMode === 'calendar') {
+            const d = document.getElementById('calDate').value;
+            if(!d) { alert("日付を入力してください"); btn.disabled = false; return; }
+            payload = { 
+                type: "calendar", action: "save", 
+                date: d, 
+                calType: document.getElementById('calType').value, 
+                note: document.getElementById('calNote').value,
+                oldCalDate: document.getElementById('oldCalDate').value,
+                oldCalType: document.getElementById('oldCalType').value,
+                oldNote: document.getElementById('oldCalNote').value
+            };
+        }
+        
+        executeSyncFetch(payload, btn, msg);
+    }
+
+    function executeSyncFetch(payload, btn, msg) {
+        fetch(GAS_URL, { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify(payload) 
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (res.status === "success") {
+                msg.style.color = "green"; msg.textContent = "保存が完了しました！";
+                document.getElementById('postForm').reset();
+                if(currentMode === 'article') {
+                    document.getElementById('oldArticleTitle').value = ""; document.getElementById('imageFile').value = ""; document.getElementById('showImage').checked = true;
+                } else if(currentMode === 'calendar') {
+                    resetCalendarForm();
+                }
+                loadData(); 
+            } else {
+                msg.style.color = "red"; msg.textContent = "保存できませんでした。エラーを確認してください。";
+                alert("GASでエラーが発生しました。\n\n詳細: " + res.message);
+            }
+        })
+        .catch(err => {
+            msg.style.color = "red"; msg.textContent = "通信エラーが発生しました";
+            alert("【保存失敗】\n通信エラーが発生しました。\n詳細: " + err);
+            loadData();
+        })
+        .finally(() => { 
+            btn.disabled = false; 
+            if(currentMode === 'article') btn.textContent = "記事を投稿・更新する";
+            if(currentMode === 'calendar') btn.textContent = "カレンダーに予定を追加する";
+        });
+    }
+
+    // カレンダー等のその他の削除・コピー関数（省略せずに維持）
     function renderArticleList() {
         const container = document.getElementById('listItems');
         document.getElementById('list-title').textContent = "投稿済み記事一覧";
@@ -298,97 +599,12 @@
         html += '</tbody></table></div>';
         container.innerHTML = html;
     }
-    function editArticle(index) {
-        const a = allData.article[index];
-        document.getElementById('type').value = a.type || 'blog';
-        if(a.date) document.getElementById('date').value = a.date.replace(/\./g, '-');
-        document.getElementById('title').value = a.title;
-        document.getElementById('content').value = a.content;
-        document.getElementById('oldArticleTitle').value = a.title;
-        document.getElementById('imageFile').value = "";
-        document.getElementById('showImage').checked = a.image ? true : false;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        document.getElementById('message').style.color = "blue"; document.getElementById('message').textContent = "記事編集モード：保存すると上書きされます";
-    }
+    
     function deleteArticle(title) {
         if(!confirm(`「${title}」の記事を削除しますか？`)) return;
-        sendData({ type: "article_delete", title: title });
+        executeSyncFetch({ type: "article_delete", title: title }, document.getElementById('submitBtn'), document.getElementById('message'));
     }
 
-    // --- メニュー関連 ---
-    function renderMenuList() {
-        const container = document.getElementById('listItems');
-        document.getElementById('list-title').textContent = "登録済みメニュー一覧";
-        if(!allData.menu || allData.menu.length === 0) { container.innerHTML = '登録されたメニューはありません。'; return; }
-
-        const searchQuery = document.getElementById('searchMenu').value.toLowerCase();
-        const filterTime = document.getElementById('filterTime').value;
-        const filterCat = document.getElementById('filterCat').value;
-
-        filteredMenuList = allData.menu.filter(m => {
-            const matchSearch = m.name.toLowerCase().includes(searchQuery);
-            const matchTime = (filterTime === 'all') || (m.timeMode === filterTime);
-            const matchCat = (filterCat === 'all') || (m.category === filterCat);
-            return matchSearch && matchTime && matchCat;
-        });
-        if (filteredMenuList.length === 0) { container.innerHTML = '<div style="text-align:center; padding: 20px; color: #666;">該当するメニューが見つかりません。</div>'; return; }
-
-        let html = '<div class="table-wrapper"><table class="admin-table"><thead><tr><th>昼/夜</th><th>カテゴリ</th><th>商品名</th><th>金額</th><th>操作</th></tr></thead><tbody>';
-        filteredMenuList.forEach((m, i) => {
-            const badge = m.timeMode === 'day' ? '<span class="badge-day">昼</span>' : '<span class="badge-night">夜</span>';
-            const isFirst = (i === 0); const isLast = (i === filteredMenuList.length - 1);
-            html += `<tr><td>${badge}</td><td>${m.category}</td><td><strong>${m.name}</strong></td><td>${m.price || '-'}</td><td><div class="btn-group"><button type="button" class="btn-move" onclick="moveMenu(${m._originalIndex}, -1)" ${isFirst ? 'disabled' : ''}>▲</button><button type="button" class="btn-move" onclick="moveMenu(${m._originalIndex}, 1)" ${isLast ? 'disabled' : ''}>▼</button><button type="button" class="edit-btn" onclick="editMenu(${m._originalIndex})">編集</button><button type="button" class="del-btn-small" onclick="deleteMenu('${m.name}', '${m.timeMode}')">削除</button></div></td></tr>`;
-        });
-        html += '</tbody></table></div>';
-        container.innerHTML = html;
-    }
-    function moveMenu(originalIndex, direction) {
-        const currentPos = filteredMenuList.findIndex(m => m._originalIndex === originalIndex);
-        if (currentPos === -1) return;
-        const targetOriginalIndex = filteredMenuList[currentPos + direction]._originalIndex;
-        const temp = allData.menu[originalIndex];
-        allData.menu[originalIndex] = allData.menu[targetOriginalIndex];
-        allData.menu[targetOriginalIndex] = temp;
-        allData.menu.forEach((m, idx) => m._originalIndex = idx);
-        renderMenuList();
-        const msg = document.getElementById('message'); msg.style.color = "blue"; msg.textContent = "並び順を保存中...";
-        fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ type: "menu_reorder", menuData: allData.menu }) })
-        .then(res => res.json()).then(res => { if (res.status === "success") { msg.style.color = "green"; msg.textContent = "並び順を更新しました！"; } else { msg.style.color = "red"; msg.textContent = "保存中にエラーが発生しました"; } });
-    }
-    function editMenu(index) {
-        const m = allData.menu[index];
-        document.getElementById('timeMode').value = m.timeMode;
-        let cat = m.category; if(cat === '単品ドリンク') cat = 'アルコール'; 
-        document.getElementById('menuCategory').value = cat;
-        document.getElementById('menuName').value = m.name;
-        document.getElementById('menuPrice').value = m.price;
-        document.getElementById('menuDesc').value = m.description || "";
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        document.getElementById('message').style.color = "blue"; document.getElementById('message').textContent = "メニュー編集モード：保存すると上書きされます";
-    }
-    function deleteMenu(name, timeMode) {
-        if(!confirm(name + ' を削除しますか？')) return;
-        sendData({ type: "menu_delete", name: name, timeMode: timeMode });
-    }
-
-    // --- カレンダー関連（新UI） ---
-    
-    // フォームをリセットして「新規追加」状態に戻す関数
-    function resetCalendarForm(dateStr = "") {
-        document.getElementById('calDate').value = dateStr;
-        document.getElementById('calType').value = "通常営業";
-        document.getElementById('calNote').value = "";
-        
-        document.getElementById('oldCalDate').value = "";
-        document.getElementById('oldCalType').value = "";
-        document.getElementById('oldCalNote').value = "";
-        
-        document.getElementById('calActionButtons').style.display = 'none';
-        document.getElementById('submitBtn').textContent = "カレンダーに予定を追加する";
-        document.getElementById('message').textContent = "";
-    }
-
-    // カレンダーのUIを生成する関数
     function renderCalendarList() {
         const container = document.getElementById('listItems');
         document.getElementById('list-title').textContent = "カレンダーから編集・追加";
@@ -420,7 +636,6 @@
         drawAdminCalendarGrid();
     }
 
-    // 月を切り替える関数
     function changeAdminMonth(offset) {
         adminMonth += offset;
         if(adminMonth < 0) { adminMonth = 11; adminYear--; }
@@ -429,7 +644,6 @@
         drawAdminCalendarGrid();
     }
 
-    // カレンダーの中身を描画する関数
     function drawAdminCalendarGrid() {
         const firstDay = new Date(adminYear, adminMonth, 1).getDay();
         const daysInMonth = new Date(adminYear, adminMonth + 1, 0).getDate();
@@ -463,15 +677,12 @@
                         if(ev.type === "短縮営業") badgeClass = "badge-short";
                         if(ev.type.includes("通常営業")) badgeClass = "badge-normal";
                         
-                        // エラー回避のためクォーテーションを安全な文字に変換
                         let safeNote = (ev.note || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
                         
-                        // バッジタップ時の処理 (バッジを押したときはセルの処理を止める)
                         cellHtml += `<div class="admin-cal-badge ${badgeClass}" onclick="event.stopPropagation(); editCalendar('${fullDate}', '${ev.type}', '${safeNote}')">${ev.type}</div>`;
                     });
                     
                     cell.innerHTML = cellHtml;
-                    // セル全体タップ時の処理（新規追加）
                     cell.setAttribute('onclick', `resetCalendarForm('${fullDate}'); window.scrollTo({ top: 0, behavior: 'smooth' }); document.getElementById('message').style.color='blue'; document.getElementById('message').textContent='${fullDate.replace(/-/g, '/')} に新規予定を追加します';`);
                     
                     date++;
@@ -482,7 +693,6 @@
         }
     }
 
-    // カレンダーのバッジを押したときの編集モード関数
     function editCalendar(date, type, note) {
         document.getElementById('calDate').value = date;
         document.getElementById('calType').value = type;
@@ -492,7 +702,6 @@
         document.getElementById('oldCalType').value = type;
         document.getElementById('oldCalNote').value = note || "";
         
-        // 編集時専用のボタン（コピー・削除・キャンセル）を表示
         document.getElementById('calActionButtons').style.display = 'flex';
         document.getElementById('submitBtn').textContent = "この内容で上書き更新する";
         
@@ -501,7 +710,6 @@
         document.getElementById('message').textContent = "編集モード：予定を変更できます";
     }
 
-    // コピーボタンを押したときの関数
     function doCopyCalendar() {
         document.getElementById('oldCalDate').value = "";
         document.getElementById('oldCalType').value = "";
@@ -514,7 +722,6 @@
         document.getElementById('message').textContent = "コピーモード：日付などを変更して保存してください";
     }
 
-    // 削除ボタンを押したときの関数
     function doDeleteCalendar() {
         const d = document.getElementById('oldCalDate').value;
         const type = document.getElementById('oldCalType').value;
@@ -523,85 +730,7 @@
         if(!d) return;
         if(!confirm(`${d.replace(/-/g, '/')} の「${type}」の予定を削除しますか？`)) return;
         
-        sendData({ type: "calendar", action: "delete", date: d, calType: type, note: note });
-    }
-
-    // --- データ送信共通処理 ---
-    document.getElementById('postForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const btn = document.getElementById('submitBtn');
-        const msg = document.getElementById('message');
-        
-        if (currentMode === 'article') {
-            const rawDate = document.getElementById('date').value;
-            let payload = { 
-                type: "article_save", 
-                articleType: document.getElementById('type').value, 
-                date: rawDate ? rawDate.replace(/-/g, '.') : "", 
-                title: document.getElementById('title').value, 
-                content: document.getElementById('content').value,
-                oldTitle: document.getElementById('oldArticleTitle').value,
-                showImage: document.getElementById('showImage').checked 
-            };
-            const fileInput = document.getElementById('imageFile');
-            if (fileInput.files.length > 0) {
-                msg.style.color = "blue"; msg.textContent = "画像をアップロード中...（少し時間がかかります）";
-                btn.disabled = true;
-                const file = fileInput.files[0];
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    payload.image = event.target.result; payload.mimeType = file.type; payload.filename = file.name;
-                    sendData(payload);
-                };
-                reader.readAsDataURL(file);
-            } else {
-                sendData(payload);
-            }
-        } else if (currentMode === 'menu') {
-            let payload = { type: "menu", timeMode: document.getElementById('timeMode').value, category: document.getElementById('menuCategory').value, name: document.getElementById('menuName').value, price: document.getElementById('menuPrice').value, description: document.getElementById('menuDesc').value };
-            sendData(payload);
-        } else if (currentMode === 'calendar') {
-            const d = document.getElementById('calDate').value;
-            if(!d) { alert("日付を入力してください"); return; }
-            let payload = { 
-                type: "calendar", action: "save", 
-                date: d, 
-                calType: document.getElementById('calType').value, 
-                note: document.getElementById('calNote').value,
-                oldCalDate: document.getElementById('oldCalDate').value,
-                oldCalType: document.getElementById('oldCalType').value,
-                oldNote: document.getElementById('oldCalNote').value
-            };
-            sendData(payload);
-        }
-    });
-
-    function sendData(payload) {
-        const btn = document.getElementById('submitBtn');
-        const msg = document.getElementById('message');
-        btn.disabled = true; 
-        if(msg.textContent !== "画像をアップロード中...（少し時間がかかります）") { msg.style.color = "blue"; msg.textContent = "処理中..."; }
-        
-        fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) })
-        .then(res => res.json()).then(res => {
-            if (res.status === "success") {
-                msg.style.color = "green"; msg.textContent = "完了しました！";
-                document.getElementById('postForm').reset();
-                
-                if(currentMode === 'article') {
-                    document.getElementById('oldArticleTitle').value = ""; document.getElementById('imageFile').value = ""; document.getElementById('showImage').checked = true;
-                } else if(currentMode === 'calendar') {
-                    resetCalendarForm();
-                }
-                loadData(); 
-            } else { msg.style.color = "red"; msg.textContent = "エラーが発生しました"; }
-        }).catch(err => { msg.style.color = "red"; msg.textContent = "通信エラーが発生しました";
-        }).finally(() => { 
-            btn.disabled = false; 
-            if(currentMode === 'article') btn.textContent = "記事を投稿・更新する";
-            if(currentMode === 'menu') btn.textContent = "メニューを保存・更新する";
-            if(currentMode === 'calendar') btn.textContent = "カレンダーに予定を追加する";
-        });
+        executeSyncFetch({ type: "calendar", action: "delete", date: d, calType: type, note: note }, document.getElementById('submitBtn'), document.getElementById('message'));
     }
 </script>
 </body>

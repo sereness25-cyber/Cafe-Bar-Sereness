@@ -30,16 +30,16 @@
         .page-title { text-align: center; margin-bottom: 40px; }
         .page-title h2 { color: var(--accent-color); font-size: 24px; margin-bottom: 5px; }
         .page-title p { color: #666; font-size: 0.9em; margin: 0; }
+        .business-hours { font-size: 1.1em; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #ddd; display: inline-block; padding-bottom: 5px;}
 
         .time-section {
             background-color: white; border-radius: 8px; padding: 40px 30px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.04); margin-bottom: 40px;
         }
         .section-header { border-bottom: 2px solid var(--accent-color); padding-bottom: 10px; margin-bottom: 25px; text-align: center; }
-        .section-header h3 { font-size: 1.6em; color: var(--text-main); margin: 0; }
+        .section-header h3 { font-size: 1.6em; color: var(--text-main); margin: 0; letter-spacing: 0.05em; font-family: 'Playfair Display', serif;}
         .section-header p { margin: 5px 0 0 0; color: #666; font-size: 0.9em; font-weight: bold; }
 
-        /* テーブル設定 */
         .table-responsive { width: 100%; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.95em; min-width: 280px; }
         th, td { border: 1px solid #ddd; padding: 15px; text-align: center; vertical-align: middle; }
@@ -52,7 +52,6 @@
 
         .plan-title { background-color: var(--text-main); color: white; padding: 10px; text-align: center; margin-top: 30px; margin-bottom: 15px; font-size: 1.1em; letter-spacing: 0.1em; }
         
-        .notice-box { background-color: var(--section-bg); padding: 20px; border-left: 4px solid var(--accent-color); margin-top: 20px; font-size: 0.9em; color: #555; }
         .free-options { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 30px; }
         .option-tag { background-color: white; border: 1px solid var(--accent-color); color: var(--text-main); padding: 8px 20px; border-radius: 30px; font-size: 0.9em; }
 
@@ -67,7 +66,6 @@
             table { font-size: 0.85em; }
             th, td { padding: 8px 5px; }
             .price-highlight { font-size: 1.1em; }
-            .notice-box { padding: 15px; font-size: 0.85em; }
             .free-options { gap: 10px; margin-top: 20px; }
             .option-tag { padding: 6px 12px; font-size: 0.8em; }
             .btn-back { width: 100%; font-size: 1em; }
@@ -86,82 +84,14 @@
         
         <div class="page-title">
             <h2>System & Price</h2>
-            <p>ご入店時に身分証明書のご提示をお願いいたします。</p>
+            <div class="business-hours">営業時間 19:00 - 25:00</div>
         </div>
 
         <section class="time-section">
             <div class="section-header">
-                <h3>Café</h3>
-                <p>14:00 - 18:00</p>
-                <p style="color: var(--accent-color); font-weight: normal; margin-top: 10px; font-size: 0.85em;">★相席あり / ソフトドリンク飲み放題</p>
+                <h3>Café PLANS</h3>
+                <p style="color: var(--accent-color); font-weight: normal; margin-top: 10px; font-size: 0.85em;">★ソフトドリンク・コーヒー飲み放題（有料メニュー除く）</p>
             </div>
-            
-            <div class="table-responsive">
-                <table>
-                    <tr>
-                        <th></th>
-                        <th class="th-male">男性</th>
-                        <th class="th-female">女性</th>
-                    </tr>
-                    <tr>
-                        <th>初回120分</th>
-                        <td><span class="price-highlight">1,100円</span></td>
-                        <td rowspan="2"><span class="price-highlight">330円</span><br><span class="small-note">（時間無制限）</span></td>
-                    </tr>
-                    <tr>
-                        <th>以降30分毎</th>
-                        <td><span class="price-highlight">550円</span></td>
-                    </tr>
-                </table>
-            </div>
-        </section>
-
-        <section class="time-section">
-            <div class="section-header">
-                <h3>Bar</h3>
-                <p>20:00 - 25:00</p>
-            </div>
-
-            <div class="plan-title">MATCHING PLANS</div>
-            <p style="text-align: center; color: var(--accent-color); font-size: 0.85em; margin-bottom: 15px; line-height: 1.6;">
-                ★相席あり / 飲み放題（有料メニュー除く）<br>
-                <span style="color: #d9534f; font-weight: bold;">※男性の「STANBY(待合)」中は飲み放題対象外です</span>
-            </p>
-            
-            <div class="table-responsive">
-                <table>
-                    <tr>
-                        <th colspan="2"></th>
-                        <th class="th-male">男性</th>
-                        <th class="th-female">女性</th>
-                    </tr>
-                    <tr>
-                        <th>STANBY<br><span style="font-size: 0.8em;">(待合)</span></th>
-                        <th></th>
-                        <td>
-                            <span class="price-highlight">550円</span><br>
-                            <span class="small-note">※40分毎に1オーダー必須<br>（飲み放題不可）</span>
-                        </td>
-                        <td rowspan="3"><span class="price-highlight">550円</span><br><span class="small-note">（時間無制限）</span></td>
-                    </tr>
-                    <tr>
-                        <th rowspan="2">MATCHING<br><span style="font-size: 0.8em;">(相席)</span></th>
-                        <th>初回30分</th>
-                        <td><span class="price-highlight">1,650円</span><br><span class="small-note">（ここから飲み放題）</span></td>
-                    </tr>
-                    <tr>
-                        <th>以降10分毎</th>
-                        <td><span class="price-highlight">550円</span></td>
-                    </tr>
-                </table>
-            </div>
-
-            <div class="notice-box">
-                ※マッチングプランは、他のお客様との交流を楽しんでいただける方限定の特別料金です。<br>交流をご希望されない場合は、下記の「プライベートプラン」でのご案内となります。
-            </div>
-
-            <div class="plan-title" style="background-color: #777;">PRIVATE PLANS</div>
-            <p style="text-align: center; color: #777; font-size: 0.85em; margin-bottom: 15px;">★相席なし / 飲み放題（有料メニューを除く）</p>
             
             <div class="table-responsive">
                 <table>
@@ -172,13 +102,63 @@
                     </tr>
                     <tr>
                         <th>120分</th>
-                        <td><span class="price-highlight">3,300円</span></td>
-                        <td><span class="price-highlight">1,650円</span></td>
+                        <td><span class="price-highlight">1,100円</span></td>
+                        <td rowspan="2"><span class="price-highlight">550円</span><br><span class="small-note">（時間無制限）</span></td>
                     </tr>
                     <tr>
-                        <th>以降30分毎</th>
+                        <th>延長料金 30分毎</th>
                         <td><span class="price-highlight">550円</span></td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+
+        <section class="time-section">
+            <div class="section-header">
+                <h3>Bar PLANS</h3>
+                <p style="color: var(--accent-color); font-weight: normal; margin-top: 10px; font-size: 0.85em;">★飲み放題（有料メニュー除く）</p>
+            </div>
+            
+            <div class="table-responsive">
+                <table>
+                    <tr>
+                        <th></th>
+                        <th class="th-male">男性</th>
+                        <th class="th-female">女性</th>
+                    </tr>
+                    <tr>
+                        <th>90分</th>
+                        <td><span class="price-highlight">2,650円</span></td>
+                        <td rowspan="2"><span class="price-highlight">1,100円</span><br><span class="small-note">（時間無制限）</span></td>
+                    </tr>
+                    <tr>
+                        <th>延長料金 30分毎</th>
                         <td><span class="price-highlight">550円</span></td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+
+        <section class="time-section">
+            <div class="section-header">
+                <h3>COUPLE PLANS</h3>
+                <p style="color: var(--accent-color); font-weight: normal; margin-top: 10px; font-size: 0.85em;">★飲み放題（有料メニュー除く）</p>
+            </div>
+            <p style="text-align: right; color: #d9534f; font-size: 0.9em; margin-bottom: 8px; font-weight: bold;">※2人での料金</p>
+            
+            <div class="table-responsive">
+                <table>
+                    <tr>
+                        <th></th>
+                        <th colspan="2" style="border-top: 3px solid var(--accent-color);">男女ペアでのご来店（恋人・友達・夫婦）</th>
+                    </tr>
+                    <tr>
+                        <th>120分</th>
+                        <td colspan="2"><span class="price-highlight">3,300円</span></td>
+                    </tr>
+                    <tr>
+                        <th>延長料金 30分毎</th>
+                        <td colspan="2"><span class="price-highlight">550円</span></td>
                     </tr>
                 </table>
             </div>
@@ -187,14 +167,14 @@
         <section class="time-section" style="padding: 30px 15px; text-align: center;">
             <h3 style="color: var(--accent-color); margin-top: 0; margin-bottom: 20px; font-size: 1.2em; letter-spacing: 0.1em;">Free Services & Amenities</h3>
             <p style="font-size: 0.9em; color: #555; line-height: 1.8;">
-                カラオケ・ボードゲームをご用意しております。ご自由にお楽しみください。<br>
+                すべてのプランでカラオケやボードゲーム等をご自由にお楽しみいただけます。<br>
                 また、組み合わせて作れるオリジナルのクラフトドリンクも大好評です！
             </p>
             
             <div class="free-options">
-                <div class="option-tag">カラオケし放題</div>
+                <div class="option-tag">カラオケ歌い放題</div>
                 <div class="option-tag">ボードゲーム遊び放題</div>
-                <div class="option-tag" style="background-color: var(--accent-color); color: white; border: none; font-weight: bold;">恋愛相談 無料</div>
+                <div class="option-tag">スポーツ観戦可能</div> <div class="option-tag" style="background-color: var(--accent-color); color: white; border: none; font-weight: bold;">恋愛相談 無料</div>
             </div>
         </section>
 
@@ -202,7 +182,7 @@
 
     </div>
 
-    <footer>&copy; 2026 Cafe & Bar Sereness. All rights reserved.</footer>
+    <footer>© 2026 Cafe & Bar Sereness. All rights reserved.</footer>
 
 </body>
 </html>

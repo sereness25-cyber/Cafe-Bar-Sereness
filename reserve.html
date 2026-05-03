@@ -31,12 +31,6 @@
         .people-input-box span { font-weight: bold; color: #555; }
         .people-input-box input[type="number"] { width: 70px; padding: 8px; text-align: center; border: 1px solid #ccc; margin: 0; }
         
-        /* 相席ラジオボタン用のスタイル */
-        .radio-group { display: flex; gap: 15px; }
-        .radio-label { display: flex; align-items: center; font-weight: normal; cursor: pointer; background: #f9f9f9; padding: 12px 15px; border: 1px solid #ccc; border-radius: 4px; flex: 1; justify-content: center; }
-        .radio-label input { width: auto; margin-right: 8px; transform: scale(1.2); }
-        .radio-label:has(input:checked) { background: #fdfaf5; border-color: var(--accent-color); color: var(--accent-color); font-weight: bold; }
-        
         .submit-btn { width: 100%; background: var(--accent-color); color: white; padding: 18px; border: none; border-radius: 4px; font-size: 1.1em; font-weight: bold; cursor: pointer; transition: 0.3s; letter-spacing: 0.1em; margin-top: 10px; -webkit-appearance: none;}
         .submit-btn:hover { opacity: 0.8; }
         .submit-btn:disabled { background: #ccc; cursor: not-allowed; }
@@ -58,7 +52,7 @@
 
     <header>
         <div style="width: 60px;"></div> 
-        <div>Café & Bar Sereness</div>
+        <div>Cafe & Bar セレネス</div>
         <a href="index.html" style="width: 60px; text-align: right;">Topへ</a>
     </header>
 
@@ -79,7 +73,7 @@
                 <div class="form-group">
                     <label>ご来店時間 <span class="required">必須</span></label>
                     <input type="time" id="resTime" required>
-                    <span style="font-size:0.8em; color:#888; margin-top:5px; display:block;">※Cafe 14:00-18:00 / Bar 20:00-25:00</span>
+                    <span style="font-size:0.8em; color:#888; margin-top:5px; display:block;">※営業時間 19:00 - 25:00</span>
                 </div>
 
                 <div class="form-group">
@@ -103,18 +97,6 @@
                             <span>女性</span>
                             <input type="number" id="resFemale" value="0" min="0">
                         </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>相席のご希望 <span class="required">必須</span></label>
-                    <div class="radio-group">
-                        <label class="radio-label">
-                            <input type="radio" name="resSeating" value="相席希望あり" required> 相席希望あり
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="resSeating" value="相席希望なし"> 相席希望なし
-                        </label>
                     </div>
                 </div>
 
@@ -155,10 +137,6 @@
             btn.style.display = 'none';
             loading.style.display = 'block';
 
-            // ▼ 追加：相席希望の取得 ▼
-            const seatingOption = document.querySelector('input[name="resSeating"]:checked');
-            const seatingValue = seatingOption ? seatingOption.value : "未選択";
-
             const payload = {
                 type: "reservation",
                 date: document.getElementById('resDate').value,
@@ -167,7 +145,6 @@
                 phone: document.getElementById('resPhone').value,
                 male: document.getElementById('resMale').value,
                 female: document.getElementById('resFemale').value,
-                seating: seatingValue, // ★これを裏側(GAS)に送ります
                 note: document.getElementById('resNote').value
             };
 
