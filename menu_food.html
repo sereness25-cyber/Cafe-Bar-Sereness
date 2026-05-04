@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOOD & SWEETS MENU | Sereness</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+
+    <style>
+        :root { --accent-color: #8C7042; }
+        body { font-family: "Noto Serif JP", "Hiragino Mincho ProN", serif; background-color: #e5e5e5; margin: 0; padding: 20px; color: #111; }
+        .menu-paper { max-width: 800px; margin: 0 auto; background: #fff; padding: 40px 50px; border: 1px solid #ccc; box-shadow: 0 15px 40px rgba(0,0,0,0.1); position: relative; }
+        .menu-inner-border { border: 3px double #333; padding: 30px; }
+        .header { text-align: center; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 30px; }
+        .logo-text { font-size: 26px; letter-spacing: 0.15em; font-family: 'Playfair Display', serif; color: #111; }
+        .normal-amp { font-family: "Noto Serif JP", serif; }
+        .mode-title { font-size: 14px; color: #555; margin-top: 5px; letter-spacing: 0.2em; font-family: 'Playfair Display', serif; }
+        
+        .menu-grid { display: grid; grid-template-columns: 1fr; gap: 40px; }
+        @media (min-width: 600px) { .menu-grid { grid-template-columns: 1fr 1fr; } }
+        
+        .menu-col .menu-section:first-child { margin-top: 0 !important; }
+
+        .genre-title { background: #333; color: #fff; text-align: center; padding: 8px; margin: 20px 0; font-family: 'Playfair Display', serif; letter-spacing: 0.2em; font-size: 1.2em; }
+        .genre-title:first-child { margin-top: 0; }
+
+        .menu-section h2 { font-size: 18px; border-bottom: 2px solid #333; padding-bottom: 5px; margin-bottom: 20px; font-family: "Noto Serif JP", "Hiragino Mincho ProN", serif; text-align: center; color: #111; letter-spacing: 0.1em; }
+        .item { margin-bottom: 18px; }
+        .item-row { display: flex; justify-content: space-between; align-items: baseline; font-weight: bold; position: relative; }
+        .item-row::before { content: ""; position: absolute; left: 0; right: 0; bottom: 4px; border-bottom: 1px dotted #aaa; z-index: 1; }
+        .name { background: #fff; padding-right: 8px; z-index: 2; font-size: 15px;}
+        .price { color: var(--accent-color); background: #fff; padding-left: 8px; z-index: 2; font-size: 15px;}
+        .desc { font-size: 11px; color: #555; margin-top: 3px; }
+
+        .back-link { display: block; text-align: center; margin-top: 20px; color: #555; text-decoration: none; font-size: 0.9em; }
+        .print-btn-container { text-align: center; margin-bottom: 20px; }
+        .print-btn { background: #333; color: white; border: none; padding: 12px 24px; font-size: 16px; border-radius: 4px; cursor: pointer; font-family: inherit; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+        .print-btn:hover { background: #111; }
+
+        @media print {
+            @page { size: A4 portrait; margin: 10mm; }
+            body { background-color: #fff; padding: 0; margin: 0; -webkit-print-color-adjust: exact; }
+            .menu-paper { box-shadow: none; border: none; padding: 0; max-width: 100%; overflow: hidden; margin: 0;}
+            .menu-inner-border { padding: 25px; }
+            .no-print { display: none !important; }
+            
+            .header { margin-bottom: 20px; padding-bottom: 10px; }
+            .logo-text { font-size: 24px; }
+            
+            .menu-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
+            .genre-title { margin: 15px 0; font-size: 1.1em; padding: 5px; }
+            .menu-section { margin-top: 15px !important; }
+            .menu-section h2 { font-size: 16px; margin-bottom: 12px; padding-bottom: 3px; }
+            .item { margin-bottom: 12px; }
+            .name { font-size: 14px; }
+            .price { font-size: 14px; }
+            .desc { font-size: 10px; margin-top: 1px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="print-btn-container no-print">
+        <button class="print-btn" onclick="autoScaleAndPrint()">🖨️ このメニューを印刷する</button>
+    </div>
+
+    <div class="menu-paper" id="paper-container">
+        <div class="menu-inner-border" id="inner-border">
+            <div class="header">
+                <div class="logo-text">Café <span class="normal-amp">&</span> Bar Sereness</div>
+                <div class="mode-title">FOOD & SWEETS MENU</div>
+            </div>
+            
+            <div class="menu-grid" id="menu-content">
+                <div style="text-align:center; grid-column: 1 / -1; color:#999;">メニューを読み込み中...</div>
+            </div>
+        </div>
+    </div>
+
+    <a href="index.html" class="back-link no-print">← トップページへ戻る</a>
+
+    <script>
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzQRAhDa8-BhxaB6IqsQ-hTmkAYLlu_x-5VK44U20hibIarUrgLSGz7wmZDgPgFsQKD6g/exec";
+        
+        fetch(GAS_URL).then(res => res.json()).then(data => {
+            const foods = data.menu.filter(i => i.timeMode === 'food' || i.timeMode === 'night');
+            const sweets = data.menu.filter(i => i.timeMode === 'sweets');
+            
+            const container = document.getElementById('menu-content');
+            
+            // フード系カテゴリ
+            const foodSnack = foods.filter(i => i.category === 'おつまみ');
+            const foodMain = foods.filter(i => i.category === 'フード');
+            const foodCan = foods.filter(i => i.category === '缶');
+            
+            // スイーツ系カテゴリ
+            const sweetDessert = sweets.filter(i => i.category === 'デザート');
+            const sweetIce = sweets.filter(i => i.category === 'アイス');
+            const sweetSweets = sweets.filter(i => i.category === 'スイーツ'); // ← 新しいカテゴリを追加
+
+            let col1Html = `<div class="genre-title">FOOD</div>` +
+                           renderSection('おつまみ', foodSnack) + 
+                           renderSection('フード', foodMain) +
+                           renderSection('缶', foodCan);
+
+            // ▼ スイーツの列に「デザート」「アイス」「スイーツ」の順で並べる ▼
+            let col2Html = `<div class="genre-title">SWEETS</div>` +
+                           renderSection('デザート', sweetDessert) +
+                           renderSection('アイス', sweetIce) +
+                           renderSection('スイーツ', sweetSweets);
+
+            if (!col1Html.includes('item') && !col2Html.includes('item')) {
+                container.innerHTML = "<div style='text-align:center; grid-column: 1 / -1; color:#999;'>メニューが登録されていません。</div>";
+            } else {
+                container.innerHTML = `
+                    <div class="menu-col">${col1Html}</div>
+                    <div class="menu-col">${col2Html}</div>
+                `;
+            }
+        }).catch(err => {
+            document.getElementById('menu-content').innerHTML = "<p style='text-align:center; color:red;'>読み込みに失敗しました。</p>";
+        });
+
+        function renderSection(title, items) {
+            if (items.length === 0) return '';
+            return `<div class="menu-section" style="margin-top: 35px;"><h2>${title}</h2>${renderItems(items)}</div>`;
+        }
+
+        function renderItems(items) {
+            return items.map(i => `
+                <div class="item">
+                    <div class="item-row"><span class="name">${i.name}</span><span class="price">${i.price}</span></div>
+                    <div class="desc">${i.description || ''}</div>
+                </div>
+            `).join('');
+        }
+
+        function autoScaleAndPrint() {
+            const paper = document.getElementById('paper-container');
+            const innerBorder = document.getElementById('inner-border');
+            
+            innerBorder.style.transform = 'none';
+            innerBorder.style.width = '100%';
+            innerBorder.style.boxSizing = 'border-box';
+            paper.style.height = 'auto';
+            
+            const targetHeight = 980; 
+            let currentHeight = innerBorder.offsetHeight;
+            
+            if (currentHeight > 0) {
+                let scaleRatio = targetHeight / currentHeight;
+                
+                if (scaleRatio > 1.0) {
+                    if (scaleRatio > 1.3) scaleRatio = 1.3; 
+                    
+                    innerBorder.style.width = `${100 / scaleRatio}%`;
+                    innerBorder.style.margin = '0 auto';
+                    
+                    currentHeight = innerBorder.offsetHeight;
+                    scaleRatio = targetHeight / currentHeight;
+                    
+                    if (scaleRatio > 1.3) scaleRatio = 1.3;
+                    if (scaleRatio < 1.0) scaleRatio = 1.0;
+                } else {
+                    if (scaleRatio < 0.6) scaleRatio = 0.6;
+                }
+                
+                innerBorder.style.transform = `scale(${scaleRatio})`;
+                innerBorder.style.transformOrigin = 'top center';
+                
+                paper.style.height = `${targetHeight}px`;
+                paper.style.overflow = 'hidden';
+            }
+            
+            window.print();
+            
+            setTimeout(() => {
+                innerBorder.style.transform = 'none';
+                innerBorder.style.width = 'auto';
+                innerBorder.style.margin = '0';
+                innerBorder.style.boxSizing = '';
+                paper.style.height = 'auto';
+                paper.style.overflow = 'visible';
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

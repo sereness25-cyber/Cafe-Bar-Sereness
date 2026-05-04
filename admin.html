@@ -74,7 +74,6 @@
         .badge-short { background-color: #f0ad4e; }
         .badge-normal { background-color: #5cb85c; }
         
-        /* ▼ バックグラウンド通信用の通知バッジ ▼ */
         #syncBadge { position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.7); color: white; padding: 12px 20px; border-radius: 30px; font-size: 0.9em; display: none; z-index: 9999; box-shadow: 0 4px 10px rgba(0,0,0,0.2); font-weight: bold;}
         
         @media (max-width: 600px) {
@@ -85,7 +84,6 @@
 </head>
 <body>
 
-<!-- バックグラウンド保存中をお知らせするバッジ -->
 <div id="syncBadge">↻ データを保存中...</div>
 
 <div class="admin-box">
@@ -97,7 +95,6 @@
     </div>
 
     <form id="postForm">
-        <!-- 記事セクション -->
         <div id="article-section">
             <input type="hidden" id="oldArticleTitle"> 
             <label>投稿先</label>
@@ -117,7 +114,6 @@
             </div>
         </div>
 
-        <!-- メニューセクション -->
         <div id="menu-section" style="display: none;">
             <input type="hidden" id="oldMenuName">
             <input type="hidden" id="oldMenuTimeMode">
@@ -133,10 +129,10 @@
             <select id="menuCategory">
                 <option value="飲み放題">飲み放題</option>
                 <option value="飲み放題（アルコール）">飲み放題（アルコール）</option>
-                <option value="飲み放題（ソフトドリンク）">飲み放題（ソフトドリンク）</option>
+                <option value="飲み放題（ノンアルコール）">飲み放題（ノンアルコール）</option>
                 <option value="アルコール">アルコール</option>
                 <option value="コーヒー">コーヒー</option>
-                <option value="ソフトドリンク">ソフトドリンク</option>
+                <option value="ノンアルコール">ノンアルコール</option>
                 <option value="スペシャルドリンク">スペシャルドリンク</option>
                 <option value="スムージー">スムージー</option>
                 <option value="単品">単品</option>
@@ -160,7 +156,6 @@
             </div>
         </div>
 
-        <!-- カレンダーセクション -->
         <div id="calendar-section" style="display: none;">
             <div style="background: #eef8f8; padding: 15px; border-radius: 4px; margin-bottom: 15px; border: 1px solid #bce8f1; font-size: 0.9em; line-height: 1.6;">
                 💡 <strong>操作方法：</strong><br>
@@ -199,7 +194,6 @@
         <div id="message"></div>
     </form>
 
-    <!-- リスト表示エリア -->
     <div id="list-container" class="menu-list-area">
         <h3 id="list-title">登録済み一覧</h3>
         
@@ -223,10 +217,10 @@
                 <option value="all">全カテゴリ</option>
                 <option value="飲み放題">飲み放題</option>
                 <option value="飲み放題（アルコール）">飲み放題（アルコール）</option>
-                <option value="飲み放題（ソフトドリンク）">飲み放題（ソフトドリンク）</option>
+                <option value="飲み放題（ノンアルコール）">飲み放題（ノンアルコール）</option>
                 <option value="アルコール">アルコール</option>
                 <option value="コーヒー">コーヒー</option>
-                <option value="ソフトドリンク">ソフトドリンク</option>
+                <option value="ノンアルコール">ノンアルコール</option>
                 <option value="スペシャルドリンク">スペシャルドリンク</option>
                 <option value="スムージー">スムージー</option>
                 <option value="単品">単品</option>
@@ -259,7 +253,6 @@
 
     window.onload = () => { loadData(); };
 
-    // 右下の通知バッジを操作する関数
     function showSyncBadge(text = "↻ データを保存中...") {
         const badge = document.getElementById('syncBadge');
         badge.textContent = text;
@@ -315,7 +308,6 @@
             if(allData.menu) {
                 allData.menu.forEach((m, idx) => {
                     m._originalIndex = idx;
-                    // 旧データの変換サポート
                     if(m.timeMode === 'day') m.timeMode = 'drink';
                     if(m.timeMode === 'night') m.timeMode = 'food';
                 });
@@ -326,9 +318,6 @@
         }).catch(err => { container.innerHTML = 'データの読み込みに失敗しました。'; });
     }
 
-    // ----------------------------------------------------
-    // メニュー関連（★画面即時反映 ＆ 裏で保存する処理★）
-    // ----------------------------------------------------
     function resetMenuForm() {
         document.getElementById('timeMode').value = "drink";
         document.getElementById('menuCategory').value = "アルコール";
@@ -397,35 +386,26 @@
         if (currentPos === -1) return;
         const targetOriginalIndex = filteredMenuList[currentPos + direction]._originalIndex;
         
-        // ① 画面上のデータを一瞬で入れ替える（UI即時反映）
         const temp = allData.menu[originalIndex];
         allData.menu[originalIndex] = allData.menu[targetOriginalIndex];
         allData.menu[targetOriginalIndex] = temp;
         allData.menu.forEach((m, idx) => m._originalIndex = idx);
         renderMenuList();
-        
-        // ② 裏でこっそりGASに保存する（非同期通信）
         sendDataAsync({ type: "menu_reorder", menuData: allData.menu });
     }
 
     function deleteMenu(name, timeMode) {
         if(!confirm(name + ' を削除しますか？')) return;
         
-        // ① 画面上のデータを一瞬で消す（UI即時反映）
         const index = allData.menu.findIndex(m => m.name === name && m.timeMode === timeMode);
         if (index > -1) {
             allData.menu.splice(index, 1);
             allData.menu.forEach((m, idx) => m._originalIndex = idx);
         }
         renderMenuList();
-
-        // ② 裏でこっそりGASに削除司令を送る（非同期通信）
         sendDataAsync({ type: "menu_delete", name: name, timeMode: timeMode });
     }
 
-    // ----------------------------------------------------
-    // バックグラウンド非同期通信処理（裏でこっそり保存）
-    // ----------------------------------------------------
     function sendDataAsync(payload) {
         showSyncBadge("↻ データを保存中...");
         
@@ -440,25 +420,21 @@
             if (res.status !== "success") {
                 console.error("保存失敗:", res.message);
                 alert("保存エラーが発生しました。画面を元の状態に戻します。\n（入力規則の制限などが原因の可能性があります）\n\n詳細: " + res.message);
-                loadData(); // エラー時は元の正しいデータを読み込み直す
+                loadData(); 
             }
         })
         .catch(err => {
             hideSyncBadge();
             console.error("通信エラー:", err);
             alert("通信エラーにより保存できませんでした。画面を元の状態に戻します。");
-            loadData(); // エラー時は元の正しいデータを読み込み直す
+            loadData(); 
         });
     }
 
-    // ----------------------------------------------------
-    // 各フォームの送信ボタン（Submit）時の処理
-    // ----------------------------------------------------
     document.getElementById('postForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
         if (currentMode === 'menu') {
-            // メニューの場合の処理（即時反映）
             const timeMode = document.getElementById('timeMode').value;
             const category = document.getElementById('menuCategory').value;
             const name = document.getElementById('menuName').value;
@@ -467,21 +443,17 @@
             const oldName = document.getElementById('oldMenuName').value;
             const oldTimeMode = document.getElementById('oldMenuTimeMode').value;
 
-            // ① 画面上のデータを書き換える（UI即時反映）
             if (oldName) {
-                // 編集の場合
                 const index = allData.menu.findIndex(m => m.name === oldName && m.timeMode === oldTimeMode);
                 if (index > -1) {
                     allData.menu[index] = { timeMode: timeMode, category: category, name: name, price: price, description: desc, _originalIndex: index };
                 }
             } else {
-                // 新規追加の場合
                 allData.menu.push({ timeMode: timeMode, category: category, name: name, price: price, description: desc, _originalIndex: allData.menu.length });
             }
             renderMenuList();
             resetMenuForm();
 
-            // ② 裏でこっそりGASに保存する（非同期通信）
             let payload = { type: "menu", timeMode: timeMode, category: category, name: name, price: price, description: desc };
             if (oldName) {
                 payload.oldName = oldName;
@@ -490,12 +462,10 @@
             sendDataAsync(payload);
 
         } else {
-            // 記事やカレンダーの場合は従来の確実な通信を行う（必要に応じてここも非同期にできます）
             sendDataSyncForOthers();
         }
     });
 
-    // 記事とカレンダー用の従来の同期通信（画面をロックして確実に保存する）
     function sendDataSyncForOthers() {
         const btn = document.getElementById('submitBtn');
         const msg = document.getElementById('message');
@@ -579,7 +549,6 @@
         });
     }
 
-    // カレンダー等のその他の削除・コピー関数（省略せずに維持）
     function renderArticleList() {
         const container = document.getElementById('listItems');
         document.getElementById('list-title').textContent = "投稿済み記事一覧";
