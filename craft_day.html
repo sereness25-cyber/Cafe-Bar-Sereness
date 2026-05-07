@@ -41,7 +41,30 @@
         .craft-title { text-align: center; margin-bottom: 30px; }
         .craft-title h2 { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--accent-color); margin: 0 0 10px 0; }
         .craft-title p { font-size: 15px; color: #333; margin: 0; letter-spacing: 0.05em; line-height: 1.8; font-weight: bold;}
-        .craft-title .highlight { font-size: 18px; color: var(--accent-color); }
+        
+        /* ▼ 追加：料金表の囲みデザイン ▼ */
+        .craft-price-box {
+            margin-top: 15px;
+            background: #fff;
+            border: 1px dashed var(--accent-color);
+            padding: 15px 30px;
+            display: inline-block;
+            border-radius: 4px;
+        }
+        .craft-price-note {
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: normal;
+        }
+        .craft-price-tiers {
+            font-weight: bold;
+            color: var(--accent-color);
+            font-size: 15px;
+            line-height: 1.6;
+            text-align: left;
+            display: inline-block;
+        }
 
         .options-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px;}
         @media (max-width: 600px) { .options-grid { grid-template-columns: repeat(2, 1fr); } }
@@ -81,8 +104,16 @@
             
             <div class="craft-title">
                 <h2>Custom Drink</h2>
-                <p>メニューにないドリンクは、こちらで注文できます。<br>
-                ベース料金に<span class="highlight">＋100円</span>でお作りします。</p>
+                <p>メニューにないドリンクは、こちらで注文できます。</p>
+                
+                <div class="craft-price-box">
+                    <div class="craft-price-note">組み合わせる種類数による追加料金</div>
+                    <div class="craft-price-tiers">
+                        ２種類組み合わせ ： ＋100円<br>
+                        ３種類組み合わせ ： ＋200円<br>
+                        ４種類以上組み合わせ ： ＋300円
+                    </div>
+                </div>
             </div>
 
             <div id="craft-content">
@@ -98,7 +129,6 @@
         
         fetch(GAS_URL).then(res => res.json()).then(data => {
             // 「クラフト」という文字がカテゴリに含まれるものをすべて取得
-            // （※もし古い「クラフトStep1」などが残っていても自動的に拾ってくれます）
             const craftItems = data.menu.filter(i => i.category && i.category.includes('クラフト'));
 
             document.getElementById('craft-content').innerHTML = `
