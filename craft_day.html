@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【印刷用】CRAFT MENU | Sereness</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+
+    <style>
+        :root { --accent-color: #A68B5B; }
+        
+        body { 
+            font-family: "Noto Serif JP", "Hiragino Mincho ProN", serif; 
+            background-color: #f4f4f4; 
+            margin: 0; padding: 20px; color: #333;
+        }
+
+        .menu-paper {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 40px 50px;
+            border: 1px solid #ddd;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .menu-inner-border {
+            border: 2px solid var(--accent-color);
+            padding: 30px;
+        }
+
+        .header { text-align: center; border-bottom: 1px solid var(--accent-color); padding-bottom: 15px; margin-bottom: 30px; }
+        .logo-text { font-size: 26px; letter-spacing: 0.15em; font-family: 'Playfair Display', serif; }
+        .normal-amp { font-family: "Noto Serif JP", serif; }
+        .mode-title { font-size: 14px; color: #666; margin-top: 5px; letter-spacing: 0.2em; font-family: 'Playfair Display', serif; }
+        
+        .craft-title { text-align: center; margin-bottom: 30px; }
+        .craft-title h2 { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--accent-color); margin: 0 0 10px 0; }
+        .craft-title p { font-size: 15px; color: #333; margin: 0; letter-spacing: 0.05em; line-height: 1.8; font-weight: bold;}
+        .craft-title .highlight { font-size: 18px; color: var(--accent-color); }
+
+        .options-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px;}
+        @media (max-width: 600px) { .options-grid { grid-template-columns: repeat(2, 1fr); } }
+        
+        .option-item { background: #fff; border: 1px solid #eee; padding: 15px 10px; text-align: center; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .option-name { font-weight: bold; font-size: 15px; margin-bottom: 5px; display: block; }
+        .option-desc { font-size: 11px; color: #777; line-height: 1.4; display: block; }
+        .option-price { display: block; font-size: 12px; color: var(--accent-color); font-weight: bold; margin-top: 5px; }
+
+        .loading { text-align: center; color: #999; padding: 40px; }
+
+        .back-link { display: block; text-align: center; margin-top: 20px; color: #666; text-decoration: none; font-size: 0.9em; }
+        .print-btn-container { text-align: center; margin-bottom: 20px; }
+        .print-btn { background: var(--accent-color); color: white; border: none; padding: 12px 24px; font-size: 16px; border-radius: 4px; cursor: pointer; font-family: inherit; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .print-btn:hover { opacity: 0.8; }
+
+        @media print {
+            @page { size: A4 portrait; margin: 15mm; }
+            body { background-color: #fff; padding: 0; }
+            .menu-paper { box-shadow: none; border: none; padding: 0; max-width: 100%; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="print-btn-container no-print">
+        <button class="print-btn" onclick="window.print()">🖨️ このクラフトメニューを印刷する</button>
+    </div>
+
+    <div class="menu-paper">
+        <div class="menu-inner-border">
+            <div class="header">
+                <div class="logo-text">Café <span class="normal-amp">&</span> Bar Sereness</div>
+                <div class="mode-title">CRAFT DRINK MENU</div>
+            </div>
+            
+            <div class="craft-title">
+                <h2>Custom Drink</h2>
+                <p>メニューにないドリンクは、こちらで注文できます。<br>
+                ベース料金に<span class="highlight">＋100円</span>でお作りします。</p>
+            </div>
+
+            <div id="craft-content">
+                <div class="loading">管理画面からメニューを読み込み中...</div>
+            </div>
+        </div>
+    </div>
+
+    <a href="index.html" class="back-link no-print">← トップページへ戻る</a>
+
+    <script>
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbzQRAhDa8-BhxaB6IqsQ-hTmkAYLlu_x-5VK44U20hibIarUrgLSGz7wmZDgPgFsQKD6g/exec";
+        
+        fetch(GAS_URL).then(res => res.json()).then(data => {
+            // 「クラフト」という文字がカテゴリに含まれるものをすべて取得
+            // （※もし古い「クラフトStep1」などが残っていても自動的に拾ってくれます）
+            const craftItems = data.menu.filter(i => i.category && i.category.includes('クラフト'));
+
+            document.getElementById('craft-content').innerHTML = `
+                <div class="options-grid">${renderOptions(craftItems)}</div>
+            `;
+        }).catch(err => {
+            document.getElementById('craft-content').innerHTML = "<p style='text-align:center; color:red;'>読み込みに失敗しました。</p>";
+        });
+
+        function renderOptions(items) {
+            if (items.length === 0) return '<div style="grid-column: 1 / -1; text-align:center; color:#999; font-size:12px;">管理画面から「クラフト」カテゴリで追加してください</div>';
+            return items.map(i => `
+                <div class="option-item">
+                    <span class="option-name">${i.name}</span>
+                    <span class="option-desc">${i.description || ''}</span>
+                    ${i.price ? `<span class="option-price">${i.price}</span>` : ''}
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
