@@ -14,7 +14,7 @@
         body { font-family: "Noto Serif JP", "Hiragino Mincho ProN", serif; background-color: #fdfaf5; margin: 0; padding: 20px; color: #111; }
         .menu-paper { max-width: 800px; margin: 0 auto; background: #fff; padding: 40px 50px; border: 1px solid #ddd; box-shadow: 0 15px 40px rgba(0,0,0,0.08); position: relative; }
         .menu-inner-border { border: 3px double var(--accent-color); padding: 30px; }
-        .header { text-align: center; border-bottom: 1px solid var(--accent-color); padding-bottom: 15px; margin-bottom: 25px; }
+        .header { text-align: center; border-bottom: 1px solid var(--accent-color); padding-bottom: 20px; margin-bottom: 25px; }
         .logo-text { font-size: 26px; letter-spacing: 0.15em; font-family: 'Playfair Display', serif; color: #111; }
         .normal-amp { font-family: "Noto Serif JP", serif; }
         .mode-title { font-size: 16px; color: var(--accent-color); margin-top: 5px; letter-spacing: 0.2em; font-family: 'Playfair Display', serif; font-weight: bold;}
@@ -47,7 +47,7 @@
             .menu-inner-border { padding: 25px; }
             .no-print { display: none !important; }
             
-            .header { margin-bottom: 20px; padding-bottom: 10px; }
+            .header { margin-bottom: 20px; padding-bottom: 15px; }
             .logo-text { font-size: 24px; }
             
             .menu-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
@@ -72,10 +72,14 @@
             <div class="header">
                 <div class="logo-text">Café <span class="normal-amp">&</span> Bar Sereness</div>
                 <div class="mode-title">PREMIUM DRINK MENU</div>
-                <div class="no-print" style="margin-top: 15px; font-family: 'Noto Serif JP', serif;">
-                    <p style="font-size: 13px; font-weight: bold; color: #111; margin: 0 0 8px 0;">※こちらのプレミアムメニューに加え、スタンダードメニューもすべて飲み放題となります</p>
+                
+                <div style="margin-top: 20px; font-family: 'Noto Serif JP', serif;">
+                    <div style="display: inline-block; border: 2px solid var(--accent-color); color: var(--accent-color); padding: 5px 25px; font-size: 15px; font-weight: bold; border-radius: 25px; margin-bottom: 10px; letter-spacing: 0.1em; background-color: #fff;">
+                        通常の飲み放題プラン <span style="font-size: 20px;">＋300円</span>
+                    </div>
+                    <p style="font-size: 12px; font-weight: bold; color: #555; margin: 0;">※こちらのプレミアムメニューに加え、スタンダードメニューもすべてご注文いただけます</p>
                 </div>
-            </div>
+                </div>
             
             <div class="menu-grid" id="menu-content">
                 <div style="text-align:center; grid-column: 1 / -1; color:#999;">メニューを読み込み中...</div>
@@ -89,7 +93,6 @@
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzQRAhDa8-BhxaB6IqsQ-hTmkAYLlu_x-5VK44U20hibIarUrgLSGz7wmZDgPgFsQKD6g/exec";
         
         fetch(GAS_URL).then(res => res.json()).then(data => {
-            // ▼ 管理画面で「ドリンク（プレミアム）」を選択したものだけを取得 ▼
             const drinks = data.menu.filter(i => i.timeMode === 'premium');
             const container = document.getElementById('menu-content');
             
