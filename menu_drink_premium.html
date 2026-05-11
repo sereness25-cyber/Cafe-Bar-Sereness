@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PREMIUM DRINK MENU | Sereness</title>
+    <title>単品メニュー | Sereness</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,7 +17,9 @@
         .header { text-align: center; border-bottom: 1px solid var(--accent-color); padding-bottom: 15px; margin-bottom: 25px; }
         .logo-text { font-size: 26px; letter-spacing: 0.15em; font-family: 'Playfair Display', serif; color: #111; }
         .normal-amp { font-family: "Noto Serif JP", serif; }
-        .mode-title { font-size: 16px; color: var(--accent-color); margin-top: 5px; letter-spacing: 0.2em; font-family: 'Playfair Display', serif; font-weight: bold;}
+        
+        /* タイトルを日本語向けに調整 */
+        .mode-title { font-size: 16px; color: var(--accent-color); margin-top: 5px; letter-spacing: 0.15em; font-family: "Noto Serif JP", serif; font-weight: bold;}
         
         .menu-grid { display: flex; flex-direction: column; gap: 40px; }
         .menu-col { width: 100%; box-sizing: border-box; }
@@ -68,14 +70,14 @@
 <body>
 
     <div class="print-btn-container no-print">
-        <button class="print-btn" onclick="autoScaleAndPrint()">🖨️ このプレミアムメニューを印刷する</button>
+        <button class="print-btn" onclick="autoScaleAndPrint()">🖨️ この単品メニューを印刷する</button>
     </div>
 
     <div class="menu-paper" id="paper-container">
         <div class="menu-inner-border" id="inner-border">
             <div class="header">
                 <div class="logo-text">Café <span class="normal-amp">&</span> Bar Sereness</div>
-                <div class="mode-title">PREMIUM DRINK MENU</div>
+                <div class="mode-title">単品メニュー</div>
             </div>
             
             <div class="menu-grid" id="menu-content">
@@ -112,7 +114,7 @@
             }
 
             if (col1Html === '' && col2Html === '') {
-                container.innerHTML = "<div style='text-align:center; width: 100%; color:#999; font-size:14px; padding:40px;'>現在プレミアムメニューは準備中です。</div>";
+                container.innerHTML = "<div style='text-align:center; width: 100%; color:#999; font-size:14px; padding:40px;'>現在単品メニューは準備中です。</div>";
             } else {
                 container.innerHTML = `
                     <div class="menu-col">${col1Html}</div>
@@ -137,7 +139,6 @@
             `).join('');
         }
 
-        // ▼ 横幅ぴったり・左右の余白が均等になる縮小処理 ▼
         function autoScaleAndPrint() {
             const paper = document.getElementById('paper-container');
             const innerBorder = document.getElementById('inner-border');
