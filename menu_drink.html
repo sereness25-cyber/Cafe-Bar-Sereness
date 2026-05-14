@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DRINK MENU | Sereness</title>
+    <title>飲み放題メニュー | Sereness</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,14 +17,13 @@
         .header { text-align: center; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 30px; }
         .logo-text { font-size: 26px; letter-spacing: 0.15em; font-family: 'Playfair Display', serif; color: #111; }
         .normal-amp { font-family: "Noto Serif JP", serif; }
-        .mode-title { font-size: 14px; color: #555; margin-top: 5px; letter-spacing: 0.2em; font-family: 'Playfair Display', serif; }
+        .mode-title { font-size: 16px; color: #555; margin-top: 5px; letter-spacing: 0.15em; font-family: "Noto Serif JP", serif; font-weight: bold; }
         
-        .menu-grid { display: flex; flex-direction: column; gap: 40px; }
-        .menu-col { width: 100%; box-sizing: border-box; }
-        @media (min-width: 600px) { 
-            .menu-grid { flex-direction: row; justify-content: space-between; }
-            .menu-col { width: 48%; }
-        }
+        /* ▼ Safariでフリーズしない安定したグリッドレイアウト（巻き戻し） ▼ */
+        .menu-grid { display: grid; grid-template-columns: 1fr; gap: 40px; }
+        @media (min-width: 600px) { .menu-grid { grid-template-columns: 1fr 1fr; } }
+        
+        .menu-col .menu-section:first-child { margin-top: 0 !important; }
 
         .genre-title { background: #333; color: #fff; text-align: center; padding: 8px; margin: 20px 0; font-family: 'Playfair Display', serif; letter-spacing: 0.2em; font-size: 1.2em; }
         .genre-title:first-child { margin-top: 0; }
@@ -42,7 +41,7 @@
         .print-btn { background: #333; color: white; border: none; padding: 12px 24px; font-size: 16px; border-radius: 4px; cursor: pointer; font-family: inherit; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
         .print-btn:hover { background: #111; }
 
-        /* ▼ 印刷時の設定 ▼ */
+        /* ▼ 印刷時の設定（絶対に2列に分ける） ▼ */
         @media print {
             @page { size: A4 portrait; margin: 10mm; }
             body { background-color: #fff; padding: 0; margin: 0; -webkit-print-color-adjust: exact; }
@@ -53,12 +52,9 @@
             .header { margin-bottom: 20px; padding-bottom: 10px; }
             .logo-text { font-size: 24px; }
             
-            /* 絶対に2列をキープするロック */
-            .menu-grid { display: flex !important; flex-direction: row !important; gap: 30px !important; justify-content: space-between !important; }
-            .menu-col { width: 48% !important; }
-
+            .menu-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
             .genre-title { margin: 15px 0; font-size: 1.1em; padding: 5px; }
-            .menu-section { margin-top: 15px !important; margin-bottom: 15px; }
+            .menu-section { margin-top: 15px !important; }
             .menu-section h2 { font-size: 16px; margin-bottom: 12px; padding-bottom: 3px; }
             .item { margin-bottom: 12px; }
             .name { font-size: 14px; }
@@ -77,11 +73,11 @@
         <div class="menu-inner-border" id="inner-border">
             <div class="header">
                 <div class="logo-text">Café <span class="normal-amp">&</span> Bar Sereness</div>
-                <div class="mode-title">STANDARD DRINK MENU</div>
+                <div class="mode-title">飲み放題メニュー</div>
             </div>
             
             <div class="menu-grid" id="menu-content">
-                <div style="text-align:center; width: 100%; color:#999;">メニューを読み込み中...</div>
+                <div style="text-align:center; grid-column: 1 / -1; color:#999;">メニューを読み込み中...</div>
             </div>
         </div>
     </div>
@@ -97,11 +93,13 @@
             
             const limited = drinks.filter(i => i.category === '期間限定');
 
+            // ▼ 左列のメニュー ▼
             let col1Html = renderSection('飲み放題', drinks.filter(i => i.category === '飲み放題')) + 
                            renderSection('飲み放題（アルコール）', drinks.filter(i => i.category === '飲み放題（アルコール）')) +
                            renderSection('アルコール', drinks.filter(i => i.category === 'アルコール')) +
                            renderSection('コーヒー', drinks.filter(i => i.category === 'コーヒー'));
                            
+            // ▼ 右列のメニュー（ノンアルコールが確実に来る） ▼
             let col2Html = renderSection('飲み放題（ノンアルコール）', drinks.filter(i => i.category === '飲み放題（ノンアルコール）' || i.category === '飲み放題（ソフトドリンク）')) +
                            renderSection('ノンアルコール', drinks.filter(i => i.category === 'ノンアルコール' || i.category === 'ソフトドリンク')) + 
                            renderSection('スムージー', drinks.filter(i => i.category === 'スムージー')) + 
@@ -114,15 +112,15 @@
             }
 
             if (col1Html === '' && col2Html === '') {
-                container.innerHTML = "<div style='text-align:center; width: 100%; color:#999;'>メニューが登録されていません。</div>";
+                container.innerHTML = "<div style='text-align:center; grid-column: 1 / -1; color:#999;'>メニューが登録されていません。</div>";
             } else {
                 container.innerHTML = `
-                    <div class="menu-col">${col1Html}</div>
-                    <div class="menu-col">${col2Html}</div>
+                    <div>${col1Html}</div>
+                    <div>${col2Html}</div>
                 `;
             }
         }).catch(err => {
-            document.getElementById('menu-content').innerHTML = "<p style='text-align:center; color:red; width: 100%;'>読み込みに失敗しました。</p>";
+            document.getElementById('menu-content').innerHTML = "<p style='text-align:center; color:red; grid-column: 1 / -1;'>読み込みに失敗しました。</p>";
         });
 
         function renderSection(title, items) {
@@ -139,7 +137,7 @@
             `).join('');
         }
 
-        // ▼ 横幅ぴったり・左右の余白が均等になる縮小処理 ▼
+        // ▼ 横幅ぴったり＆均等余白になる、完璧なA4リサイズ処理 ▼
         function autoScaleAndPrint() {
             const paper = document.getElementById('paper-container');
             const innerBorder = document.getElementById('inner-border');
@@ -147,7 +145,6 @@
             innerBorder.style.transform = 'none';
             innerBorder.style.width = '100%';
             innerBorder.style.boxSizing = 'border-box';
-            innerBorder.style.margin = '0'; // 左寄せ基準にする
             paper.style.height = 'auto';
             
             const targetHeight = 980; // A4縦の描画領域の目安
@@ -159,10 +156,10 @@
                 if (scaleRatio > 1.3) scaleRatio = 1.3; 
                 if (scaleRatio < 0.45) scaleRatio = 0.45;
                 
-                // 縮小・拡大に合わせて横幅を逆算して設定（これで用紙幅にジャストフィット）
+                // 縮小した分、横幅を逆算して広げることで用紙にジャストフィットさせる
                 innerBorder.style.width = `${100 / scaleRatio}%`;
                 
-                // 幅が変わると改行位置が変わり高さが変わる可能性があるため再計算
+                // 幅が広がると改行が減り、高さが変わるので再計算
                 currentHeight = innerBorder.offsetHeight;
                 scaleRatio = targetHeight / currentHeight;
                 
@@ -170,19 +167,22 @@
                 if (scaleRatio < 0.45) scaleRatio = 0.45;
                 
                 innerBorder.style.width = `${100 / scaleRatio}%`;
-                innerBorder.style.transform = `scale(${scaleRatio})`;
-                innerBorder.style.transformOrigin = 'top left'; // 左上基準にすることで左右のズレをなくす
                 
+                // 左上を基準に全体を縮小（これで横幅がぴったり100%になり余白が均等になる）
+                innerBorder.style.transform = `scale(${scaleRatio})`;
+                innerBorder.style.transformOrigin = 'top left';
+                
+                // 余計な白紙ページが出ないように高さを固定
                 paper.style.height = `${targetHeight}px`;
                 paper.style.overflow = 'hidden';
             }
             
             window.print();
             
+            // 印刷後は元の状態に戻す
             setTimeout(() => {
                 innerBorder.style.transform = 'none';
                 innerBorder.style.width = 'auto';
-                innerBorder.style.margin = '0';
                 innerBorder.style.boxSizing = '';
                 paper.style.height = 'auto';
                 paper.style.overflow = 'visible';
