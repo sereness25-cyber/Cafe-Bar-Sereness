@@ -123,10 +123,12 @@
             
             <label>ジャンル</label>
             <select id="timeMode">
-                <option value="drink">ドリンク（スタンダード）</option>
-                <option value="premium">ドリンク（プレミアム）</option>
+                <option value="drink">ドリンク（Bar PLANS）</option>
+                <option value="cafe">ドリンク（Cafe PLANS）</option>
+                <option value="premium">ドリンク（単品メニュー）</option>
                 <option value="food">フード</option>
                 <option value="sweets">スイーツ</option>
+                <option value="nightcafe">夜カフェ（日・月限定）</option>
             </select>
             
             <label>カテゴリ</label>
@@ -212,10 +214,12 @@
             <input type="text" id="searchMenu" placeholder="商品名で検索..." oninput="renderMenuList()">
             <select id="filterTime" onchange="renderMenuList()">
                 <option value="all">全ジャンル</option>
-                <option value="drink">ドリンク（スタンダード）</option>
-                <option value="premium">ドリンク（プレミアム）</option>
+                <option value="drink">ドリンク（Bar PLANS）</option>
+                <option value="cafe">ドリンク（Cafe PLANS）</option>
+                <option value="premium">ドリンク（単品）</option>
                 <option value="food">フード</option>
                 <option value="sweets">スイーツ</option>
+                <option value="nightcafe">夜カフェ（日・月限定）</option>
             </select>
             <select id="filterCat" onchange="renderMenuList()">
                 <option value="all">全カテゴリ</option>
@@ -310,7 +314,6 @@
             if(allData.menu) {
                 allData.menu.forEach((m, idx) => {
                     m._originalIndex = idx;
-                    // 旧データの読み替え
                     if(m.timeMode === 'day') m.timeMode = 'drink';
                     if(m.timeMode === 'night') m.timeMode = 'food';
                 });
@@ -449,11 +452,12 @@
         let html = '<div class="table-wrapper"><table class="admin-table"><thead><tr><th>ジャンル</th><th>カテゴリ</th><th>商品名</th><th>金額</th><th>操作</th></tr></thead><tbody>';
         filteredMenuList.forEach((m, i) => {
             let badge = '';
-            // ▼ プレミアム用のバッジ追加 ▼
-            if(m.timeMode === 'drink' || m.timeMode === 'day') badge = '<span class="badge-drink">ドリンク(通常)</span>';
-            else if(m.timeMode === 'premium') badge = '<span class="badge-drink" style="background:#8C7042;">プレミアム</span>';
-            else if(m.timeMode === 'food' || m.timeMode === 'night') badge = '<span class="badge-food">フード</span>';
+            if(m.timeMode === 'drink') badge = '<span class="badge-drink">Bar PLANS</span>';
+            else if(m.timeMode === 'cafe') badge = '<span class="badge-drink" style="background:#5ba68c;">Cafe PLANS</span>';
+            else if(m.timeMode === 'premium') badge = '<span class="badge-drink" style="background:#8C7042;">単品</span>';
+            else if(m.timeMode === 'food') badge = '<span class="badge-food">フード</span>';
             else if(m.timeMode === 'sweets') badge = '<span class="badge-sweets">スイーツ</span>';
+            else if(m.timeMode === 'nightcafe') badge = '<span class="badge-sweets" style="background:#7c5ba6;">夜カフェ</span>';
             else badge = '<span class="badge-drink">旧データ</span>';
 
             const isFirst = (i === 0); const isLast = (i === filteredMenuList.length - 1);

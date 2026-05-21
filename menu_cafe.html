@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BAR PLANS MENU | Sereness</title>
+    <title>CAFE PLANS MENU | Sereness</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,7 +19,6 @@
         .normal-amp { font-family: "Noto Serif JP", serif; }
         .mode-title { font-size: 14px; color: #555; margin-top: 5px; letter-spacing: 0.2em; font-family: 'Playfair Display', serif; font-weight: bold; }
         
-        /* ▼ フリーズしない、絶対に2列をキープする仕組み（inline-block方式） ▼ */
         .menu-columns { width: 100%; font-size: 0; text-align: left; }
         .menu-col { width: 48%; display: inline-block; vertical-align: top; font-size: 16px; }
         .menu-col:first-child { margin-right: 4%; }
@@ -70,7 +69,7 @@
         <div class="menu-inner-border" id="inner-border">
             <div class="header">
                 <div class="logo-text">Café <span class="normal-amp">&</span> Bar Sereness</div>
-                <div class="mode-title">BAR PLANS DRINK MENU</div>
+                <div class="mode-title">CAFE PLANS DRINK MENU</div>
             </div>
             
             <div id="menu-content">
@@ -85,19 +84,17 @@
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzQRAhDa8-BhxaB6IqsQ-hTmkAYLlu_x-5VK44U20hibIarUrgLSGz7wmZDgPgFsQKD6g/exec";
         
         fetch(GAS_URL).then(res => res.json()).then(data => {
-            const drinks = data.menu.filter(i => i.timeMode === 'drink' || i.timeMode === 'day');
+            // ▼ 管理画面で「ドリンク（Cafe PLANS）」に設定されたものを取得 ▼
+            const drinks = data.menu.filter(i => i.timeMode === 'cafe');
             const container = document.getElementById('menu-content');
             
             const limited = drinks.filter(i => i.category === '期間限定');
 
-            // ▼ 指定通り、左と右にガッチリ固定 ▼
-            let col1Html = renderSection('飲み放題', drinks.filter(i => i.category === '飲み放題')) + 
-                           renderSection('飲み放題（アルコール）', drinks.filter(i => i.category === '飲み放題（アルコール）')) +
-                           renderSection('アルコール', drinks.filter(i => i.category === 'アルコール')) +
-                           renderSection('コーヒー', drinks.filter(i => i.category === 'コーヒー'));
+            // ▼ Cafeプランなのでアルコール類を除外し、左右に振り分け ▼
+            let col1Html = renderSection('コーヒー', drinks.filter(i => i.category === 'コーヒー')) +
+                           renderSection('飲み放題（ノンアルコール）', drinks.filter(i => i.category === '飲み放題（ノンアルコール）' || i.category === '飲み放題（ソフトドリンク）' || i.category === '飲み放題'));
                            
-            let col2Html = renderSection('飲み放題（ノンアルコール）', drinks.filter(i => i.category === '飲み放題（ノンアルコール）' || i.category === '飲み放題（ソフトドリンク）')) +
-                           renderSection('ノンアルコール', drinks.filter(i => i.category === 'ノンアルコール' || i.category === 'ソフトドリンク')) + 
+            let col2Html = renderSection('ノンアルコール', drinks.filter(i => i.category === 'ノンアルコール' || i.category === 'ソフトドリンク')) + 
                            renderSection('スムージー', drinks.filter(i => i.category === 'スムージー')) + 
                            renderSection('スペシャルドリンク', drinks.filter(i => i.category === 'スペシャルドリンク'));
 
@@ -108,7 +105,7 @@
             }
 
             if (col1Html === '' && col2Html === '') {
-                container.innerHTML = "<div style='text-align:center; width: 100%; color:#999; font-size:16px;'>メニューが登録されていません。</div>";
+                container.innerHTML = "<div style='text-align:center; width: 100%; color:#999; font-size:16px; padding:40px;'>現在Cafe PLANSメニューは準備中です。<br>（管理画面のジャンルから「ドリンク（Cafe PLANS）」を選んで追加してください）</div>";
             } else {
                 container.innerHTML = `
                     <div class="menu-columns">
@@ -135,7 +132,6 @@
             `).join('');
         }
 
-        // ▼ 横幅ぴったり・A4ぴったり・フリーズしない完璧なプログラム ▼
         function autoScaleAndPrint() {
             const paper = document.getElementById('paper-container');
             const innerBorder = document.getElementById('inner-border');
