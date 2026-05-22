@@ -82,6 +82,16 @@
     <a href="index.html" class="back-link no-print">← トップページへ戻る</a>
 
     <script>
+    // ▼ トップページからの遷移時に印刷ボタンを非表示にする ▼
+    document.addEventListener("DOMContentLoaded", () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('hidePrint') === 'true') {
+            const printBtn = document.querySelector('.print-btn-container');
+            if (printBtn) {
+                printBtn.style.display = 'none';
+            }
+        }
+    });
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzQRAhDa8-BhxaB6IqsQ-hTmkAYLlu_x-5VK44U20hibIarUrgLSGz7wmZDgPgFsQKD6g/exec";
         
         fetch(GAS_URL).then(res => res.json()).then(data => {

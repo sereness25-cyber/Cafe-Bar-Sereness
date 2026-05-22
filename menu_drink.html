@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BAR PLANS MENU | Sereness</title>
+    <title>飲み放題メニュー | Sereness</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,12 +17,15 @@
         .header { text-align: center; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 30px; }
         .logo-text { font-size: 26px; letter-spacing: 0.15em; font-family: 'Playfair Display', serif; color: #111; }
         .normal-amp { font-family: "Noto Serif JP", serif; }
-        .mode-title { font-size: 14px; color: #555; margin-top: 5px; letter-spacing: 0.2em; font-family: 'Playfair Display', serif; font-weight: bold; }
+        .mode-title { font-size: 16px; color: #555; margin-top: 5px; letter-spacing: 0.15em; font-family: "Noto Serif JP", serif; font-weight: bold; }
         
-        /* ▼ フリーズしない、絶対に2列をキープする仕組み（inline-block方式） ▼ */
+        /* ▼ フリーズしない、スマホ1列・PC＆印刷2列の仕組み（inline-block方式） ▼ */
         .menu-columns { width: 100%; font-size: 0; text-align: left; }
-        .menu-col { width: 48%; display: inline-block; vertical-align: top; font-size: 16px; }
-        .menu-col:first-child { margin-right: 4%; }
+        .menu-col { width: 100%; display: inline-block; vertical-align: top; font-size: 16px; box-sizing: border-box;}
+        @media (min-width: 600px) {
+            .menu-col { width: 48%; }
+            .menu-col:first-child { margin-right: 4%; }
+        }
 
         .genre-title { background: #333; color: #fff; text-align: center; padding: 8px; margin: 20px 0; font-family: 'Playfair Display', serif; letter-spacing: 0.2em; font-size: 1.2em; }
         .genre-title:first-child { margin-top: 0; }
@@ -40,6 +43,7 @@
         .print-btn { background: #333; color: white; border: none; padding: 12px 24px; font-size: 16px; border-radius: 4px; cursor: pointer; font-family: inherit; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
         .print-btn:hover { background: #111; }
 
+        /* ▼ 印刷時の設定（絶対に2列に分ける） ▼ */
         @media print {
             @page { size: A4 portrait; margin: 10mm; }
             body { background-color: #fff; padding: 0; margin: 0; -webkit-print-color-adjust: exact; }
@@ -50,6 +54,9 @@
             .header { margin-bottom: 20px; padding-bottom: 10px; }
             .logo-text { font-size: 24px; }
             
+            .menu-col { width: 48% !important; }
+            .menu-col:first-child { margin-right: 4% !important; }
+
             .genre-title { margin: 15px 0; font-size: 1.1em; padding: 5px; }
             .menu-section { margin-top: 15px !important; margin-bottom: 15px; }
             .menu-section h2 { font-size: 16px; margin-bottom: 12px; padding-bottom: 3px; }
@@ -82,6 +89,17 @@
     <a href="index.html" class="back-link no-print">← トップページへ戻る</a>
 
     <script>
+        // ▼ トップページからの遷移時に印刷ボタンを非表示にする ▼
+        document.addEventListener("DOMContentLoaded", () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('hidePrint') === 'true') {
+                const printBtn = document.querySelector('.print-btn-container');
+                if (printBtn) {
+                    printBtn.style.display = 'none';
+                }
+            }
+        });
+
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzQRAhDa8-BhxaB6IqsQ-hTmkAYLlu_x-5VK44U20hibIarUrgLSGz7wmZDgPgFsQKD6g/exec";
         
         fetch(GAS_URL).then(res => res.json()).then(data => {
