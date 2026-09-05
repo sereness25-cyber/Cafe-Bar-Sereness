@@ -28,8 +28,36 @@
         header { background-color: var(--text-main); padding: 20px; text-align: center; }
         .header-title { color: #fff; font-size: 1.4em; letter-spacing: 0.1em; font-family: 'Playfair Display', serif; font-weight: 500; }
         
-        .hero { position: relative; background-color: var(--hero-bg); background-image: url('hero_background.jpg'); background-size: cover; background-position: center; color: white; text-align: center; padding: 80px 20px; z-index: 1; }
-        .hero::before { content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.6); z-index: -1; }
+        /* ヒーローセクション（落ち着いた夜カフェ風） */
+        .hero { 
+            position: relative; 
+            /* 深いコーヒーブラウンから黒への柔らかいグラデーション＋クロス質感 */
+            background-color: #1c1815;
+            background-image: 
+                radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 0),
+                radial-gradient(circle at center, #2e241f 0%, #1c1815 70%, #120f0e 100%);
+            background-size: 12px 12px, 100% 100%;
+            color: white; 
+            text-align: center; 
+            padding: 85px 20px; 
+            z-index: 1; 
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        /* 落ち着いたステッチ風（破線）のフレーム */
+        .hero::before { 
+            content: ""; 
+            position: absolute; 
+            top: 15px; 
+            left: 15px; 
+            right: 15px; 
+            bottom: 15px; 
+            border: 1px dashed rgba(166, 139, 91, 0.35); /* 破線にして温かみのある印象に */
+            border-radius: 4px;
+            z-index: -1; 
+            pointer-events: none;
+        }
         .hero-logo { width: 100%; max-width: 500px; height: auto; display: inline-block; margin-bottom: 20px; opacity: 1; }
         .hero p { font-size: 1.1em; font-weight: 300; margin: 0; letter-spacing: 0.1em; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         
@@ -307,226 +335,222 @@
         </div>
     </div>
 
-    <script>
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbzQRAhDa8-BhxaB6IqsQ-hTmkAYLlu_x-5VK44U20hibIarUrgLSGz7wmZDgPgFsQKD6g/exec";
+   <script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzQRAhDa8-BhxaB6IqsQ-hTmkAYLlu_x-5VK44U20hibIarUrgLSGz7wmZDgPgFsQKD6g/exec";
+    const CACHE_KEY = "sereness_data_cache";
 
-        let calData = [];
-        let currDate = new Date();
-        let currYear = currDate.getFullYear();
-        let currMonth = currDate.getMonth(); 
+    let calData = [];
+    let currDate = new Date();
+    let currYear = currDate.getFullYear();
+    let currMonth = currDate.getMonth(); 
 
-        let allNews = [];
-        let allBlog = [];
+    let allNews = [];
+    let allBlog = [];
 
-        function autoLink(text) {
-            if (!text) return '';
-            let safeText = text.replace(/[&<>"']/g, function(match) {
-                return {
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    '"': '&quot;',
-                    "'": '&#39;'
-                }[match];
-            });
-            const urlRegex = /(https?:\/\/[^\s]+)/g;
-            return safeText.replace(urlRegex, function(url) {
-                return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #A68B5B; text-decoration: underline; word-break: break-all;">${url}</a>`;
-            });
-        }
+    function autoLink(text) {
+        if (!text) return '';
+        let safeText = text.replace(/[&<>"']/g, function(match) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[match];
+        });
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        return safeText.replace(urlRegex, function(url) {
+            return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #A68B5B; text-decoration: underline; word-break: break-all;">${url}</a>`;
+        });
+    }
 
-        function renderPageData(data) {
-            if(data.news) {
-                allNews = data.news.sort((a, b) => (b.date > a.date) ? 1 : -1);
-            }
-            if(data.blog) {
-                allBlog = data.blog.sort((a, b) => (b.date > a.date) ? 1 : -1);
-            }
+    // 1. カレンダーを高速に描画する関数（文字列結合で一括挿入）
+    function renderCalendar(year, month) {
+        document.getElementById('calendarMonth').textContent = year + "." + String(month + 1).padStart(2, '0');
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        
+        let html = '';
+        let date = 1;
 
-            renderNewsList();
-            renderBlogList();
-
-            if(data.calendar) {
-                calData = data.calendar;
-                renderCalendar(currYear, currMonth);
+        // イベントデータを日付キーのマップに変換して検索をO(1)に高速化
+        const eventMap = {};
+        if (calData && calData.length > 0) {
+            for (let i = 0; i < calData.length; i++) {
+                const ev = calData[i];
+                if (!eventMap[ev.date]) eventMap[ev.date] = [];
+                eventMap[ev.date].push(ev);
             }
         }
 
-        // ▼ トップページは必ず3件で固定し、別ページへのリンクを表示 ▼
-        function renderNewsList() {
-            const newsList = document.getElementById('top-news-list');
-            const btnContainer = document.getElementById('news-more-container');
-            
-            if(!newsList) return;
-            newsList.innerHTML = '';
-            
-            if(allNews.length === 0) {
-                newsList.innerHTML = '<li><span style="color:#666; font-size:0.9em;">現在お知らせはありません。</span></li>';
-                btnContainer.style.display = 'none';
-                return;
-            }
+        for (let i = 0; i < 6; i++) {
+            let rowHtml = '';
+            let hasData = false;
 
-            const itemsToShow = allNews.slice(0, 3);
-            
-            itemsToShow.forEach(article => {
-                const li = document.createElement('li');
-                li.innerHTML = `<span class="news-date">${article.date}</span><a href="news.html?id=${article.id}" class="news-title">${article.title}</a>`;
-                newsList.appendChild(li);
-            });
+            for (let j = 0; j < 7; j++) {
+                if ((i === 0 && j < firstDay) || date > daysInMonth) {
+                    rowHtml += '<td></td>';
+                } else {
+                    hasData = true;
+                    const fullDate = year + "-" + String(month + 1).padStart(2, '0') + "-" + String(date).padStart(2, '0');
+                    const dateColor = (j === 0) ? "#d9534f" : (j === 6) ? "#5b7da6" : "inherit";
+                    let cellContent = `<span class="cal-date" style="color: ${dateColor}">${date}</span>`;
+                    
+                    const todaysEvents = eventMap[fullDate] || [];
+                    let cellClass = '';
+                    let onClickAttr = '';
 
-            btnContainer.style.display = allNews.length > 3 ? 'block' : 'none';
-        }
-
-        function renderBlogList() {
-            const blogList = document.getElementById('top-blog-list');
-            const btnContainer = document.getElementById('blog-more-container');
-            
-            if(!blogList) return;
-            blogList.innerHTML = '';
-            
-            if(allBlog.length === 0) {
-                blogList.innerHTML = '<p style="color:#666; font-size:0.9em;">現在投稿はありません。</p>';
-                btnContainer.style.display = 'none';
-                return;
-            }
-
-            const itemsToShow = allBlog.slice(0, 3);
-            
-            itemsToShow.forEach(article => {
-                const div = document.createElement('div');
-                div.className = 'blog-item';
-                const thumb = article.image ? `<img src="${article.image}" class="blog-thumb">` : ``;
-                div.innerHTML = `${thumb}<div class="blog-info"><span class="news-date">${article.date}</span><a href="news.html?id=${article.id}" class="news-title">${article.title}</a></div>`;
-                blogList.appendChild(div);
-            });
-
-            btnContainer.style.display = allBlog.length > 3 ? 'block' : 'none';
-        }
-
-        const CACHE_KEY = "sereness_data_cache";
-        const cachedData = localStorage.getItem(CACHE_KEY);
-
-        if (cachedData) {
-            try {
-                renderPageData(JSON.parse(cachedData));
-            } catch(e) {}
-        }
-
-        fetch(GAS_URL)
-            .then(res => res.json())
-            .then(data => {
-                localStorage.setItem(CACHE_KEY, JSON.stringify(data)); 
-                renderPageData(data); 
-            })
-            .catch(err => {
-                console.log(err);
-                if (!cachedData) {
-                    const newsList = document.getElementById('top-news-list');
-                    if (newsList) newsList.innerHTML = '<li>データの取得に失敗しました。</li>';
-                    document.getElementById('calendarBody').innerHTML = '<tr><td colspan="7">カレンダーの読み込みに失敗しました</td></tr>';
-                }
-            });
-
-        function renderCalendar(year, month) {
-            document.getElementById('calendarMonth').textContent = year + "." + String(month + 1).padStart(2, '0');
-            const firstDay = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            
-            let tbody = document.getElementById('calendarBody');
-            tbody.innerHTML = '';
-            
-            let date = 1;
-            for (let i = 0; i < 6; i++) {
-                let row = document.createElement('tr');
-                let hasData = false;
-                for (let j = 0; j < 7; j++) {
-                    let cell = document.createElement('td');
-                    if (i === 0 && j < firstDay) {
-                        cell.innerHTML = "";
-                    } else if (date > daysInMonth) {
-                        break;
+                    if (todaysEvents.length === 0) {
+                        cellClass = 'slash-cell';
                     } else {
-                        hasData = true;
-                        let fullDate = year + "-" + String(month + 1).padStart(2, '0') + "-" + String(date).padStart(2, '0');
-                        let dateColor = (j === 0) ? "#d9534f" : (j === 6) ? "#5b7da6" : "inherit";
-                        let cellHtml = `<span class="cal-date" style="color: ${dateColor}">${date}</span>`;
-                        
-                        let todaysEvents = calData.filter(e => e.date === fullDate);
-                        
-                        if (todaysEvents.length === 0) {
-                            cell.classList.add('slash-cell');
-                        } else {
-                            todaysEvents.forEach(ev => {
-                                if (ev.type !== "通常営業（表示なし）") {
-                                    let badgeClass = "badge-event";
-                                    if(ev.type === "休業日") badgeClass = "badge-closed";
-                                    if(ev.type === "貸切") badgeClass = "badge-private";
-                                    if(ev.type === "短縮営業") badgeClass = "badge-short";
-                                    if(ev.type === "通常営業") badgeClass = "badge-normal";
-                                    
-                                    cellHtml += `<div class="cal-badge ${badgeClass}">${ev.type}</div>`;
-                                }
-                            });
-                            
-                            cell.classList.add('clickable-cell');
-                            cell.setAttribute('onclick', `showModal('${fullDate}')`);
+                        for (let k = 0; k < todaysEvents.length; k++) {
+                            const ev = todaysEvents[k];
+                            if (ev.type !== "通常営業（表示なし）") {
+                                let badgeClass = "badge-event";
+                                if(ev.type === "休業日") badgeClass = "badge-closed";
+                                else if(ev.type === "貸切") badgeClass = "badge-private";
+                                else if(ev.type === "短縮営業") badgeClass = "badge-short";
+                                else if(ev.type === "通常営業") badgeClass = "badge-normal";
+                                
+                                cellContent += `<div class="cal-badge ${badgeClass}">${ev.type}</div>`;
+                            }
                         }
-                        
-                        cell.innerHTML = cellHtml;
-                        date++;
+                        cellClass = 'clickable-cell';
+                        onClickAttr = `onclick="showModal('${fullDate}')"`;
                     }
-                    row.appendChild(cell);
+
+                    rowHtml += `<td class="${cellClass}" ${onClickAttr}>${cellContent}</td>`;
+                    date++;
                 }
-                if (hasData) tbody.appendChild(row);
+            }
+
+            if (hasData) {
+                html += `<tr>${rowHtml}</tr>`;
             }
         }
 
-        function changeMonth(offset) {
-            currMonth += offset;
-            if(currMonth < 0) { currMonth = 11; currYear--; }
-            if(currMonth > 11) { currMonth = 0; currYear++; }
+        document.getElementById('calendarBody').innerHTML = html;
+    }
+
+    function renderPageData(data) {
+        if(data.news) allNews = data.news.sort((a, b) => (b.date > a.date) ? 1 : -1);
+        if(data.blog) allBlog = data.blog.sort((a, b) => (b.date > a.date) ? 1 : -1);
+
+        renderNewsList();
+        renderBlogList();
+
+        if(data.calendar) {
+            calData = data.calendar;
             renderCalendar(currYear, currMonth);
         }
+    }
 
-        function showModal(dateStr) {
-            document.getElementById('modalDate').textContent = dateStr.replace(/-/g, '.');
-            const list = document.getElementById('modalEventList');
-            list.innerHTML = '';
-
-            const events = calData.filter(e => e.date === dateStr);
-            
-            if (events.length > 0) {
-                events.forEach(ev => {
-                    let displayType = ev.type === "通常営業（表示なし）" ? "通常営業" : ev.type;
-                    
-                    let badgeClass = "badge-event";
-                    if(ev.type === "休業日") badgeClass = "badge-closed";
-                    if(ev.type === "貸切") badgeClass = "badge-private";
-                    if(ev.type === "短縮営業") badgeClass = "badge-short";
-                    if(ev.type.includes("通常営業")) badgeClass = "badge-normal";
-                    
-                    let noteHtml = ev.note ? autoLink(ev.note) : '詳細はありません';
-                    
-                    list.innerHTML += `
-                        <li class="modal-event-item">
-                            <span class="modal-event-type ${badgeClass}">${displayType}</span>
-                            <div style="font-size: 0.95em; color: #333; margin-top: 5px;">${noteHtml}</div>
-                        </li>`;
-                });
-            }
-
-            list.innerHTML += `
-                <div style="text-align: center; margin-top: 25px;">
-                    <a href="reserve.html?date=${dateStr}" style="display: block; background: #A68B5B; color: white; padding: 12px; border-radius: 4px; text-decoration: none; font-weight: bold; letter-spacing: 0.1em; transition: 0.3s;">この日で予約する</a>
-                </div>
-            `;
-            
-            document.getElementById('calModal').style.display = 'flex';
-        }
+    function renderNewsList() {
+        const newsList = document.getElementById('top-news-list');
+        const btnContainer = document.getElementById('news-more-container');
+        if(!newsList) return;
         
-        function closeModal() {
-            document.getElementById('calModal').style.display = 'none';
+        if(allNews.length === 0) {
+            newsList.innerHTML = '<li><span style="color:#666; font-size:0.9em;">現在お知らせはありません。</span></li>';
+            if(btnContainer) btnContainer.style.display = 'none';
+            return;
         }
-    </script>
+
+        const itemsToShow = allNews.slice(0, 3);
+        newsList.innerHTML = itemsToShow.map(article => 
+            `<li><span class="news-date">${article.date}</span><a href="news.html?id=${article.id}" class="news-title">${article.title}</a></li>`
+        ).join('');
+
+        if(btnContainer) btnContainer.style.display = allNews.length > 3 ? 'block' : 'none';
+    }
+
+    function renderBlogList() {
+        const blogList = document.getElementById('top-blog-list');
+        const btnContainer = document.getElementById('blog-more-container');
+        if(!blogList) return;
+        
+        if(allBlog.length === 0) {
+            blogList.innerHTML = '<p style="color:#666; font-size:0.9em;">現在投稿はありません。</p>';
+            if(btnContainer) btnContainer.style.display = 'none';
+            return;
+        }
+
+        const itemsToShow = allBlog.slice(0, 3);
+        blogList.innerHTML = itemsToShow.map(article => {
+            const thumb = article.image ? `<img src="${article.image}" class="blog-thumb">` : ``;
+            return `<div class="blog-item">${thumb}<div class="blog-info"><span class="news-date">${article.date}</span><a href="news.html?id=${article.id}" class="news-title">${article.title}</a></div></div>`;
+        }).join('');
+
+        if(btnContainer) btnContainer.style.display = allBlog.length > 3 ? 'block' : 'none';
+    }
+
+    // 2. 即時実行（キャッシュがあれば最速で描画、無ければ空枠を先行描画）
+    const cachedData = localStorage.getItem(CACHE_KEY);
+    if (cachedData) {
+        try {
+            renderPageData(JSON.parse(cachedData));
+        } catch(e) {
+            renderCalendar(currYear, currMonth);
+        }
+    } else {
+        renderCalendar(currYear, currMonth);
+    }
+
+    // 3. バックグラウンドで最新データ取得＆裏で更新
+    fetch(GAS_URL)
+        .then(res => res.json())
+        .then(data => {
+            localStorage.setItem(CACHE_KEY, JSON.stringify(data)); 
+            renderPageData(data); 
+        })
+        .catch(err => {
+            console.log(err);
+            if (!cachedData && calData.length === 0) {
+                const newsList = document.getElementById('top-news-list');
+                if (newsList) newsList.innerHTML = '<li>データの取得に失敗しました。</li>';
+            }
+        });
+
+    function changeMonth(offset) {
+        currMonth += offset;
+        if(currMonth < 0) { currMonth = 11; currYear--; }
+        if(currMonth > 11) { currMonth = 0; currYear++; }
+        renderCalendar(currYear, currMonth);
+    }
+
+    function showModal(dateStr) {
+        document.getElementById('modalDate').textContent = dateStr.replace(/-/g, '.');
+        const list = document.getElementById('modalEventList');
+        
+        const events = calData.filter(e => e.date === dateStr);
+        let listHtml = '';
+        
+        if (events.length > 0) {
+            events.forEach(ev => {
+                let displayType = ev.type === "通常営業（表示なし）" ? "通常営業" : ev.type;
+                let badgeClass = "badge-event";
+                if(ev.type === "休業日") badgeClass = "badge-closed";
+                else if(ev.type === "貸切") badgeClass = "badge-private";
+                else if(ev.type === "短縮営業") badgeClass = "badge-short";
+                else if(ev.type.includes("通常営業")) badgeClass = "badge-normal";
+                
+                let noteHtml = ev.note ? autoLink(ev.note) : '詳細はありません';
+                
+                listHtml += `
+                    <li class="modal-event-item">
+                        <span class="modal-event-type ${badgeClass}">${displayType}</span>
+                        <div style="font-size: 0.95em; color: #333; margin-top: 5px;">${noteHtml}</div>
+                    </li>`;
+            });
+        }
+
+        listHtml += `
+            <div style="text-align: center; margin-top: 25px;">
+                <a href="reserve.html?date=${dateStr}" style="display: block; background: #A68B5B; color: white; padding: 12px; border-radius: 4px; text-decoration: none; font-weight: bold; letter-spacing: 0.1em; transition: 0.3s;">この日で予約する</a>
+            </div>
+        `;
+        
+        list.innerHTML = listHtml;
+        document.getElementById('calModal').style.display = 'flex';
+    }
+    
+    function closeModal() {
+        document.getElementById('calModal').style.display = 'none';
+    }
+</script>
 </body>
 </html>
