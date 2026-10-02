@@ -181,6 +181,89 @@
             .calendar-table td { height: 50px; padding: 5px 1px; }
             .cal-badge { font-size: 0.6em; padding: 2px; }
         }
+
+        /* ===== Love Check（恋愛診断） ===== */
+        [hidden] { display: none !important; }
+        .lv-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+        .lv-lead { font-size: 0.9em; color: #666; margin: 0 0 22px; }
+        .lv-box { text-align: left; }
+        .lv-btn { font: inherit; font-weight: bold; letter-spacing: 0.1em; padding: 14px 34px; border: 1px solid var(--accent-color); border-radius: 2px; background: var(--accent-color); color: #fff; cursor: pointer; transition: 0.3s; min-width: 200px; }
+        .lv-btn:hover { opacity: 0.85; }
+        .lv-btn.sub { background: #fff; color: var(--accent-color); }
+        .lv-btn:focus-visible { outline: 3px solid #333; outline-offset: 2px; }
+        .lv-actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 26px; }
+        .lv-msg { text-align: center; color: #c9302c; font-size: 0.88em; min-height: 1.4em; margin: 14px 0 0; }
+        .lv-h { font-size: 1.15em; text-align: left; color: var(--text-main); margin: 0 0 6px; outline: none; font-weight: bold; }
+        .lv-sub { font-size: 0.85em; color: #666; margin: 0 0 18px; }
+        .lv-info { background: var(--section-bg); border-left: 4px solid var(--accent-color); padding: 14px 16px; font-size: 0.86em; margin: 0 0 22px; }
+        .lv-info ul { margin: 6px 0 0; padding-left: 1.2em; }
+
+        .lv-progress { height: 6px; background: #eee; border-radius: 3px; overflow: hidden; margin: 0 0 6px; }
+        .lv-progress i { display: block; height: 100%; background: var(--accent-color); transition: width 0.3s; }
+        .lv-step { font-size: 0.78em; color: #888; margin: 0 0 18px; }
+
+        .lv-q { border: none; border-top: 1px dashed #ddd; margin: 0; padding: 18px 0 14px; min-width: 0; }
+        .lv-q legend { padding: 0; font-size: 0.98em; line-height: 1.7; margin-bottom: 10px; float: left; width: 100%; }
+        .lv-q legend + * { clear: both; }
+        .lv-qn { display: inline-block; min-width: 1.8em; color: var(--accent-color); font-weight: bold; font-family: 'Playfair Display', serif; }
+        .lv-q.lv-missing { background: #fff5f4; box-shadow: -4px 0 0 #c9302c; padding-left: 10px; }
+        .lv-scale { display: flex; justify-content: space-between; align-items: center; max-width: 360px; margin: 0 auto; }
+        .lv-opt { position: relative; display: inline-flex; width: 52px; height: 44px; align-items: center; justify-content: center; cursor: pointer; }
+        .lv-opt input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+        .lv-dot { display: block; border-radius: 50%; border: 2px solid var(--accent-color); background: #fff; transition: 0.15s; }
+        .lv-opt:nth-child(1) .lv-dot, .lv-opt:nth-child(5) .lv-dot { width: 34px; height: 34px; }
+        .lv-opt:nth-child(2) .lv-dot, .lv-opt:nth-child(4) .lv-dot { width: 28px; height: 28px; }
+        .lv-opt:nth-child(3) .lv-dot { width: 22px; height: 22px; }
+        .lv-opt input:checked + .lv-dot { background: var(--accent-color); box-shadow: inset 0 0 0 4px #fff; }
+        .lv-opt input:focus-visible + .lv-dot { outline: 3px solid #333; outline-offset: 2px; }
+        .lv-ends { display: flex; justify-content: space-between; max-width: 360px; margin: 2px auto 0; font-size: 0.72em; color: #888; }
+
+        .lv-card { position: relative; display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border: 1px solid #ddd; border-radius: 4px; background: #fff; margin: 8px 0; cursor: pointer; text-align: left; font-size: 0.94em; line-height: 1.7; }
+        .lv-card input { position: absolute; opacity: 0; width: 100%; height: 100%; left: 0; top: 0; margin: 0; cursor: pointer; }
+        .lv-mark { flex: none; width: 20px; height: 20px; border: 2px solid var(--accent-color); border-radius: 50%; margin-top: 3px; background: #fff; }
+        .lv-card input:checked ~ .lv-mark { background: var(--accent-color); box-shadow: inset 0 0 0 3px #fff; }
+        .lv-card input:focus-visible ~ .lv-mark { outline: 3px solid #333; outline-offset: 2px; }
+        .lv-card:has(input:checked) { border-color: var(--accent-color); background: #fcfaf6; }
+
+        .lv-res { margin: 0 0 18px; padding: 24px 20px; background: var(--section-bg); border: 1px solid #E5DFD0; animation: lvFade 0.5s ease; }
+        .lv-res h3 { text-align: left; font-size: 1.05em; color: var(--accent-color); margin: 0 0 12px; padding-bottom: 6px; border-bottom: 1px solid #d8d1bf; }
+        .lv-hero { text-align: center; background: #fff; border: 1px solid var(--accent-color); }
+        .lv-lead2 { font-size: 0.82em; color: #888; margin: 0; }
+        .lv-type { font-size: 1.9em; color: var(--accent-color); margin: 2px 0 0; outline: none; font-weight: normal; text-align: center; }
+        .lv-type-sub { font-weight: bold; margin: 0 0 14px; }
+        .lv-hero p.lv-p { text-align: left; margin: 0 0 10px; }
+        .lv-p { margin: 0 0 10px; font-size: 0.94em; }
+        .lv-note { font-size: 0.82em; color: #777; margin: 8px 0 0; }
+        .lv-meter { margin: 0 0 16px; }
+        .lv-meter-top { display: flex; justify-content: space-between; font-size: 0.88em; margin-bottom: 4px; }
+        .lv-meter-desc { font-size: 0.78em; color: #777; margin: 0 0 6px; }
+        .lv-meter-bar { position: relative; height: 12px; background: #e8e3d6; border-radius: 6px; overflow: hidden; }
+        .lv-meter-bar i { display: block; height: 100%; background: var(--accent-color); border-radius: 6px; }
+        .lv-meter-bar b { position: absolute; left: 50%; top: -2px; width: 2px; height: 16px; background: #555; opacity: 0.55; }
+        .lv-meter-ends { display: flex; justify-content: space-between; font-size: 0.7em; color: #888; margin-top: 2px; }
+        .lv-two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .lv-two .lv-res { margin: 0; }
+        .lv-list { margin: 0; padding-left: 1.2em; font-size: 0.92em; }
+        .lv-list li { margin-bottom: 6px; }
+        .lv-lang-row { display: grid; grid-template-columns: 11em 1fr 2em; gap: 8px; align-items: center; font-size: 0.86em; margin: 6px 0; }
+        .lv-lang-row .lv-meter-bar { height: 10px; }
+        .lv-lang-row.top { font-weight: bold; }
+        .lv-lang-row span:last-child { text-align: right; color: #888; }
+        .lv-lang-tip { background: #fff; border: 1px solid #E5DFD0; padding: 12px 14px; margin-top: 12px; font-size: 0.9em; }
+        .lv-lang-tip b { color: var(--accent-color); }
+        .lv-partner { display: grid; grid-template-columns: 8.5em 1fr; gap: 4px 12px; padding: 10px 0; border-top: 1px dashed #d8d1bf; font-size: 0.9em; margin: 0; }
+        .lv-partner dt { font-weight: bold; color: var(--accent-color); }
+        .lv-partner dd { margin: 0; }
+        @keyframes lvFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+        @media (max-width: 767px) {
+            .lv-two { grid-template-columns: 1fr; }
+            .lv-res { padding: 20px 14px; }
+            .lv-lang-row { grid-template-columns: 8.5em 1fr 1.6em; font-size: 0.8em; }
+            .lv-partner { grid-template-columns: 1fr; }
+            .lv-type { font-size: 1.6em; }
+        }
+        @media (prefers-reduced-motion: reduce) { .lv-res { animation: none; } .lv-progress i, .lv-dot, .lv-btn { transition: none; } }
     </style>
 </head>
 <body>
@@ -276,6 +359,344 @@
                 <a href="menu_food.html?hidePrint=true" class="btn-menu-link">フード＆<br>スイーツ</a>
             </div>
         </section>
+
+        <section class="system section-wrapper love-section" id="love">
+            <h2 class="elegant-font">Love Check</h2>
+            <p class="lv-lead">愛着スタイルと愛情表現から読み解く、恋愛傾向の診断（全24問・約3分）</p>
+            <div id="lvApp" class="lv-box"></div>
+        </section>
+
+        <script>
+        /* Love Check：愛着スタイル（不安・回避の2軸）＋愛情表現（5タイプ）＋いまの状況別アドバイス。
+           回答は端末の中だけで処理され、送信も保存もされません。他のスクリプトと干渉しないよう、すべてこの中で完結。 */
+        (function () {
+            var app = document.getElementById("lvApp");
+            if (!app) return;
+
+            /* ================= 設問データ ================= */
+            var SITUATIONS = [
+                { id: "crush", label: "気になる人がいる・アプローチ中" },
+                { id: "dating", label: "交際中・パートナーがいる" },
+                { id: "seeking", label: "出会いを探している（恋人・結婚）" },
+                { id: "breakup", label: "別れた直後・復縁を考えている" }
+            ];
+            var SIT_LABEL = { crush: "気になる人がいる・アプローチ中", dating: "交際中・パートナーがいる", seeking: "出会いを探している", breakup: "別れた直後・復縁を考えている" };
+
+            var LIKERT_LABELS = ["まったくあてはまらない", "あまりあてはまらない", "どちらともいえない", "ややあてはまる", "とてもあてはまる"];
+            // ax: A=不安傾向 / V=回避傾向、rev: 逆転項目（得点を 6 から引く）
+            var LIKERT = [
+                { id: "q1", ax: "A", t: "好きな人（恋人）からの返信が遅いと、嫌われたのではと不安になる。" },
+                { id: "q2", ax: "V", t: "恋人には、悩みや弱い部分をあまり見せたくない。" },
+                { id: "q3", ax: "A", t: "相手が自分をどれくらい好きか、何度も確かめたくなる。" },
+                { id: "q4", ax: "V", t: "相手との距離が近くなりすぎると、息苦しく感じる。" },
+                { id: "q5", ax: "A", t: "相手が離れていってしまうのではと、心配になることが多い。" },
+                { id: "q6", ax: "V", rev: true, t: "恋人には、困ったときに素直に頼ることができる。" },
+                { id: "q7", ax: "A", t: "相手の機嫌や態度のちょっとした変化が、とても気になる。" },
+                { id: "q8", ax: "V", t: "悩みは、相手に話すより自分ひとりで解決したいと思う。" },
+                { id: "q9", ax: "A", t: "好きな人が他の人と親しくしていると、強い不安や嫉妬を感じる。" },
+                { id: "q10", ax: "V", rev: true, t: "相手と気持ちが近づくと、安心する。" },
+                { id: "q11", ax: "A", rev: true, t: "相手の気持ちを信じて、どっしり構えていられる。" },
+                { id: "q12", ax: "V", t: "恋愛よりも、自分のペースや自由を優先したい。" },
+                { id: "q13", ax: "A", t: "自分は相手にとって十分ではないのでは、と感じることがある。" },
+                { id: "q14", ax: "V", rev: true, t: "気持ちや考えを、相手に打ち明けるのは自然にできる。" }
+            ];
+
+            var LANG = {
+                W: "「ありがとう」「会えてうれしい」など、気持ちを言葉で伝えてもらう",
+                T: "スマホを置いて、ふたりだけの時間をゆっくり過ごす",
+                G: "自分のことを思い出して選んでくれた、ちょっとした贈り物をもらう",
+                S: "忙しいときに、さりげなく手伝ってくれたり、代わりにやってくれたりする",
+                P: "手をつないだり、ハグしたりして、ぬくもりを感じる"
+            };
+            // 5つの愛情表現の全組み合わせ（10通り）。各表現がちょうど4回ずつ登場する
+            var PAIRS = [["W", "T"], ["G", "S"], ["P", "W"], ["T", "G"], ["S", "P"], ["W", "G"], ["T", "S"], ["P", "T"], ["G", "P"], ["S", "W"]];
+
+            var PAGES = [
+                { part: "パート1：恋愛での気持ちの傾向", sub: "ふだんの恋愛（過去の恋愛でもOK）での自分に、どれくらいあてはまりますか？ 深く考えず、直感で選んでください。", type: "likert", ids: ["q1", "q2", "q3", "q4", "q5", "q6", "q7"] },
+                { part: "パート1：恋愛での気持ちの傾向", sub: "つづきです。", type: "likert", ids: ["q8", "q9", "q10", "q11", "q12", "q13", "q14"] },
+                { part: "パート2：愛情を感じる瞬間", sub: "好きな人から、どちらをされるほうが嬉しいですか？ 両方嬉しくても、より嬉しいほうを選んでください。", type: "pair", from: 0, to: 5 },
+                { part: "パート2：愛情を感じる瞬間", sub: "つづきです。", type: "pair", from: 5, to: 10 }
+            ];
+
+            /* ================= 結果の文章 ================= */
+            var LEVELS = [[1.8, "低い"], [2.6, "やや低い"], [3.4, "中程度"], [4.2, "やや高い"], [9, "高い"]];
+            function levelOf(x) { for (var i = 0; i < LEVELS.length; i++) if (x < LEVELS[i][0]) return LEVELS[i][1]; return "高い"; }
+
+            var STYLES = {
+                secure: { name: "安定型", sub: "安心して関係を育てられるタイプ",
+                    summary: "相手を信頼しつつ、自分の気持ちも大切にできる傾向があります。距離が近づいても、ひとりの時間があっても、不安や窮屈さを感じにくいタイプです。",
+                    strengths: ["気持ちや要望を、落ち着いて言葉にできる", "ケンカやすれ違いのあとも、関係を立て直しやすい", "相手の自由も、自分の自由も尊重できる"],
+                    pitfalls: ["不安が強い相手の「確かめたい気持ち」を、実感しにくいことがある", "距離を取りたい相手に「話せばわかる」と迫ってしまうことがある", "小さな問題を「様子見」で先送りしやすい"],
+                    actions: ["相手が不安そうなときは、解決策より先に「大丈夫、ここにいるよ」と伝える", "距離がほしい相手には、「待つよ」と伝えて、連絡のタイミングを一緒に決める", "小さな違和感のうちに、軽い口調で共有する"],
+                    partner: { secure: "安心感のある、安定した関係を築きやすい組み合わせです。", anxious: "あなたの安定感が、相手の不安をやわらげます。こまめな連絡と、言葉での安心づけが効果的です。", avoidant: "相手のペースを尊重しつつ、安心して近づける関係をつくれます。急かさず、小さな共有を重ねましょう。", fearful: "一貫した態度で接することが、相手の安心につながります。相手が揺れても、変わらず誠実に。" } },
+                anxious: { name: "不安型（とらわれ型）", sub: "愛情深く、つながりを大切にするタイプ",
+                    summary: "相手との距離や反応に敏感で、愛情を確かめたくなりやすい傾向があります。情が深く、関係を大切にする気持ちが強いタイプです。",
+                    strengths: ["愛情深く、相手の気持ちの変化にすぐ気づける", "関係をよくしようと、努力を惜しまない", "気持ちを素直に表現できる"],
+                    pitfalls: ["返信の間隔や態度の変化を、悪い意味で受け取りやすい", "不安になると確認や連絡が増え、相手に負担をかけることがある", "相手を優先しすぎて、自分が疲れてしまうことがある"],
+                    actions: ["不安になったら、連絡する前に「事実」と「想像」をメモで分けてみる", "確かめたいときは、責める言い方ではなく「少し不安になった」と気持ちで伝える", "恋愛以外にも、安心できる居場所や楽しみ（友人・趣味）を持つ"],
+                    partner: { secure: "安心感を与えてくれる相手です。不安を感じたら、素直に話してみてください。", anxious: "気持ちが共鳴しやすい反面、不安が増幅しやすい組み合わせです。連絡頻度などをあらかじめ話し合っておくと安心です。", avoidant: "追う側と距離を取る側になりやすい組み合わせです。追う前に一呼吸おき、相手のペースを尊重しつつ、自分の安心も言葉にしましょう。", fearful: "相手の気持ちが揺れやすいので、反応に一喜一憂しがちです。事実を確認し、落ち着いた対話を意識して。" } },
+                avoidant: { name: "回避型（拒絶回避型）", sub: "自立心が強く、自分のペースを大切にするタイプ",
+                    summary: "自立心が強く、ひとりの時間や自分のペースを大切にする傾向があります。感情を表に出すより、自分で解決しようとするタイプです。",
+                    strengths: ["冷静で、感情に流されず判断できる", "自立していて、相手に依存しすぎない", "相手の自由やプライバシーを尊重できる"],
+                    pitfalls: ["気持ちや悩みを話さないため、相手に「壁」を感じさせやすい", "距離が近づくと息苦しくなり、引いてしまうことがある", "相手の感情的な訴えを、重く感じてしまうことがある"],
+                    actions: ["ひとりの時間がほしいときは、黙って離れず「◯時間（◯日）後に連絡するね」と伝える", "1日1回、気持ちを一言だけでも言葉にする（「今日は疲れた」「会えて嬉しい」など）", "相手が感情的なときは、解決策より先に「聞いているよ」と受け止める"],
+                    partner: { secure: "無理なく距離を縮められる、相性のよい相手です。少しずつ気持ちを共有してみて。", anxious: "追う側と距離を取る側になりやすい組み合わせです。連絡のルールを決めて、安心を小さく先渡しするとうまくいきます。", avoidant: "お互い自由で居心地はいいものの、気持ちの共有が少なくなりがちです。意識して会話の時間をつくりましょう。", fearful: "相手の揺れに戸惑うかもしれません。感情的にならず、一貫した態度で接しましょう。" } },
+                fearful: { name: "恐れ・回避型", sub: "近づきたい気持ちと、怖い気持ちが同居するタイプ",
+                    summary: "親密になりたい気持ちと、近づくのが怖い気持ちが同時にある傾向があります。相手を求めながらも、傷つくのを避けようとして揺れやすいタイプです。",
+                    strengths: ["人の気持ちに敏感で、深いつながりを強く求められる", "自分の弱さや痛みに向き合う力がある", "関係が安定すれば、深い絆を育てられる"],
+                    pitfalls: ["「近づきたい → 怖くなって離れる」を繰り返しやすい", "相手の言動を「裏切りのサイン」と受け取りやすい", "自分の本心がわからなくなることがある"],
+                    actions: ["気持ちが揺れたら、「近づきたい気持ち」と「怖い気持ち」の両方を書き出してみる", "距離を取りたくなったら、突然連絡を断たず「少し落ち着く時間がほしい」と伝える", "信頼できる友人や専門家など、恋愛以外の安心できるつながりを持つ"],
+                    partner: { secure: "一貫して安心を与えてくれる相手です。少しずつ信頼を積み重ねましょう。", anxious: "お互いの不安が強まりやすい組み合わせです。落ち着いた対話の時間を意識して。", avoidant: "近づく・離れるのリズムがすれ違いやすい組み合わせです。連絡や会う頻度の目安を共有しましょう。", fearful: "お互い揺れやすいため、定期的に会う・話すなどの習慣をつくると安心です。" } }
+            };
+            var PARTNER_LABEL = { secure: "相手が安定型のとき", anxious: "相手が不安型のとき", avoidant: "相手が回避型のとき", fearful: "相手が恐れ・回避型のとき" };
+
+            var SITUATION_ADVICE = {
+                crush: {
+                    secure: "自然体で距離を縮められるタイプです。共通の話題で会話を重ね、「楽しかった」と好意を軽く言葉にして伝えましょう。相手のペースが合えば、自然に進展します。",
+                    anxious: "返信や反応に一喜一憂しやすい時期です。連絡の回数で気持ちを測らず、会ったときの様子で判断しましょう。「会う約束」を軸に進めると安心です。",
+                    avoidant: "気持ちを見せるのが苦手なぶん、好意が伝わりにくいかもしれません。「楽しかった」「また会いたい」など、短い言葉を意識して添えましょう。",
+                    fearful: "惹かれつつも、怖くなって引いてしまいやすい時期です。引きたくなったら、無言で離れるより「少し忙しいけど、気にかけてるよ」と一言伝えましょう。" },
+                dating: {
+                    secure: "いまの安定を保つコツは、小さな感謝と、定期的な「ふたりの話し合い」です。相手の不安や距離感に気づいたら、早めに声をかけましょう。",
+                    anxious: "不安になったら、責めずに「寂しい」「少し不安」と気持ちで伝えます。連絡や会う頻度の目安は、気持ちが落ち着いている日に話し合っておくと楽になります。",
+                    avoidant: "距離がほしくなったら、黙って離れず、理由と期間を添えて伝えます。感謝や好意を言葉にする習慣が、関係を深めます。",
+                    fearful: "近づいたあとに不安になって距離を取る流れを、自覚しておきましょう。揺れたときは「いま気持ちが揺れてる」と共有できると、関係が安定します。" },
+                seeking: {
+                    secure: "焦らず、自分らしくいられる相手を選べる強みがあります。条件だけでなく「一緒にいて落ち着くか」を大切にしましょう。",
+                    anxious: "早く安心したくて、まだ好意の薄い相手に踏み込みすぎることがあります。数回会ってから判断し、反応が一定で誠実な人を選びましょう。",
+                    avoidant: "「条件はいいのに、踏み出せない」ことが起きやすいです。違和感の理由が「自分の距離感」なのか「相手との相性」なのか、一度整理してみましょう。",
+                    fearful: "過去の傷が、新しい出会いへの警戒になりがちです。少人数・短時間の会話から始めて、安心できる相手かをゆっくり見極めましょう。" },
+                breakup: {
+                    secure: "気持ちの整理に時間がかかるのは自然なことです。無理に前向きにならず、信頼できる人に話すことで回復します。復縁を考えるなら、「何が変わったか」を基準に。",
+                    anxious: "連絡したくなる衝動が強い時期です。送る前に24時間おいて、「連絡の目的は何か」を自分に問いましょう。復縁を考えるなら、これまでの不安のパターンを見直すことが先です。",
+                    avoidant: "感情を押し込めて「平気」と振る舞いがちです。悲しみや後悔を、書く・話すなど外に出す時間をとりましょう。",
+                    fearful: "「会いたい」と「関わりたくない」の間で揺れやすい時期です。決断を急がず、気持ちが落ち着いてから判断を。つらさが強いときは、専門の相談先も頼ってください。" }
+            };
+
+            var LANGS = {
+                W: { name: "肯定的な言葉", desc: "「ありがとう」「すごいね」「会えてうれしい」など、言葉で認められたり、気持ちを伝えられたりすると、愛情を強く感じるタイプです。", give: "感謝や好意を、毎日ひとこと言葉にして伝えましょう。", get: "言葉が少ない相手でも、態度や行動に気持ちが出ていないか見てみましょう。" },
+                T: { name: "クオリティ・タイム（ふたりの時間）", desc: "同じ時間を共有し、自分に向き合ってもらえることで愛情を感じるタイプです。会う頻度より、会っている時間の「質」が大切です。", give: "スマホを置いて、相手の話に集中する時間をつくりましょう。", get: "会う回数が少なくても、会っているときの密度に目を向けてみましょう。" },
+                G: { name: "贈り物", desc: "自分のために選んでくれた「気持ちのこもったもの」に、愛情を感じるタイプです。値段より、思い出してくれたことが大切です。", give: "小さくても、相手の好みに合わせたものを、ふとしたタイミングで。", get: "贈り物をしない相手でも、別の形で気持ちを示していることがあります。" },
+                S: { name: "奉仕（行動で支える）", desc: "手伝ってもらったり、負担を減らしてもらったりと、行動で支えられることで愛情を感じるタイプです。", give: "相手が「面倒だな」と思っていることを、ひとつ引き受けてみましょう。", get: "「これを手伝ってほしい」と具体的に頼むと、相手も動きやすくなります。" },
+                P: { name: "スキンシップ", desc: "手をつなぐ、ハグするなど、触れ合うことで安心と愛情を感じるタイプです。", give: "相手が心地よいかを確かめながら、自然な触れ合いを大切に。", get: "触れ合いが苦手な相手には、別の方法で安心を伝えてもらいましょう。" }
+            };
+
+            /* ================= 状態 ================= */
+            var state = { situation: "", page: -1, ans: {} };
+
+            function esc(s) { return String(s).replace(/[&<>"']/g, function (m) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]; }); }
+            function byId(id) { for (var i = 0; i < LIKERT.length; i++) if (LIKERT[i].id === id) return LIKERT[i]; return null; }
+            function focusEl(id) { var el = document.getElementById(id); if (el) el.focus({ preventScroll: true }); }
+            function scrollToTop() { app.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" }); }
+
+            /* ================= 画面 ================= */
+            function renderStart() {
+                state.page = -1;
+                var sit = "";
+                SITUATIONS.forEach(function (s) {
+                    sit += '<label class="lv-card"><input type="radio" name="situation" value="' + s.id + '"' + (state.situation === s.id ? " checked" : "") + '><span class="lv-mark" aria-hidden="true"></span><span>' + s.label + "</span></label>";
+                });
+                app.innerHTML =
+                    '<h3 class="lv-h" id="lvHead" tabindex="-1">診断をはじめる前に</h3>' +
+                    '<div class="lv-info"><ul>' +
+                    "<li>全24問、約3分です。深く考えず、直感で選んでください。</li>" +
+                    "<li>「愛着スタイル」と「愛情を感じる表現」の2つから、あなたの恋愛傾向を読み解きます。</li>" +
+                    "<li>回答は、この端末の中だけで処理されます。送信も保存もされません。</li>" +
+                    "</ul></div>" +
+                    '<fieldset class="lv-q" style="border-top:none;padding-top:0"><legend><span class="lv-qn">Q0</span>いまの恋愛の状況に、いちばん近いものは？</legend>' + sit + "</fieldset>" +
+                    '<p class="lv-msg" id="lvMsg" role="alert"></p>' +
+                    '<div class="lv-actions"><button type="button" class="lv-btn" data-act="start">診断をはじめる</button></div>';
+            }
+
+            function likertHtml(q, n) {
+                var opts = "";
+                for (var v = 1; v <= 5; v++) {
+                    opts += '<label class="lv-opt"><input type="radio" name="' + q.id + '" value="' + v + '"' + (+state.ans[q.id] === v ? " checked" : "") + '><span class="lv-dot" aria-hidden="true"></span><span class="lv-sr">' + LIKERT_LABELS[v - 1] + "</span></label>";
+                }
+                return '<fieldset class="lv-q" data-q="' + q.id + '"><legend><span class="lv-qn">' + n + "</span>" + q.t + '</legend><div class="lv-scale">' + opts + '</div><div class="lv-ends" aria-hidden="true"><span>あてはまらない</span><span>あてはまる</span></div></fieldset>';
+            }
+            function pairHtml(idx, n) {
+                var p = PAIRS[idx], id = "p" + idx, out = "";
+                p.forEach(function (code) {
+                    out += '<label class="lv-card"><input type="radio" name="' + id + '" value="' + code + '"' + (state.ans[id] === code ? " checked" : "") + '><span class="lv-mark" aria-hidden="true"></span><span>' + LANG[code] + "</span></label>";
+                });
+                return '<fieldset class="lv-q" data-q="' + id + '"><legend><span class="lv-qn">' + n + "</span>より嬉しいのは、どちら？</legend>" + out + "</fieldset>";
+            }
+
+            function renderPage(i) {
+                state.page = i;
+                var pg = PAGES[i], html = "", n;
+                if (pg.type === "likert") {
+                    pg.ids.forEach(function (id) { var q = byId(id); n = parseInt(id.slice(1), 10); html += likertHtml(q, n); });
+                } else {
+                    for (var k = pg.from; k < pg.to; k++) html += pairHtml(k, 15 + k);
+                }
+                var pct = Math.round((i / PAGES.length) * 100);
+                app.innerHTML =
+                    '<div class="lv-progress" role="progressbar" aria-valuemin="0" aria-valuemax="' + PAGES.length + '" aria-valuenow="' + i + '"><i style="width:' + pct + '%"></i></div>' +
+                    '<p class="lv-step">' + (i + 1) + " / " + PAGES.length + "ページ</p>" +
+                    '<h3 class="lv-h" id="lvHead" tabindex="-1">' + pg.part + "</h3>" +
+                    '<p class="lv-sub">' + pg.sub + "</p>" + html +
+                    '<p class="lv-msg" id="lvMsg" role="alert"></p>' +
+                    '<div class="lv-actions"><button type="button" class="lv-btn sub" data-act="back">戻る</button><button type="button" class="lv-btn" data-act="next">' + (i === PAGES.length - 1 ? "結果を見る" : "次へ") + "</button></div>";
+            }
+
+            /* ================= 採点 ================= */
+            function avg(ax) {
+                var sum = 0, cnt = 0;
+                LIKERT.forEach(function (q) { if (q.ax !== ax) return; var v = +state.ans[q.id]; sum += q.rev ? 6 - v : v; cnt++; });
+                return sum / cnt;
+            }
+            function styleKey(anx, avo) {
+                var a = anx > 3, v = avo > 3;
+                return !a && !v ? "secure" : (a && !v ? "anxious" : (!a && v ? "avoidant" : "fearful"));
+            }
+            function compute() {
+                var anx = avg("A"), avo = avg("V");
+                var key = styleKey(anx, avo), also = [];
+                // 境界（3.0）に近い軸は、反対側のタイプの特徴も出やすい
+                if (Math.abs(anx - 3) < 0.35) also.push(styleKey(anx > 3 ? 2.9 : 3.1, avo));
+                if (Math.abs(avo - 3) < 0.35) also.push(styleKey(anx, avo > 3 ? 2.9 : 3.1));
+                also = also.filter(function (k, i) { return k !== key && also.indexOf(k) === i; });
+                var lang = { W: 0, T: 0, G: 0, S: 0, P: 0 };
+                for (var k = 0; k < PAIRS.length; k++) { var c = state.ans["p" + k]; if (c) lang[c]++; }
+                var order = Object.keys(lang).sort(function (a, b) { return lang[b] - lang[a]; });
+                var tops = order.filter(function (c) { return lang[c] === lang[order[0]]; }).slice(0, 2);
+                return { anx: anx, avo: avo, key: key, also: also, lang: lang, order: order, tops: tops };
+            }
+
+            /* ================= 結果 ================= */
+            function meter(label, desc, val, lowLabel, highLabel) {
+                var pct = Math.max(0, Math.min(100, ((val - 1) / 4) * 100));
+                return '<div class="lv-meter"><div class="lv-meter-top"><span><b>' + label + '</b></span><span style="white-space:nowrap"><b>' + levelOf(val) + "</b>（" + val.toFixed(1) + " / 5）</span></div>" +
+                    '<div class="lv-meter-desc">' + desc + "</div>" +
+                    '<div class="lv-meter-bar" role="img" aria-label="' + label + " " + levelOf(val) + '"><i style="width:' + pct + '%"></i><b></b></div>' +
+                    '<div class="lv-meter-ends"><span>' + lowLabel + "</span><span>" + highLabel + "</span></div></div>";
+            }
+            function summaryText(r) {
+                var st = STYLES[r.key];
+                return "【恋愛診断の結果】Café & Bar Sereness\n" +
+                    "愛着スタイル：" + st.name + "（不安傾向 " + r.anx.toFixed(1) + "／回避傾向 " + r.avo.toFixed(1) + "）\n" +
+                    "愛情を感じやすい表現：" + r.tops.map(function (c) { return LANGS[c].name; }).join("・") + "\n" +
+                    "いまの状況：" + SIT_LABEL[state.situation] + "\n" +
+                    "アドバイス：" + SITUATION_ADVICE[state.situation][r.key];
+            }
+
+            function renderResult() {
+                state.page = PAGES.length;
+                var r = compute(), st = STYLES[r.key];
+                var also = r.also.length ? '<p class="lv-note">不安・回避のどちらかが境界付近のため、' + r.also.map(function (k) { return "「" + STYLES[k].name + "」"; }).join("・") + "の特徴も出やすい傾向です。</p>" : "";
+
+                var langRows = "";
+                r.order.forEach(function (c) {
+                    var top = r.tops.indexOf(c) >= 0;
+                    langRows += '<div class="lv-lang-row' + (top ? " top" : "") + '"><span>' + LANGS[c].name.replace(/（.*）/, "") + '</span><div class="lv-meter-bar"><i style="width:' + (r.lang[c] / 4) * 100 + '%"></i></div><span>' + r.lang[c] + "</span></div>";
+                });
+                var langTips = "";
+                r.tops.forEach(function (c) {
+                    langTips += '<div class="lv-lang-tip"><b>' + LANGS[c].name + "</b><br>" + LANGS[c].desc + "<br><b>伝えるコツ：</b>" + LANGS[c].give + "<br><b>受け取るコツ：</b>" + LANGS[c].get + "</div>";
+                });
+                var tie = r.tops.length > 1 ? '<p class="lv-note">上位2つがほぼ同じ強さです。どちらも、あなたが愛情を感じやすい表現です。</p>' : "";
+
+                var li = function (arr) { return arr.map(function (t) { return "<li>" + t + "</li>"; }).join(""); };
+                var partner = "";
+                ["secure", "anxious", "avoidant", "fearful"].forEach(function (k) { partner += '<dl class="lv-partner"><dt>' + PARTNER_LABEL[k] + "</dt><dd>" + st.partner[k] + "</dd></dl>"; });
+
+                app.innerHTML =
+                    '<div class="lv-res lv-hero"><p class="lv-lead2">あなたの愛着スタイルは</p>' +
+                    '<h3 class="lv-type elegant-font" id="lvHead" tabindex="-1" style="border:none;padding:0">' + st.name + "</h3>" +
+                    '<p class="lv-type-sub">' + st.sub + '</p><p class="lv-p">' + st.summary + "</p>" + also + "</div>" +
+
+                    '<div class="lv-res"><h3>気持ちの傾向（2つの軸）</h3>' +
+                    meter("不安傾向", "相手の気持ちを確かめたくなる度合い", r.anx, "低い", "高い") +
+                    meter("回避傾向", "親密さや、頼ることへの慎重さ", r.avo, "低い", "高い") +
+                    '<p class="lv-note">中央の線（3.0）が目安です。点数は「良い・悪い」ではなく、傾向の強さを表します。</p></div>' +
+
+                    '<div class="lv-two"><div class="lv-res"><h3>あなたの強み</h3><ul class="lv-list">' + li(st.strengths) + '</ul></div>' +
+                    '<div class="lv-res"><h3>つまずきやすいところ</h3><ul class="lv-list">' + li(st.pitfalls) + "</ul></div></div>" +
+
+                    '<div class="lv-res" style="margin-top:18px"><h3>いまの状況へのアドバイス</h3><p class="lv-note" style="margin:0 0 8px">状況：' + SIT_LABEL[state.situation] + '</p>' +
+                    '<p class="lv-p">' + SITUATION_ADVICE[state.situation][r.key] + '</p><p class="lv-p" style="margin-top:14px"><b>今日からできること</b></p><ul class="lv-list">' + li(st.actions) + "</ul></div>" +
+
+                    '<div class="lv-res"><h3>愛情を感じやすい表現</h3>' + langRows + tie + langTips +
+                    '<p class="lv-note">あなたが嬉しい表現と、相手が嬉しい表現は違うことがあります。「どんなときに愛情を感じる？」と、お互いに話してみるのもおすすめです。</p></div>' +
+
+                    '<div class="lv-res"><h3>相手のタイプ別・付き合い方のヒント</h3>' + partner + "</div>" +
+
+                    '<div class="lv-res" style="background:#fff"><h3>この診断について</h3>' +
+                    '<p class="lv-note" style="margin-top:0">愛着理論（アタッチメント理論）の「不安」「回避」の2つの軸と、愛情表現の5つの分類という、よく知られた考え方をもとにした簡易診断です。医学的・心理学的な診断ではありません。愛着スタイルは固定されたものではなく、経験や相手との関係によって変わります。愛情表現の分類は広く知られていますが、科学的な裏づけは限られているため、会話のきっかけとしてお使いください。</p>' +
+                    '<p class="lv-note">強い不安やつらさが続くときは、信頼できる人や専門の相談機関にも相談してください。お店では恋愛相談も無料です。結果の画面を見せながら、気軽にお話しください。</p></div>' +
+
+                    '<div class="lv-actions"><button type="button" class="lv-btn" data-act="copy">結果をコピーする</button><button type="button" class="lv-btn sub" data-act="retry">もう一度診断する</button></div>' +
+                    '<p class="lv-msg" id="lvMsg" role="status" style="color:#5a7a3a"></p>';
+                app._result = r;
+            }
+
+            /* ================= 操作 ================= */
+            function validatePage() {
+                var qs = app.querySelectorAll("fieldset[data-q]"), first = null;
+                for (var i = 0; i < qs.length; i++) {
+                    var ok = !!state.ans[qs[i].getAttribute("data-q")];
+                    qs[i].classList.toggle("lv-missing", !ok);
+                    if (!ok && !first) first = qs[i];
+                }
+                if (first) {
+                    document.getElementById("lvMsg").textContent = "回答していない質問があります（赤い線の質問）。";
+                    first.scrollIntoView({ behavior: "smooth", block: "center" });
+                    return false;
+                }
+                return true;
+            }
+            function go(fn) { fn(); scrollToTop(); focusEl("lvHead"); }
+
+            function copyText(text, done) {
+                function fallback() {
+                    var ta = document.createElement("textarea");
+                    ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+                    document.body.appendChild(ta); ta.select();
+                    var ok = false; try { ok = document.execCommand("copy"); } catch (e) {}
+                    document.body.removeChild(ta); done(ok);
+                }
+                if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { done(true); }, fallback);
+                else fallback();
+            }
+
+            app.addEventListener("change", function (e) {
+                var t = e.target;
+                if (t.type !== "radio") return;
+                if (t.name === "situation") state.situation = t.value;
+                else {
+                    state.ans[t.name] = t.value;
+                    var fs = t.closest("fieldset"); if (fs) fs.classList.remove("lv-missing");
+                }
+                var msg = document.getElementById("lvMsg"); if (msg && !app.querySelector(".lv-missing")) msg.textContent = "";
+            });
+
+            app.addEventListener("click", function (e) {
+                var b = e.target.closest("button[data-act]");
+                if (!b) return;
+                var act = b.getAttribute("data-act");
+                if (act === "start") {
+                    if (!state.situation) { document.getElementById("lvMsg").textContent = "いまの状況を選んでください。"; return; }
+                    go(function () { renderPage(0); });
+                } else if (act === "next") {
+                    if (!validatePage()) return;
+                    go(function () { if (state.page >= PAGES.length - 1) renderResult(); else renderPage(state.page + 1); });
+                } else if (act === "back") {
+                    go(function () { if (state.page <= 0) renderStart(); else renderPage(state.page - 1); });
+                } else if (act === "retry") {
+                    state.ans = {}; state.situation = "";
+                    go(renderStart);
+                } else if (act === "copy") {
+                    copyText(summaryText(app._result), function (ok) {
+                        document.getElementById("lvMsg").textContent = ok ? "コピーしました。" : "コピーできませんでした。画面を見せてお伝えください。";
+                    });
+                }
+            });
+
+            renderStart();
+        })();
+        </script>
 
         <section class="faq-section section-wrapper">
             <h2 class="elegant-font">FAQ</h2>
