@@ -3,9 +3,9 @@
    events.html（閲覧）と event-admin.html（管理）で共有します
    ========================================================= */
 
-/* ★ 設定：Google Apps Script をデプロイしたら、そのURL（…/exec）をここに貼る。
-     空のままだと「テストモード」（このブラウザ内だけに保存）で動きます。 */
-const EVENTS_API_URL = "https://script.google.com/macros/s/AKfycbzRJqbQ1-zXSbz0DW8S_G3c7lg_9smujZcXIw02ZTH0SbRB1_9ehcCUPes3eDPtUYc6/exec";
+/* 接続先URLは events-config.js に書きます（トップページの先読みと共通で使うため）。
+   空のままだと「テストモード」（このブラウザ内だけに保存）で動きます。 */
+const EVENTS_API_URL = window.SERENESS_EVENTS_API || "";
 
 const EV_LOCAL_KEY = "sereness_events_local";
 const EV_RES_LOCAL_KEY = "sereness_reservations_local";

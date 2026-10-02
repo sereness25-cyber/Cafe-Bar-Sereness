@@ -6,10 +6,13 @@
     <title>Events | Café & Bar Sereness</title>
     <meta name="description" content="秋田市のエンタメバー Sereness（セレネス）のイベントスケジュールと詳細。">
     <link rel="preconnect" href="https://script.google.com">
+    <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
     <link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+    <!-- フォントは表示をブロックしないよう、あとから読み込む -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet"></noscript>
     <style>
         :root { --primary-bg:#FAFAFA; --text-main:#333; --accent-color:#A68B5B; --section-bg:#F5F5F0; }
         * { box-sizing: border-box; }
@@ -99,6 +102,7 @@
         </div>
     </div>
 
+    <script src="events-config.js"></script>
     <script src="events-common.js"></script>
     <script>
         let events = [];

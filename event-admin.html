@@ -143,6 +143,7 @@
 
     <div id="toast" role="status"></div>
 
+    <script src="events-config.js"></script>
     <script src="events-common.js"></script>
     <script>
         let pw = sessionStorage.getItem("sereness_admin_pw") || "";
@@ -365,7 +366,12 @@
                 swapItem(key, saved);
                 cacheList();
                 renderList();
-                toast("「" + title + "」を保存しました");
+                if (!EV_IS_LOCAL && saved && saved.reservable === undefined) {
+                    // 古いバージョンのサーバーは、金額・予約の項目を知らないので捨ててしまう
+                    toast("保存はできましたが、金額・予約の設定は保存されていません。Apps Script を新バージョンで再デプロイしてください", true);
+                } else {
+                    toast("「" + title + "」を保存しました");
+                }
             }).catch(function (e) {
                 swapItem(key, prev); // 失敗：元の状態に戻す
                 renderList();
