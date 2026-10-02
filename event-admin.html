@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preconnect" href="https://script.google.com">
+    <link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin>
+    <title>イベント管理 | Café & Bar Sereness</title>
+    <style>
+        :root { --text-main:#333; --accent-color:#A68B5B; --section-bg:#F5F5F0; --danger:#c9302c; }
+        * { box-sizing:border-box; }
+        body { margin:0; font-family:"Noto Serif JP","Hiragino Mincho ProN",serif; color:var(--text-main); background:#FAFAFA; line-height:1.7; letter-spacing:.04em; }
+        header { background:var(--text-main); color:#fff; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; }
+        header a, header button { color:var(--accent-color); background:none; border:none; font:inherit; font-size:.85em; cursor:pointer; text-decoration:none; }
+        .wrap { max-width:860px; margin:0 auto; padding:30px 16px 60px; }
+        h2 { font-size:1.15em; color:var(--accent-color); border-bottom:1px solid var(--accent-color); padding-bottom:6px; margin:0 0 16px; font-weight:normal; }
+        .panel { background:#fff; border:1px solid #EAEAEA; padding:24px 22px; margin-bottom:30px; }
+        .notice { background:#fff7e0; border:1px solid #e6cf8a; padding:12px 16px; font-size:.85em; margin-bottom:24px; }
+        input[type=text], input[type=date], input[type=password], select, textarea { width:100%; font:inherit; font-size:16px; padding:10px 12px; border:1px solid #ccc; border-radius:4px; background:#fff; }
+        textarea { min-height:150px; resize:vertical; }
+        input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible { outline:3px solid #333; outline-offset:1px; }
+        label.f { display:block; font-size:.85em; color:#555; margin:16px 0 4px; font-weight:bold; }
+        .req { color:var(--danger); }
+        .row2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+        .btn { font:inherit; font-weight:bold; letter-spacing:.08em; padding:11px 24px; border-radius:4px; border:1px solid var(--accent-color); background:var(--accent-color); color:#fff; cursor:pointer; }
+        .btn.sub { background:#fff; color:var(--accent-color); }
+        .btn.danger { background:#fff; color:var(--danger); border-color:var(--danger); }
+        .btn:disabled { opacity:.5; cursor:wait; }
+        .actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:26px; }
+        .actions .spacer { flex:1; }
+
+        .list-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+        .list-head h2 { margin:0; border:none; padding:0; }
+        .item { display:grid; grid-template-columns:64px 1fr auto; gap:14px; align-items:center; padding:12px 4px; border-bottom:1px dotted #ddd; }
+        .item:last-child { border-bottom:none; }
+        .item img, .item .noimg { width:64px; height:48px; object-fit:cover; border-radius:3px; background:var(--section-bg); }
+        .item .t { font-weight:bold; }
+        .item .d { font-size:.8em; color:#777; }
+        .tag { display:inline-block; font-size:.7em; padding:0 7px; border-radius:3px; margin-left:6px; color:#fff; background:#999; }
+        .tag.draft { background:#f0ad4e; }
+        .item .btn { padding:6px 14px; font-size:.85em; }
+        .item-btns { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+        .empty { text-align:center; color:#888; padding:30px 0; }
+
+        .img-box { display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap; }
+        .img-preview { width:240px; max-width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:4px; background:var(--section-bg); border:1px dashed #bbb; }
+        .img-preview.has { border-style:solid; border-color:#ddd; }
+        .img-ctl { display:flex; flex-direction:column; gap:10px; }
+        .hint { font-size:.78em; color:#777; margin:4px 0 0; }
+        .chk { display:flex; align-items:center; gap:8px; margin-top:20px; font-size:.95em; }
+        .chk input { width:20px; height:20px; }
+
+        #toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:#333; color:#fff; padding:12px 22px; border-radius:30px; font-size:.9em; display:none; z-index:50; max-width:90vw; }
+        #toast.err { background:var(--danger); }
+        .login { max-width:380px; margin:60px auto; }
+        @media (max-width:600px) { .row2 { grid-template-columns:1fr; } .item { grid-template-columns:56px 1fr; } .item-btns { grid-column:2; justify-content:flex-start; } .item img,.item .noimg { width:56px; } }
+    </style>
+</head>
+<body>
+    <header>
+        <div>イベント管理</div>
+        <div><a href="events.html" target="_blank" rel="noopener">公開ページを見る</a>　<button id="logoutBtn" style="display:none" onclick="logout()">ログアウト</button></div>
+    </header>
+
+    <div id="loginView" class="wrap" style="display:none">
+        <div class="panel login">
+            <h2>管理者ログイン</h2>
+            <label class="f" for="pw">パスワード</label>
+            <input type="password" id="pw" autocomplete="current-password">
+            <div class="actions"><button class="btn" id="loginBtn" onclick="login()">ログイン</button></div>
+        </div>
+    </div>
+
+    <div id="appView" class="wrap" style="display:none">
+        <div id="localNotice" class="notice" style="display:none">
+            <b>テストモードで動作中です。</b>入力した内容はこのブラウザの中だけに保存され、お客様には公開されません。
+            本番で使うには <code>events-common.js</code> の <code>EVENTS_API_URL</code> に Apps Script のURLを設定してください。
+        </div>
+
+        <section class="panel">
+            <div class="list-head">
+                <h2>登録済みのイベント</h2>
+                <button class="btn" onclick="newEvent()">＋ 新しいイベント</button>
+            </div>
+            <div id="adminList"></div>
+        </section>
+
+        <section class="panel" id="formPanel">
+            <h2 id="formTitle">新しいイベント</h2>
+
+            <label class="f" for="fTitle">タイトル <span class="req">*</span></label>
+            <input type="text" id="fTitle" maxlength="80">
+
+            <div class="row2">
+                <div>
+                    <label class="f" for="fDate">開催日 <span class="req">*</span></label>
+                    <input type="date" id="fDate">
+                </div>
+                <div>
+                    <label class="f" for="fTime">時間</label>
+                    <input type="text" id="fTime" maxlength="30" placeholder="例：20:00〜22:00">
+                </div>
+            </div>
+
+            <div class="row2">
+                <div>
+                    <label class="f" for="fCat">カテゴリ</label>
+                    <select id="fCat"></select>
+                </div>
+                <div>
+                    <label class="f" for="fPrice">金額（参加費）</label>
+                    <input type="text" id="fPrice" maxlength="100" placeholder="例：無料 ／ 男性1,000円・女性500円">
+                </div>
+            </div>
+            <p class="hint">金額は自由に書けます。空欄なら表示されません。</p>
+
+            <label class="f" for="fDesc">詳細</label>
+            <textarea id="fDesc" maxlength="3000" placeholder="イベントの内容、参加方法、料金など。URLを書くと自動でリンクになります。"></textarea>
+
+            <label class="f">画像</label>
+            <div class="img-box">
+                <img id="imgPreview" class="img-preview" alt="画像プレビュー">
+                <div class="img-ctl">
+                    <input type="file" id="fFile" accept="image/*" style="display:none">
+                    <button type="button" class="btn sub" onclick="document.getElementById('fFile').click()">画像を選ぶ</button>
+                    <button type="button" class="btn danger" id="imgRemove" onclick="clearImage()" style="display:none">画像を外す</button>
+                    <p class="hint">長辺1200pxに自動で縮小されます。</p>
+                </div>
+            </div>
+
+            <label class="chk"><input type="checkbox" id="fPub" checked> 公開する（外すと下書きとして非公開）</label>
+            <label class="chk" style="margin-top:10px"><input type="checkbox" id="fRes" checked> 予約を受け付ける（外すと閲覧ページに予約欄が出ません）</label>
+
+            <div class="actions">
+                <button class="btn" id="saveBtn" onclick="saveEvent()">保存する</button>
+                <button class="btn sub" onclick="newEvent()">入力をクリア</button>
+                <span class="spacer"></span>
+                <button class="btn danger" id="delBtn" onclick="deleteEvent()" style="display:none">このイベントを削除</button>
+            </div>
+        </section>
+    </div>
+
+    <div id="toast" role="status"></div>
+
+    <script src="events-common.js"></script>
+    <script>
+        let pw = sessionStorage.getItem("sereness_admin_pw") || "";
+        let list = [];
+        let editingId = "";
+        let imageValue = ""; // 既存URL もしくは 新規選択した dataURL
+        let loading = false;
+        const LIST_CACHE = "sereness_admin_list_cache";
+
+        const $ = function (id) { return document.getElementById(id); };
+
+        function toast(msg, isErr) {
+            const t = $("toast");
+            t.textContent = msg;
+            t.className = isErr ? "err" : "";
+            t.style.display = "block";
+            clearTimeout(toast.timer);
+            toast.timer = setTimeout(function () { t.style.display = "none"; }, isErr ? 5000 : 2500);
+        }
+
+        function cacheList() {
+            try { localStorage.setItem(LIST_CACHE, JSON.stringify(list.filter(function (x) { return !x._pending; }))); } catch (e) {}
+        }
+
+        function showApp() {
+            $("loginView").style.display = "none";
+            $("appView").style.display = "block";
+            $("localNotice").style.display = EV_IS_LOCAL ? "block" : "none";
+            $("logoutBtn").style.display = EV_IS_LOCAL ? "none" : "inline";
+        }
+
+        function showLogin() {
+            $("appView").style.display = "none";
+            $("loginView").style.display = "block";
+        }
+
+        async function load() {
+            try { list = await EventAPI.listAll(pw); } finally { loading = false; }
+            cacheList();
+            renderList();
+        }
+
+        async function login() {
+            pw = $("pw").value;
+            $("loginBtn").disabled = true;
+            $("loginBtn").textContent = "確認中...";
+            try {
+                await load();
+                sessionStorage.setItem("sereness_admin_pw", pw);
+                showApp();
+            } catch (e) {
+                toast(e.message === "unauthorized" ? "パスワードが違います" : "ログインできませんでした：" + e.message, true);
+            }
+            $("loginBtn").disabled = false;
+            $("loginBtn").textContent = "ログイン";
+        }
+
+        function logout() {
+            sessionStorage.removeItem("sereness_admin_pw");
+            localStorage.removeItem(LIST_CACHE);
+            location.reload();
+        }
+        $("pw").addEventListener("keydown", function (e) { if (e.key === "Enter") login(); });
+
+        function renderList() {
+            const box = $("adminList");
+            if (!list.length) {
+                box.innerHTML = loading ? '<div class="empty">読み込み中...</div>'
+                    : '<div class="empty">まだイベントがありません。<br>下のフォームから登録してください。</div>';
+                return;
+            }
+            const today = todayStr();
+            const sorted = list.slice().sort(function (a, b) { return (b.date + (b.time || "")).localeCompare(a.date + (a.time || "")); });
+            box.innerHTML = sorted.map(function (ev) {
+                const p = parseDate(ev.date);
+                const pend = !!ev._pending;
+                return '<div class="item" data-item="' + esc(ev.id) + '">' +
+                    (ev.image ? '<img src="' + esc(thumbUrl(ev.image, 160)) + '" alt="" decoding="async">' : '<div class="noimg"></div>') +
+                    "<div><div class=\"t\">" + esc(ev.title) +
+                    (pend ? '<span class="tag draft">保存中...</span>' : "") +
+                    (ev.published === false ? '<span class="tag draft">非公開</span>' : "") +
+                    (ev.reservable === false ? '<span class="tag">予約なし</span>' : "") +
+                    (ev.date < today ? '<span class="tag">終了</span>' : "") + "</div>" +
+                    '<div class="d">' + p.y + "." + pad2(p.m) + "." + pad2(p.d) + "（" + p.w + "）" + esc(ev.time || "") + (ev.price ? "　" + esc(ev.price) : "") + "</div></div>" +
+                    (pend ? "" : '<div class="item-btns">' +
+                    '<button class="btn sub" data-act="edit" data-id="' + esc(ev.id) + '">編集</button>' +
+                    '<button class="btn sub" data-act="copy" data-id="' + esc(ev.id) + '">コピー</button>' +
+                    '<button class="btn danger" data-act="del" data-id="' + esc(ev.id) + '">削除</button></div>') + "</div>";
+            }).join("");
+        }
+        $("adminList").addEventListener("click", function (e) {
+            const b = e.target.closest("button[data-id]");
+            if (!b) return;
+            if (b.dataset.act === "copy") copyEvent(b.dataset.id);
+            else if (b.dataset.act === "del") confirmDelete(b.dataset.id);
+            else editEvent(b.dataset.id);
+        });
+
+        function setImage(v) {
+            imageValue = v || "";
+            const img = $("imgPreview");
+            if (imageValue) { img.src = imageValue; img.classList.add("has"); }
+            else { img.removeAttribute("src"); img.classList.remove("has"); }
+            $("imgRemove").style.display = imageValue ? "block" : "none";
+        }
+        function clearImage() { setImage(""); $("fFile").value = ""; }
+
+        function fillForm(ev) {
+            editingId = ev ? ev.id : "";
+            $("formTitle").textContent = (ev && ev.id) ? "イベントを編集" : "新しいイベント";
+            $("fTitle").value = ev ? ev.title : "";
+            $("fDate").value = ev ? ev.date : "";
+            $("fTime").value = ev ? (ev.time || "") : "";
+            $("fCat").value = ev ? (ev.category || EV_CATEGORIES[0]) : EV_CATEGORIES[0];
+            $("fDesc").value = ev ? (ev.description || "") : "";
+            $("fPub").checked = ev ? ev.published !== false : true;
+            $("fPrice").value = ev ? (ev.price || "") : "";
+            $("fRes").checked = ev ? ev.reservable !== false : true;
+            $("delBtn").style.display = (ev && ev.id) ? "inline-block" : "none";
+            $("fFile").value = "";
+            setImage(ev ? ev.image : "");
+        }
+        function newEvent() { fillForm(null); $("fTitle").focus(); }
+        function editEvent(id) {
+            const ev = list.find(function (x) { return x.id === id; });
+            if (!ev) return;
+            fillForm(ev);
+            $("formPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+
+        // 登録済みイベントの内容を、新規イベントとしてフォームに複写（保存するまで登録されない）
+        function copyEvent(id) {
+            const ev = list.find(function (x) { return x.id === id; });
+            if (!ev) return;
+            fillForm(null);
+            $("formTitle").textContent = "イベントをコピーして新規登録";
+            $("fTitle").value = ev.title;
+            $("fDate").value = ev.date;
+            $("fTime").value = ev.time || "";
+            $("fCat").value = ev.category || EV_CATEGORIES[0];
+            $("fDesc").value = ev.description || "";
+            $("fPub").checked = ev.published !== false;
+            $("fPrice").value = ev.price || "";
+            $("fRes").checked = ev.reservable !== false;
+            setImage(ev.image);
+            $("formPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+            $("fDate").focus({ preventScroll: true });
+            toast("コピーしました。開催日などを直して「保存する」を押してください");
+        }
+
+        // 画像を選んだら縮小してプレビュー（長辺1000px：閲覧ページの表示サイズには十分で、送信も速い）
+        $("fFile").addEventListener("change", function () {
+            const file = this.files[0];
+            if (!file) return;
+            if (!/^image\//.test(file.type)) { toast("画像ファイルを選んでください", true); return; }
+            const reader = new FileReader();
+            reader.onload = function () {
+                const img = new Image();
+                img.onload = function () {
+                    const MAX = 1000;
+                    const r = Math.min(1, MAX / Math.max(img.width, img.height));
+                    const c = document.createElement("canvas");
+                    c.width = Math.round(img.width * r);
+                    c.height = Math.round(img.height * r);
+                    const ctx = c.getContext("2d");
+                    ctx.fillStyle = "#fff";
+                    ctx.fillRect(0, 0, c.width, c.height);
+                    ctx.drawImage(img, 0, 0, c.width, c.height);
+                    setImage(c.toDataURL("image/jpeg", EV_IS_LOCAL ? 0.7 : 0.8));
+                };
+                img.onerror = function () { toast("この画像は読み込めませんでした", true); };
+                img.src = reader.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // 一覧の1件を入れ替える（item が null なら削除、無ければ追加）
+        function swapItem(key, item) {
+            const i = list.findIndex(function (x) { return x.id === key; });
+            if (item) { if (i >= 0) list[i] = item; else list.push(item); }
+            else if (i >= 0) list.splice(i, 1);
+        }
+
+        // 保存：押した瞬間に一覧へ反映し、サーバーへの保存はうしろで行う。失敗したときだけ元に戻す
+        function saveEvent() {
+            const title = $("fTitle").value.trim();
+            const date = $("fDate").value;
+            if (!title) { toast("タイトルを入力してください", true); $("fTitle").focus(); return; }
+            if (!date) { toast("開催日を入力してください", true); $("fDate").focus(); return; }
+
+            let image = imageValue, dataUrl = "";
+            if (image.indexOf("data:") === 0) { dataUrl = image; image = ""; } // 新しく選んだ画像
+            const isNew = !editingId;
+            const send = {
+                id: editingId,
+                title: title,
+                date: date,
+                time: $("fTime").value.trim(),
+                category: $("fCat").value,
+                description: $("fDesc").value.trim(),
+                image: image,
+                published: $("fPub").checked,
+                price: $("fPrice").value.trim(),
+                reservable: $("fRes").checked
+            };
+            const key = isNew ? "tmp" + Date.now().toString(36) : editingId;
+            const prev = isNew ? null : list.find(function (x) { return x.id === editingId; });
+
+            // 1) 画面に即反映（画像は選んだ画像をそのまま表示）
+            swapItem(key, Object.assign({}, send, { id: key, image: dataUrl || image, _pending: true }));
+            renderList();
+            fillForm(null);
+            const row = document.querySelector('[data-item="' + key + '"]');
+            if (row) row.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            toast("保存しています...");
+
+            // 2) うしろでサーバーに保存
+            EventAPI.save(send, pw, dataUrl).then(function (saved) {
+                localStorage.removeItem(EV_CACHE_KEY); // 公開ページの古いキャッシュを破棄
+                swapItem(key, saved);
+                cacheList();
+                renderList();
+                toast("「" + title + "」を保存しました");
+            }).catch(function (e) {
+                swapItem(key, prev); // 失敗：元の状態に戻す
+                renderList();
+                const why = e.name === "QuotaExceededError" ? "保存容量がいっぱいです。古いイベントを削除してください" : e.message;
+                toast("「" + title + "」を保存できませんでした：" + why, true);
+                // 入力中のものが無ければ、入力内容をフォームに戻して再保存できるようにする
+                if (!$("fTitle").value.trim() && !editingId) {
+                    fillForm(Object.assign({}, send, { image: dataUrl || image }));
+                    editingId = send.id;
+                }
+            });
+        }
+
+        // 削除：画面からは先に消し、失敗したときだけ元に戻す
+        async function confirmDelete(id) {
+            const ev = list.find(function (x) { return x.id === id; });
+            if (!ev) return;
+            if (!confirm("「" + ev.title + "」を削除します。元に戻せません。よろしいですか？")) return;
+            const backup = list.slice();
+            const wasEditing = editingId === id;
+            list = list.filter(function (x) { return x.id !== id; });
+            renderList();
+            if (wasEditing) fillForm(null);
+            toast("削除しました");
+            try {
+                await EventAPI.remove(id, pw);
+                cacheList();
+                localStorage.removeItem(EV_CACHE_KEY);
+            } catch (e) {
+                list = backup;
+                renderList();
+                toast("削除できませんでした（元に戻しました）：" + e.message, true);
+            }
+        }
+        function deleteEvent() { if (editingId) confirmDelete(editingId); }
+
+        // 初期化
+        $("fCat").innerHTML = EV_CATEGORIES.map(function (c) { return "<option>" + esc(c) + "</option>"; }).join("");
+        fillForm(null);
+        if (EV_IS_LOCAL) {
+            load().then(showApp);
+        } else {
+            // サーバーの起動待ち（数秒かかることがある）を、入力や表示と並行して先に済ませておく
+            fetch(EVENTS_API_URL + "?action=ping", { mode: "no-cors" }).catch(function () {});
+            if (pw) {
+                // ログイン済みなら前回の一覧をすぐ表示し、最新はうしろで取得する
+                try { list = JSON.parse(localStorage.getItem(LIST_CACHE) || "[]") || []; } catch (e) { list = []; }
+                loading = true;
+                renderList();
+                showApp();
+                load().catch(function (e) {
+                    if (e.message === "unauthorized") {
+                        sessionStorage.removeItem("sereness_admin_pw");
+                        localStorage.removeItem(LIST_CACHE);
+                        pw = "";
+                        showLogin();
+                    } else {
+                        if (!list.length) $("adminList").innerHTML = '<div class="empty">読み込めませんでした。ページを再読み込みしてください。</div>';
+                        toast("最新の情報を取得できませんでした：" + e.message, true);
+                    }
+                });
+            } else {
+                showLogin();
+            }
+        }
+    </script>
+</body>
+</html>
