@@ -142,6 +142,7 @@
                 <option value="スペシャルドリンク">スペシャルドリンク</option>
                 <option value="スムージー">スムージー</option>
                 <option value="単品">単品</option>
+                <option value="ホットサンド">ホットサンド</option>
                 <option value="おつまみ">おつまみ</option>
                 <option value="フード">フード</option>
                 <option value="缶">缶</option>
@@ -155,6 +156,19 @@
             <label>商品名</label><input type="text" id="menuName">
             <label>金額（例: 500円）</label><input type="text" id="menuPrice">
             <label>簡単な説明</label><input type="text" id="menuDesc">
+
+            <div class="file-upload-wrapper">
+                <label style="margin-top: 0;">商品画像（任意）</label>
+                <div id="menuImagePreview" style="display:none; margin-bottom:10px;">
+                    <img id="menuImagePreviewImg" src="" alt="" style="width:80px; height:80px; object-fit:cover; border-radius:6px; border:1px solid #ddd;">
+                </div>
+                <input type="file" id="menuImageFile" accept="image/*" style="border: none; padding: 0;" onchange="previewMenuImage()">
+                <label id="menuRemoveImageLabel" style="margin-top: 15px; display: none; align-items: center; gap: 5px; cursor: pointer;">
+                    <input type="checkbox" id="menuRemoveImage" style="width: auto; margin: 0; cursor: pointer;">
+                    <span>登録済みの画像を削除する</span>
+                </label>
+                <div style="font-size:0.8em; color:#888; margin-top:8px;">※ 画像は自動で小さくしてから保存します。メニューでは商品名の左に表示されます。</div>
+            </div>
             
             <div id="menuActionButtons" class="action-buttons" style="display: none;">
                 <button type="button" class="btn-cancel" onclick="resetMenuForm()">キャンセル（入力をクリア）</button>
@@ -232,6 +246,7 @@
                 <option value="スペシャルドリンク">スペシャルドリンク</option>
                 <option value="スムージー">スムージー</option>
                 <option value="単品">単品</option>
+                <option value="ホットサンド">ホットサンド</option>
                 <option value="おつまみ">おつまみ</option>
                 <option value="フード">フード</option>
                 <option value="缶">缶</option>
@@ -336,7 +351,7 @@
         });
     }
 
-    function sendDataAsync(payload) {
+    function sendDataAsync(payload, reloadAfter) {
         showSyncBadge("↻ データを保存中...");
         
         fetch(GAS_URL, { 
@@ -350,6 +365,8 @@
             if (res.status !== "success") {
                 alert("保存エラーが発生しました。画面を元の状態に戻します。\n\n詳細: " + res.message);
                 loadData(); 
+            } else if (reloadAfter) {
+                loadData();
             }
         })
         .catch(err => {
@@ -424,12 +441,54 @@
         document.getElementById('menuName').value = "";
         document.getElementById('menuPrice').value = "";
         document.getElementById('menuDesc').value = "";
+        document.getElementById('menuImageFile').value = "";
+        document.getElementById('menuRemoveImage').checked = false;
+        document.getElementById('menuRemoveImageLabel').style.display = 'none';
+        setMenuPreview("");
         document.getElementById('oldMenuName').value = "";
         document.getElementById('oldMenuTimeMode').value = "";
         
         document.getElementById('menuActionButtons').style.display = 'none';
         document.getElementById('submitBtn').textContent = "メニューを追加・保存する";
         document.getElementById('message').textContent = "";
+    }
+
+    function setMenuPreview(src) {
+        document.getElementById('menuImagePreviewImg').src = src || "";
+        document.getElementById('menuImagePreview').style.display = src ? 'block' : 'none';
+    }
+
+    function previewMenuImage() {
+        const file = document.getElementById('menuImageFile').files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = e => setMenuPreview(e.target.result);
+        reader.readAsDataURL(file);
+    }
+
+    // 画像を長辺 maxSize px 以下の JPEG に縮小する
+    function resizeImage(file, maxSize) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onerror = reject;
+            reader.onload = e => {
+                const img = new Image();
+                img.onerror = reject;
+                img.onload = () => {
+                    const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+                    const canvas = document.createElement('canvas');
+                    canvas.width = Math.round(img.width * scale);
+                    canvas.height = Math.round(img.height * scale);
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = '#fff';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.85));
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
     }
 
     function renderMenuList() {
@@ -463,6 +522,8 @@
             const isFirst = (i === 0); const isLast = (i === filteredMenuList.length - 1);
             
             let descHtml = m.description ? `<br><span style="font-size:0.8em; color:#888; font-weight:normal;">${m.description}</span>` : '';
+            if (m.image === "pending") descHtml += ' <span class="badge-image">📷画像を保存中</span>';
+            else if (m.image) descHtml = `<br><img src="${m.image}" alt="" style="width:40px; height:40px; object-fit:cover; border-radius:4px; margin-top:4px;">` + descHtml;
             
             html += `<tr><td>${badge}</td><td>${m.category}</td><td><strong>${m.name}</strong>${descHtml}</td><td>${m.price || '-'}</td><td><div class="btn-group"><button type="button" class="btn-move" onclick="moveMenu(${m._originalIndex}, -1)" ${isFirst ? 'disabled' : ''}>▲</button><button type="button" class="btn-move" onclick="moveMenu(${m._originalIndex}, 1)" ${isLast ? 'disabled' : ''}>▼</button><button type="button" class="edit-btn" onclick="editMenu(${m._originalIndex})">編集</button><button type="button" class="del-btn-small" onclick="deleteMenu('${m.name}', '${m.timeMode}')">削除</button></div></td></tr>`;
         });
@@ -477,6 +538,11 @@
         document.getElementById('menuName').value = m.name;
         document.getElementById('menuPrice').value = m.price;
         document.getElementById('menuDesc').value = m.description || "";
+        document.getElementById('menuImageFile').value = "";
+        document.getElementById('menuRemoveImage').checked = false;
+        const hasImg = m.image && m.image !== "pending";
+        document.getElementById('menuRemoveImageLabel').style.display = hasImg ? 'flex' : 'none';
+        setMenuPreview(hasImg ? m.image : "");
         
         document.getElementById('oldMenuName').value = m.name;
         document.getElementById('oldMenuTimeMode').value = m.timeMode;
@@ -724,20 +790,40 @@
             const oldName = document.getElementById('oldMenuName').value;
             const oldTimeMode = document.getElementById('oldMenuTimeMode').value;
 
+            const imgFile = document.getElementById('menuImageFile').files[0];
+            const removeImage = document.getElementById('menuRemoveImage').checked;
+
             if (oldName) {
                 const index = allData.menu.findIndex(m => m.name === oldName && m.timeMode === oldTimeMode);
                 if (index > -1) {
-                    allData.menu[index] = { timeMode: timeMode, category: category, name: name, price: price, description: desc, _originalIndex: index };
+                    const currentImage = allData.menu[index].image || "";
+                    const newImage = imgFile ? "pending" : (removeImage ? "" : currentImage);
+                    allData.menu[index] = { timeMode: timeMode, category: category, name: name, price: price, description: desc, image: newImage, _originalIndex: index };
                 }
             } else {
-                allData.menu.push({ timeMode: timeMode, category: category, name: name, price: price, description: desc, _originalIndex: allData.menu.length });
+                allData.menu.push({ timeMode: timeMode, category: category, name: name, price: price, description: desc, image: imgFile ? "pending" : "", _originalIndex: allData.menu.length });
             }
             renderMenuList();
             resetMenuForm();
 
-            let payload = { type: "menu", timeMode: timeMode, category: category, name: name, price: price, description: desc };
+            let payload = { type: "menu", timeMode: timeMode, category: category, name: name, price: price, description: desc, removeImage: removeImage && !imgFile };
             if (oldName) { payload.oldName = oldName; payload.oldTimeMode = oldTimeMode; }
-            sendDataAsync(payload);
+
+            if (imgFile) {
+                showSyncBadge("↻ 画像を準備中...");
+                resizeImage(imgFile, 600).then(dataUrl => {
+                    payload.image = dataUrl;
+                    payload.mimeType = "image/jpeg";
+                    payload.filename = "menu_" + name + ".jpg";
+                    sendDataAsync(payload, true);
+                }).catch(() => {
+                    hideSyncBadge();
+                    alert("画像の読み込みに失敗しました。別の画像でお試しください。");
+                    loadData();
+                });
+            } else {
+                sendDataAsync(payload);
+            }
 
         } else if (currentMode === 'calendar') {
             const d = document.getElementById('calDate').value;

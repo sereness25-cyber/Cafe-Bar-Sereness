@@ -65,6 +65,12 @@
             .price { font-size: 14px; }
             .desc { font-size: 10px; margin-top: 1px; }
         }
+        /* メニュー画像 */
+        .item.has-img { display: flex; align-items: center; gap: 10px; }
+        .item-img { width: 56px; height: 56px; object-fit: cover; border-radius: 6px; flex: 0 0 56px; }
+        .item-body { flex: 1; min-width: 0; }
+        .item-body .price { white-space: nowrap; }
+        @media print { .item-img { width: 44px; height: 44px; flex-basis: 44px; } }
     </style>
 </head>
 <body>
@@ -145,12 +151,13 @@
         }
 
         function renderItems(items) {
-            return items.map(i => `
-                <div class="item">
+            return items.map(i => {
+                const body = `
                     <div class="item-row"><span class="name">${i.name}</span><span class="price">${i.price}</span></div>
-                    <div class="desc">${i.description || ''}</div>
-                </div>
-            `).join('');
+                    <div class="desc">${i.description || ''}</div>`;
+                if (!i.image) return `<div class="item">${body}</div>`;
+                return `<div class="item has-img"><img class="item-img" src="${i.image}" alt="" loading="lazy" onerror="this.remove()"><div class="item-body">${body}</div></div>`;
+            }).join('');
         }
 
         // ▼ 横幅ぴったり・A4ぴったり・フリーズしない完璧なプログラム ▼
