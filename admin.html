@@ -351,7 +351,7 @@
         });
     }
 
-    function sendDataAsync(payload, reloadAfter) {
+    function sendDataAsync(payload) {
         showSyncBadge("↻ データを保存中...");
         
         fetch(GAS_URL, { 
@@ -365,8 +365,6 @@
             if (res.status !== "success") {
                 alert("保存エラーが発生しました。画面を元の状態に戻します。\n\n詳細: " + res.message);
                 loadData(); 
-            } else if (reloadAfter) {
-                loadData();
             }
         })
         .catch(err => {
@@ -563,7 +561,7 @@
         allData.menu[targetOriginalIndex] = temp;
         allData.menu.forEach((m, idx) => m._originalIndex = idx);
         renderMenuList();
-        sendDataAsync({ type: "menu_reorder", menuData: allData.menu });
+        sendDataAsync({ type: "menu_reorder", menuData: allData.menu.map(m => ({ category: m.category, name: m.name, price: m.price, description: m.description, timeMode: m.timeMode })) });
     }
 
     function deleteMenu(name, timeMode) {
@@ -793,15 +791,18 @@
             const imgFile = document.getElementById('menuImageFile').files[0];
             const removeImage = document.getElementById('menuRemoveImage').checked;
 
+            let savedItem = null;
             if (oldName) {
                 const index = allData.menu.findIndex(m => m.name === oldName && m.timeMode === oldTimeMode);
                 if (index > -1) {
                     const currentImage = allData.menu[index].image || "";
                     const newImage = imgFile ? "pending" : (removeImage ? "" : currentImage);
-                    allData.menu[index] = { timeMode: timeMode, category: category, name: name, price: price, description: desc, image: newImage, _originalIndex: index };
+                    savedItem = { timeMode: timeMode, category: category, name: name, price: price, description: desc, image: newImage, _originalIndex: index };
+                    allData.menu[index] = savedItem;
                 }
             } else {
-                allData.menu.push({ timeMode: timeMode, category: category, name: name, price: price, description: desc, image: imgFile ? "pending" : "", _originalIndex: allData.menu.length });
+                savedItem = { timeMode: timeMode, category: category, name: name, price: price, description: desc, image: imgFile ? "pending" : "", _originalIndex: allData.menu.length };
+                allData.menu.push(savedItem);
             }
             renderMenuList();
             resetMenuForm();
@@ -815,7 +816,10 @@
                     payload.image = dataUrl;
                     payload.mimeType = "image/jpeg";
                     payload.filename = "menu_" + name + ".jpg";
-                    sendDataAsync(payload, true);
+                    // 再読み込みせず、縮小した画像をそのまま一覧に表示する
+                    if (savedItem) savedItem.image = dataUrl;
+                    if (currentMode === 'menu') renderMenuList();
+                    sendDataAsync(payload);
                 }).catch(() => {
                     hideSyncBadge();
                     alert("画像の読み込みに失敗しました。別の画像でお試しください。");
