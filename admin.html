@@ -80,6 +80,51 @@
             .admin-calendar-table td { height: 60px; padding: 2px; }
             .admin-cal-badge { font-size: 0.65em; padding: 2px; }
         }
+
+        /* ===== 使いやすさ改善レイアウト ===== */
+        body { padding: 0; margin: 0; background: #f2efe9; -webkit-text-size-adjust: 100%; }
+        .admin-box { max-width: 760px; margin: 0 auto; padding: 0 20px 40px; border-radius: 0; box-shadow: none; background: transparent; }
+        .admin-header { position: sticky; top: 0; z-index: 50; background: #f2efe9; padding: 14px 0 10px; margin-bottom: 10px; }
+        .admin-header h1 { margin: 0 0 10px; padding-bottom: 8px; font-size: 1.1em; }
+        .admin-header .tab-wrapper { margin-bottom: 0; flex-wrap: nowrap; }
+        .tab-btn { padding: 10px 4px; font-size: 0.9em; white-space: nowrap; }
+
+        #postForm, #list-container { background: #fff; border-radius: 10px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        #list-container { margin-top: 18px; border-top: none; }
+        #list-container h3 { margin: 0 0 12px; font-size: 1em; }
+        label { margin-top: 14px; }
+        select, input, textarea { font-size: 16px; }   /* iPhoneで入力時に拡大されないように */
+        .btn-primary { margin-top: 18px; border-radius: 8px; }
+        .btn-cancel, .btn-danger, .copy-btn { border-radius: 8px; }
+        .file-upload-wrapper { border-radius: 8px; }
+        input[type="file"] { font-size: 14px; }
+
+        #editBanner { display: none; background: #fff6e5; border: 1px solid #f0ad4e; color: #8a5a00; padding: 10px 12px; border-radius: 8px; font-weight: bold; font-size: 0.9em; margin-bottom: 6px; }
+        #postForm.editing { box-shadow: 0 0 0 2px #f0ad4e, 0 2px 8px rgba(0,0,0,0.06); }
+
+        .filter-container { border-radius: 8px; }
+        .filter-container input, .filter-container select { font-size: 16px; }
+
+        /* 一覧（カード表示） */
+        .card-list { display: flex; flex-direction: column; gap: 8px; }
+        .list-count { font-size: 0.8em; color: #888; margin: 0 0 8px; }
+        .item-card { display: flex; align-items: center; gap: 10px; border: 1px solid #e6e1d8; border-radius: 8px; padding: 10px; background: #fff; flex-wrap: wrap; }
+        .item-thumb { width: 52px; height: 52px; border-radius: 6px; object-fit: cover; flex: 0 0 52px; background: #f2efe9; display: flex; align-items: center; justify-content: center; color: #c9bfae; font-size: 20px; }
+        .item-main { flex: 1; min-width: 0; }
+        .item-name { font-weight: bold; font-size: 0.95em; line-height: 1.4; word-break: break-word; }
+        .item-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 0.78em; color: #666; margin-top: 4px; }
+        .item-price { font-weight: bold; color: #8C7042; }
+        .item-desc { font-size: 0.78em; color: #888; margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .item-actions { display: flex; gap: 6px; flex: 0 0 auto; }
+        .item-actions button { min-height: 36px; min-width: 40px; padding: 6px 12px; border-radius: 6px; font-size: 0.85em; }
+
+        @media (max-width: 600px) {
+            .admin-box { padding: 0 12px 30px; }
+            #postForm, #list-container { padding: 14px; }
+            .item-actions { flex-basis: 100%; justify-content: flex-end; }
+            .item-actions .edit-btn, .item-actions .del-btn-small { flex: 1; }
+            #syncBadge { left: 50%; right: auto; transform: translateX(-50%); bottom: 16px; white-space: nowrap; }
+        }
     </style>
 </head>
 <body>
@@ -87,14 +132,17 @@
 <div id="syncBadge">↻ データを保存中...</div>
 
 <div class="admin-box">
-    <h1>セレネス 管理画面</h1>
-    <div class="tab-wrapper">
-        <button class="tab-btn active" onclick="switchTab('article')">記事投稿</button>
-        <button class="tab-btn" onclick="switchTab('menu')">メニュー管理</button>
-        <button class="tab-btn" onclick="switchTab('calendar')">カレンダー管理</button>
+    <div class="admin-header">
+        <h1>セレネス 管理画面</h1>
+        <div class="tab-wrapper">
+            <button class="tab-btn active" onclick="switchTab('article')">記事</button>
+            <button class="tab-btn" onclick="switchTab('menu')">メニュー</button>
+            <button class="tab-btn" onclick="switchTab('calendar')">カレンダー</button>
+        </div>
     </div>
 
     <form id="postForm">
+        <div id="editBanner"></div>
         <div id="article-section">
             <input type="hidden" id="oldArticleTitle"> 
             <label>投稿先</label>
@@ -374,7 +422,15 @@
         });
     }
 
+    function setEditBanner(text) {
+        const banner = document.getElementById('editBanner');
+        banner.textContent = text || "";
+        banner.style.display = text ? 'block' : 'none';
+        document.getElementById('postForm').classList.toggle('editing', !!text);
+    }
+
     function resetArticleForm() {
+        setEditBanner("");
         document.getElementById('oldArticleTitle').value = "";
         document.getElementById('title').value = "";
         document.getElementById('content').value = "";
@@ -395,19 +451,30 @@
         const filteredArticles = allData.article.filter(a => { return (filterType === 'all') || (a.type === filterType); });
         if (filteredArticles.length === 0) { container.innerHTML = '<div style="text-align:center; padding: 20px; color: #666;">該当する記事がありません。</div>'; return; }
 
-        let html = '<div class="table-wrapper"><table class="admin-table"><thead><tr><th>区分</th><th>日付</th><th>タイトル・本文</th><th>操作</th></tr></thead><tbody>';
+        let html = `<p class="list-count">${filteredArticles.length}件</p><div class="card-list">`;
         filteredArticles.forEach(a => {
             const badge = a.type === 'news' ? '<span class="badge-news">News</span>' : '<span class="badge-blog">ブログ</span>';
-            const imgBadge = a.image ? '<span class="badge-image">📷画像あり</span>' : '';
-            const preview = a.content ? a.content.replace(/\n/g, ' ').substring(0, 30) + '...' : '';
-            html += `<tr><td>${badge}</td><td>${a.date}</td><td><strong>${a.title}</strong> ${imgBadge}<br><span class="text-preview">${preview}</span></td><td><div class="btn-group"><button type="button" class="edit-btn" onclick="editArticle(${a._originalIndex})">編集</button><button type="button" class="del-btn-small" onclick="deleteArticle('${a.title}')">削除</button></div></td></tr>`;
+            const imgBadge = a.image ? '<span class="badge-image" style="margin-left:0;">📷画像あり</span>' : '';
+            const preview = a.content ? a.content.replace(/\n/g, ' ').substring(0, 40) : '';
+            html += `<div class="item-card">
+                <div class="item-main">
+                    <div class="item-name">${a.title}</div>
+                    <div class="item-meta">${badge}<span>${a.date || ''}</span>${imgBadge}</div>
+                    <div class="item-desc">${preview}</div>
+                </div>
+                <div class="item-actions">
+                    <button type="button" class="edit-btn" onclick="editArticle(${a._originalIndex})">編集</button>
+                    <button type="button" class="del-btn-small" onclick="deleteArticle('${a.title}')">削除</button>
+                </div>
+            </div>`;
         });
-        html += '</tbody></table></div>';
+        html += '</div>';
         container.innerHTML = html;
     }
 
     function editArticle(index) {
         const a = allData.article[index];
+        setEditBanner(`✏️「${a.title}」を編集中`);
         document.getElementById('type').value = a.type || 'blog';
         if(a.date) document.getElementById('date').value = a.date.replace(/\./g, '-');
         document.getElementById('title').value = a.title;
@@ -434,6 +501,7 @@
     }
 
     function resetMenuForm() {
+        setEditBanner("");
         document.getElementById('timeMode').value = "drink";
         document.getElementById('menuCategory').value = "アルコール";
         document.getElementById('menuName').value = "";
@@ -506,7 +574,7 @@
         });
         if (filteredMenuList.length === 0) { container.innerHTML = '<div style="text-align:center; padding: 20px; color: #666;">該当するメニューが見つかりません。</div>'; return; }
 
-        let html = '<div class="table-wrapper"><table class="admin-table"><thead><tr><th>ジャンル</th><th>カテゴリ</th><th>商品名</th><th>金額</th><th>操作</th></tr></thead><tbody>';
+        let html = `<p class="list-count">${filteredMenuList.length}件</p><div class="card-list">`;
         filteredMenuList.forEach((m, i) => {
             let badge = '';
             if(m.timeMode === 'drink') badge = '<span class="badge-drink">Bar PLANS</span>';
@@ -519,18 +587,33 @@
 
             const isFirst = (i === 0); const isLast = (i === filteredMenuList.length - 1);
             
-            let descHtml = m.description ? `<br><span style="font-size:0.8em; color:#888; font-weight:normal;">${m.description}</span>` : '';
-            if (m.image === "pending") descHtml += ' <span class="badge-image">📷画像を保存中</span>';
-            else if (m.image) descHtml = `<br><img src="${m.image}" alt="" style="width:40px; height:40px; object-fit:cover; border-radius:4px; margin-top:4px;">` + descHtml;
-            
-            html += `<tr><td>${badge}</td><td>${m.category}</td><td><strong>${m.name}</strong>${descHtml}</td><td>${m.price || '-'}</td><td><div class="btn-group"><button type="button" class="btn-move" onclick="moveMenu(${m._originalIndex}, -1)" ${isFirst ? 'disabled' : ''}>▲</button><button type="button" class="btn-move" onclick="moveMenu(${m._originalIndex}, 1)" ${isLast ? 'disabled' : ''}>▼</button><button type="button" class="edit-btn" onclick="editMenu(${m._originalIndex})">編集</button><button type="button" class="del-btn-small" onclick="deleteMenu('${m.name}', '${m.timeMode}')">削除</button></div></td></tr>`;
+            let thumb = '<div class="item-thumb">🍽</div>';
+            if (m.image === "pending") thumb = '<div class="item-thumb" style="font-size:11px; color:#888;">保存中</div>';
+            else if (m.image) thumb = `<img class="item-thumb" src="${m.image}" alt="">`;
+            const descHtml = m.description ? `<div class="item-desc">${m.description}</div>` : '';
+
+            html += `<div class="item-card">
+                ${thumb}
+                <div class="item-main">
+                    <div class="item-name">${m.name}</div>
+                    <div class="item-meta">${badge}<span>${m.category || ''}</span>${m.price ? `<span class="item-price">${m.price}</span>` : ''}</div>
+                    ${descHtml}
+                </div>
+                <div class="item-actions">
+                    <button type="button" class="btn-move" onclick="moveMenu(${m._originalIndex}, -1)" ${isFirst ? 'disabled' : ''} aria-label="上へ">▲</button>
+                    <button type="button" class="btn-move" onclick="moveMenu(${m._originalIndex}, 1)" ${isLast ? 'disabled' : ''} aria-label="下へ">▼</button>
+                    <button type="button" class="edit-btn" onclick="editMenu(${m._originalIndex})">編集</button>
+                    <button type="button" class="del-btn-small" onclick="deleteMenu('${m.name}', '${m.timeMode}')">削除</button>
+                </div>
+            </div>`;
         });
-        html += '</tbody></table></div>';
+        html += '</div>';
         container.innerHTML = html;
     }
 
     function editMenu(index) {
         const m = allData.menu[index];
+        setEditBanner(`✏️「${m.name}」を編集中`);
         document.getElementById('timeMode').value = m.timeMode;
         document.getElementById('menuCategory').value = m.category;
         document.getElementById('menuName').value = m.name;
@@ -666,6 +749,7 @@
     }
 
     function resetCalendarForm(dateStr = "") {
+        setEditBanner("");
         document.getElementById('calDate').value = dateStr;
         document.getElementById('calType').value = "通常営業";
         document.getElementById('calNote').value = "";
@@ -680,6 +764,7 @@
     }
 
     function editCalendar(date, type, note) {
+        setEditBanner(`✏️ ${date.replace(/-/g, '/')} の「${type}」を編集中`);
         document.getElementById('calDate').value = date;
         document.getElementById('calType').value = type;
         document.getElementById('calNote').value = note || "";
@@ -695,6 +780,7 @@
     }
 
     function doCopyCalendar() {
+        setEditBanner("📋 コピーして新しい予定を追加します（日付を変えて保存してください）");
         document.getElementById('oldCalDate').value = "";
         document.getElementById('oldCalType').value = "";
         document.getElementById('oldCalNote').value = "";
