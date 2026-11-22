@@ -118,6 +118,25 @@
         .item-actions { display: flex; gap: 6px; flex: 0 0 auto; }
         .item-actions button { min-height: 36px; min-width: 40px; padding: 6px 12px; border-radius: 6px; font-size: 0.85em; }
 
+        /* タブレット・パソコン：左に入力欄、右に一覧（それぞれの中でスクロール） */
+        @media (min-width: 768px) {
+            body { height: 100vh; overflow: hidden; }
+            .admin-box { max-width: 1400px; height: 100vh; display: flex; flex-direction: column; padding: 0 20px; box-sizing: border-box; }
+            .admin-header { position: static; flex: 0 0 auto; display: flex; align-items: center; gap: 20px; padding: 12px 0; }
+            .admin-header h1 { margin: 0; padding: 0; border: none; white-space: nowrap; }
+            .admin-header .tab-wrapper { flex: 0 1 420px; margin-left: auto; }
+            .admin-layout { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(300px, 380px) 1fr; gap: 18px; padding-bottom: 18px; }
+            #postForm { overflow-y: auto; min-height: 0; }
+            #postForm label:first-of-type { margin-top: 0; }
+            #list-container { margin-top: 0; display: flex; flex-direction: column; min-height: 0; }
+            #listItems { flex: 1; overflow-y: auto; min-height: 0; padding-right: 4px; }
+            .filter-container { flex-wrap: nowrap; }
+            .card-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; align-items: start; }
+            .item-actions { flex-basis: 100%; justify-content: flex-end; }
+            .item-actions .edit-btn, .item-actions .del-btn-small { flex: 1; }
+            .admin-calendar-table td { height: 64px; }
+        }
+
         @media (max-width: 600px) {
             .admin-box { padding: 0 12px 30px; }
             #postForm, #list-container { padding: 14px; }
@@ -141,6 +160,7 @@
         </div>
     </div>
 
+    <div class="admin-layout">
     <form id="postForm">
         <div id="editBanner"></div>
         <div id="article-section">
@@ -308,6 +328,7 @@
 
         <div id="listItems">データを読み込んでいます...</div>
     </div>
+    </div>
 </div>
 
 <script>
@@ -423,6 +444,7 @@
     }
 
     function setEditBanner(text) {
+        if (text) document.getElementById('postForm').scrollTop = 0;  // 2列表示のとき、入力欄を先頭に戻す
         const banner = document.getElementById('editBanner');
         banner.textContent = text || "";
         banner.style.display = text ? 'block' : 'none';
