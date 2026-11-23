@@ -7,6 +7,23 @@
     <title>夜のカフェで、ほっとひと息。｜Café &amp; Bar Sereness（秋田市大町）</title>
     
     <meta name="description" content="秋田市大町のエンタメカフェ。焼きたてのホットサンドとスイーツ、お酒も飲めてカラオケにゲームも。お酒を飲まない方もお気軽にどうぞ。">
+    <link rel="canonical" href="https://sereness25-cyber.github.io/Cafe-Bar-Sereness/">
+    <link rel="icon" href="favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="theme-color" content="#2b2623">
+    <!-- LINE・SNS で共有したときの表示 -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Café &amp; Bar Sereness">
+    <meta property="og:title" content="夜のカフェで、ほっとひと息。｜Café &amp; Bar Sereness（秋田市大町）">
+    <meta property="og:description" content="秋田市大町のエンタメカフェ。焼きたてのホットサンドとスイーツ、お酒も飲めてカラオケにゲームも。お酒を飲まない方もお気軽にどうぞ。">
+    <meta property="og:url" content="https://sereness25-cyber.github.io/Cafe-Bar-Sereness/">
+    <meta property="og:image" content="https://sereness25-cyber.github.io/Cafe-Bar-Sereness/sereness_logo_2026.jpg">
+    <meta property="og:image:width" content="1670">
+    <meta property="og:image:height" content="942">
+    <meta property="og:locale" content="ja_JP">
+    <meta name="twitter:card" content="summary_large_image">
+    <!-- Google にお店の情報を伝える -->
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":["CafeOrCoffeeShop","BarOrPub"],"name":"Café & Bar Sereness","alternateName":"セレネス","url":"https://sereness25-cyber.github.io/Cafe-Bar-Sereness/","image":"https://sereness25-cyber.github.io/Cafe-Bar-Sereness/sereness_logo_2026.jpg","telephone":"+81-70-1147-9049","email":"c.b.sereness@gmail.com","priceRange":"¥550〜","address":{"@type":"PostalAddress","postalCode":"010-0921","addressCountry":"JP","addressRegion":"秋田県","addressLocality":"秋田市","streetAddress":"大町5-2-7 SCビル2F"},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Sunday","Monday","Tuesday","Thursday"],"opens":"19:00","closes":"01:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":["Friday","Saturday"],"opens":"19:00","closes":"03:00"}],"sameAs":["https://www.instagram.com/cafe_bar.sereness/"]}</script>
     <link rel="preconnect" href="https://script.google.com">
     <script src="events-config.js" defer></script>
     <script src="events-prefetch.js" defer></script>
@@ -181,6 +198,20 @@
             .calendar-table td { height: 50px; padding: 5px 1px; }
             .cal-badge { font-size: 0.6em; padding: 2px; }
         }
+
+        /* 予約・お問い合わせのボタン */
+        .contact-btn { display: block; margin: 10px 0; padding: 14px; border: 1px solid #A68B5B; border-radius: 6px; color: #8C7042; text-decoration: none; font-weight: bold; font-size: 1em; }
+        .contact-btn--main { background: #A68B5B; color: #fff; }
+        /* 画面下の固定ボタン（スマホ・タブレット） */
+        .quick-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 900; display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 8px; padding: 8px 10px calc(8px + env(safe-area-inset-bottom)); background: rgba(30, 26, 24, 0.94); backdrop-filter: blur(6px); box-shadow: 0 -2px 12px rgba(0,0,0,0.2); }
+        .quick-bar a { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 46px; border-radius: 999px; text-decoration: none; font-weight: bold; font-size: 0.95em; color: #fff; border: 1px solid rgba(255,255,255,0.35); }
+        .quick-bar .qb-reserve { background: #A68B5B; border-color: #A68B5B; }
+        .quick-bar .qb-line { background: #06C755; border-color: #06C755; }
+        footer { padding-bottom: calc(80px + env(safe-area-inset-bottom)) !important; }
+        @media (min-width: 900px) {
+            .quick-bar { left: auto; right: 20px; bottom: 20px; width: 360px; border-radius: 999px; padding: 8px; }
+            footer { padding-bottom: 30px !important; }
+        }
     </style>
 </head>
 <body>
@@ -306,8 +337,10 @@
         <div class="contact-wrapper" style="margin-top: 50px; text-align: center;">
             <h2 class="elegant-font" style="font-size: 1.2em; color: var(--text-main); margin-bottom: 20px; letter-spacing: 0.1em;">Reservation <span class="normal-amp">&</span> Contact</h2>
             <div style="background-color: white; border: 1px solid #EAEAEA; padding: 20px; max-width: 400px; margin: 0 auto 40px; border-radius: 4px;">
-                <p style="margin: 10px 0; font-size: 1.1em;">TEL : <a href="tel:07011479049" style="color: var(--text-main); text-decoration: none;">070-1147-9049</a></p>
-                <p style="margin: 10px 0; font-size: 1.1em;">Mail : <a href="mailto:c.b.sereness@gmail.com" style="color: var(--text-main); text-decoration: none;">c.b.sereness@gmail.com</a></p>
+                <a href="reserve.html" class="contact-btn contact-btn--main">📅 WEBで予約する</a>
+                <a href="tel:07011479049" class="contact-btn">📞 電話する（070-1147-9049）</a>
+                <a href="mailto:c.b.sereness@gmail.com" class="contact-btn">✉️ メールする</a>
+                <p style="margin: 12px 0 0; font-size: 0.8em; color: #888;">LINEでのご予約・お問い合わせも承っております。</p>
             </div>
             
             <h2 class="elegant-font" style="font-size: 1.2em; color: var(--text-main); margin-bottom: 10px; letter-spacing: 0.1em; margin-top: 40px;">Consultation</h2>
@@ -324,7 +357,7 @@
         <h2 class="elegant-font" style="font-size:1.3em; margin-bottom:20px; color:#fff; font-weight: normal; letter-spacing: 0.1em;">Access <span class="normal-amp">&</span> Information</h2>
         <div class="access-info">
             <p><strong class="elegant-font" style="font-size: 1.2em;">Café <span class="normal-amp">&</span> Bar Sereness</strong><br>〒010-0921 秋田県秋田市大町5-2-7 SCビル2F</p>
-            <p style="margin-top: 15px;"><strong>【営業時間】</strong><br>月〜木　19:00 - 1:00<br>金・土・祝前日　19:00 - 3:00</p>
+            <p style="margin-top: 15px;"><strong>【営業時間】</strong><br>日・月・火・木　19:00 - 1:00<br>金・土・祝前日　19:00 - 3:00</p>
             <p style="margin-top: 15px; color:#ccc;">定休日: 水曜日</p>
         </div>
         <div class="map-container">
@@ -332,6 +365,13 @@
         </div>
     </div>
     
+    <!-- スマホ：画面の下に予約・電話・LINE を常に表示 -->
+    <nav class="quick-bar" aria-label="予約・お問い合わせ">
+        <a href="reserve.html" class="qb-reserve"><span aria-hidden="true">📅</span>予約</a>
+        <a href="tel:07011479049"><span aria-hidden="true">📞</span>電話</a>
+        <a href="https://lin.ee/5yuGMRS" target="_blank" rel="noopener" class="qb-line"><span aria-hidden="true">💬</span>LINE</a>
+    </nav>
+
     <footer class="elegant-font">
         <div class="footer-operator">運営元：再婚活相談所セレネス</div>
         © 2026 Café <span class="normal-amp">&</span> Bar Sereness. All rights reserved.
