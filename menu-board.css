@@ -1,0 +1,82 @@
+/* メニューを「Café & Bar Sereness の黒板風カード」のデザインで表示する（全メニューページ共通）
+   カードの画像は 3 つに分けている：上（ロゴとリボン）・まん中（くり返して伸ばす）・下（テーブルとキャンドル）
+   画像の元の幅は 941px。上 490px・下 370px の高さの割合で余白を取る */
+:root { --bw: min(calc(100vw - 24px), 560px); }
+
+html { background: #1f1712; }
+body { background: radial-gradient(circle at 50% 0%, #6b4a32 0%, #2e2119 60%, #1f1712 100%) no-repeat #1f1712; min-height: 100vh; padding: 12px; color: #3e2415; }
+
+.menu-paper {
+    width: var(--bw); max-width: none; box-sizing: border-box;
+    margin: 0 auto; border: none; border-radius: 8px;
+    padding: calc(var(--bw) * 0.521) calc(var(--bw) * 0.105) calc(var(--bw) * 0.393);
+    background:
+        url(img/menu-board-top.jpg) top center / 100% auto no-repeat,
+        url(img/menu-board-bottom.jpg) bottom center / 100% auto no-repeat,
+        url(img/menu-board-mid.jpg) top center / 100% auto repeat-y;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+.menu-inner-border { border: none; padding: 0; position: static; }
+
+/* ページ名はリボンの上に */
+.header {
+    position: absolute; left: 22%; right: 22%; top: calc(var(--bw) * 0.392);
+    transform: translateY(-50%); border: none; margin: 0; padding: 0; text-align: center;
+}
+.logo-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.mode-title {
+    margin: 0; color: #fff7ea; font-size: calc(var(--bw) * 0.033); letter-spacing: 0.06em;
+    font-weight: 600; text-shadow: 0 1px 2px rgba(60, 30, 10, 0.45); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* 中身は1列（ドリンクのページの2列も1列にする） */
+.menu-grid { grid-template-columns: 1fr !important; gap: 0 !important; }
+@media screen {
+    .menu-columns { font-size: 16px; }
+    .menu-col { display: block !important; width: 100% !important; padding: 0 !important; margin: 0 !important; vertical-align: top; }
+}
+.genre-title {
+    background: #7a4a2e; color: #fff6e8; border-radius: 999px; margin: 26px 0 8px; padding: 6px;
+    font-size: 1em; letter-spacing: 0.25em; box-shadow: 0 2px 4px rgba(60, 30, 10, 0.25);
+}
+.menu-grid > div:first-child .genre-title:first-child { margin-top: 4px; }
+.menu-section { margin-top: 18px !important; }
+.menu-section h2 {
+    color: #5a3520; border-bottom: 1px solid rgba(90, 53, 32, 0.35); font-size: 16px;
+    margin: 0 0 12px; padding-bottom: 6px;
+}
+
+/* 1品：左に写真、右に「商品名 ………… 金額」（点線はカードと同じ雰囲気で） */
+.item { margin-bottom: 14px; }
+.item-row { display: flex; align-items: baseline; font-weight: bold; }
+.item-row::before { content: none; }
+.item-row::after { content: ""; order: 2; flex: 1; min-width: 16px; margin: 0 6px; border-bottom: 2px dotted rgba(90, 53, 32, 0.55); transform: translateY(-4px); }
+.name { order: 1; background: none; padding: 0; color: #3e2415; font-size: 15px; }
+.price { order: 3; background: none; padding: 0; color: #8a4b22; font-size: 15px; white-space: nowrap; }
+.desc { color: #6b4e3a; }
+.item.has-img { gap: 12px; }
+.item-img {
+    width: 64px; height: 64px; flex: 0 0 64px; border-radius: 50%;
+    border: 2px solid #fff7ea; box-shadow: 0 2px 6px rgba(60, 30, 10, 0.3); background: #efe3d1;
+}
+
+.back-link { color: #f3e6d3; }
+.print-btn { background: #7a4a2e; }
+
+@media (max-width: 400px) {
+    .name, .price { font-size: 14px; }
+    .item-img { width: 52px; height: 52px; flex-basis: 52px; }
+}
+
+/* 印刷はこれまでどおり白い紙で（カードの画像は使わない） */
+@media print {
+    body { background: #fff; padding: 0; }
+    .menu-paper { width: auto; padding: 0; background: none; box-shadow: none; border-radius: 0; }
+    .menu-inner-border { border: 3px double #333; padding: 25px; }
+    .header { position: static; transform: none; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
+    .logo-text { position: static; width: auto; height: auto; clip: auto; }
+    .mode-title { color: #555; text-shadow: none; font-size: 14px; }
+    .menu-grid { grid-template-columns: 1fr 1fr !important; gap: 30px !important; }
+    .genre-title { background: #333; border-radius: 0; box-shadow: none; }
+    .item-img { border-radius: 6px; border: none; box-shadow: none; }
+}
