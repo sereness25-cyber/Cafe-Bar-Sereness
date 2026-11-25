@@ -574,7 +574,7 @@
     }
 
     function setMenuPreview(src) {
-        document.getElementById('menuImagePreviewImg').src = src || "";
+        document.getElementById('menuImagePreviewImg').src = (src && !src.startsWith('data:')) ? src.replace(/([?&]sz=)w\d+/, '$1w200') : (src || "");
         document.getElementById('menuImagePreview').style.display = src ? 'block' : 'none';
     }
 
@@ -655,7 +655,7 @@
             
             let thumb = '<div class="item-thumb">🍽</div>';
             if (m.image === "pending") thumb = '<div class="item-thumb" style="font-size:11px; color:#888;">保存中</div>';
-            else if (m.image) thumb = `<img class="item-thumb" src="${m.image}" alt="">`;
+            else if (m.image) thumb = `<img class="item-thumb" src="${String(m.image).startsWith('data:') ? m.image : String(m.image).replace(/([?&]sz=)w\d+/, '$1w120')}" alt="" loading="lazy" decoding="async">`;
             const descHtml = m.description ? `<div class="item-desc">${m.description}</div>` : '';
 
             html += `<div class="item-card">
