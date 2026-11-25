@@ -99,7 +99,22 @@
     });
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzQRAhDa8-BhxaB6IqsQ-hTmkAYLlu_x-5VK44U20hibIarUrgLSGz7wmZDgPgFsQKD6g/exec";
         
+        // トップページと同じ保存場所。保存済みのメニューがあればすぐ表示し、最新の内容は裏で取りに行く
+        const CACHE_KEY = "sereness_data_cache";
+        let shownFromCache = false;
+        try {
+            const cached = localStorage.getItem(CACHE_KEY);
+            if (cached) { renderMenu(JSON.parse(cached)); shownFromCache = true; }
+        } catch (e) {}
         fetch(GAS_URL).then(res => res.json()).then(data => {
+            try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch (e) {}
+            renderMenu(data);
+        }).catch(err => {
+            if (shownFromCache) return;
+            document.getElementById('menu-content').innerHTML = "<p style='text-align:center; color:red; font-size:16px;'>読み込みに失敗しました。</p>";
+        });
+
+        function renderMenu(data) {
             // ▼ 管理画面で「ドリンク（Cafe PLANS）」に設定されたものを取得 ▼
             const drinks = data.menu.filter(i => i.timeMode === 'cafe');
             const container = document.getElementById('menu-content');
@@ -130,9 +145,7 @@
                     </div>
                 `;
             }
-        }).catch(err => {
-            document.getElementById('menu-content').innerHTML = "<p style='text-align:center; color:red; font-size:16px;'>読み込みに失敗しました。</p>";
-        });
+        }
 
         function renderSection(title, items) {
             if (items.length === 0) return '';
