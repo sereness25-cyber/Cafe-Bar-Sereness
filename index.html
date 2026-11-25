@@ -540,10 +540,20 @@
         renderCalendar(currYear, currMonth);
     }
 
+    // 2.5 初めて開いたとき（保存データなし）は、サイトに置いた data.json（10分ごとに自動更新）をすぐ表示
+    let liveArrived = false;
+    if (!cachedData) {
+        fetch('data.json', { cache: 'no-cache' })
+            .then(r => r.ok ? r.json() : null)
+            .then(d => { if (d && !liveArrived) renderPageData(d); })
+            .catch(() => {});
+    }
+
     // 3. バックグラウンドで最新データ取得＆裏で更新
     fetch(GAS_URL)
         .then(res => res.json())
         .then(data => {
+            liveArrived = true;
             localStorage.setItem(CACHE_KEY, JSON.stringify(data)); 
             renderPageData(data); 
         })

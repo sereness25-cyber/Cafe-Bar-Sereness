@@ -1,0 +1,50 @@
+# お店のデータ（Apps Script の内容）を data.json としてサイトに置く。
+# メニューなどのページは、初めて開くときにこのファイルをすぐ表示し、最新の内容は Apps Script から取りに行く。
+name: お店のデータを data.json に保存
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/data-snapshot.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: data-snapshot
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apps Script からデータを取得
+        run: |
+          curl -sSL --retry 3 --max-time 60 "$GAS_URL" -o data.new.json
+          # 正しいデータ（メニューが1件以上ある）ときだけ使う
+          python3 - <<'PY'
+          import json, sys
+          d = json.load(open("data.new.json", encoding="utf-8"))
+          if not isinstance(d, dict) or not isinstance(d.get("menu"), list) or not d["menu"]:
+              sys.exit("メニューが空、または形が正しくないため保存しません")
+          json.dump(d, open("data.new.json", "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"), sort_keys=True)
+          PY
+          mv data.new.json data.json
+        env:
+          GAS_URL: https://script.google.com/macros/s/AKfycbzQRAhDa8-BhxaB6IqsQ-hTmkAYLlu_x-5VK44U20hibIarUrgLSGz7wmZDgPgFsQKD6g/exec
+
+      - name: 変わっていたら保存
+        run: |
+          git add data.json
+          if git diff --cached --quiet; then echo "変更なし"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "お店のデータ（data.json）を更新"
+          git push

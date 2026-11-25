@@ -84,21 +84,12 @@
 
     <a href="index.html" class="back-link no-print">← トップページへ戻る</a>
 
+    <script src="site-data.js"></script>
     <script>
         const GAS_URL = "https://script.google.com/macros/s/AKfycbzQRAhDa8-BhxaB6IqsQ-hTmkAYLlu_x-5VK44U20hibIarUrgLSGz7wmZDgPgFsQKD6g/exec";
         
-        // トップページと同じ保存場所。保存済みのメニューがあればすぐ表示し、最新の内容は裏で取りに行く
-        const CACHE_KEY = "sereness_data_cache";
-        let shownFromCache = false;
-        try {
-            const cached = localStorage.getItem(CACHE_KEY);
-            if (cached) { renderMenu(JSON.parse(cached)); shownFromCache = true; }
-        } catch (e) {}
-        fetch(GAS_URL).then(res => res.json()).then(data => {
-            try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch (e) {}
-            renderMenu(data);
-        }).catch(err => {
-            if (shownFromCache) return;
+        // 保存済みのデータ → サイトの data.json → Apps Script の最新、の順で表示（site-data.js）
+        loadSiteData(GAS_URL, renderMenu, err => {
             document.getElementById('menu-content').innerHTML = "<p style='text-align:center; color:red;'>読み込みに失敗しました。</p>";
         });
 
