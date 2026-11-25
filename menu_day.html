@@ -139,12 +139,14 @@
             return `<div class="menu-section" style="margin-top: 35px;"><h2>${title}</h2>${renderItems(items)}</div>`;
         }
 
+        // 金額が空のとき：飲み放題のメニューは「飲み放題」と出す。それ以外は点線ごと出さない
+        function priceLabel(i) { return i.price ? i.price : (String(i.category || '').startsWith('飲み放題') ? '飲み放題' : ''); }
         // Googleドライブの画像は、表示に合った小さいサイズ（幅160px）で読み込む（もとは幅600px）
         function smallImg(u) { return String(u || '').replace(/([?&]sz=)w\d+/, '$1w160'); }
         function renderItems(items) {
             return items.map(i => {
                 const body = `
-                    <div class="item-row"><span class="name">${i.name}</span><span class="price">${i.price}</span></div>
+                    <div class="item-row${priceLabel(i) ? '' : ' no-price'}"><span class="name">${i.name}</span><span class="price${i.price ? '' : ' price-note'}">${priceLabel(i)}</span></div>
                     <div class="desc">${i.description || ''}</div>`;
                 if (!i.image) return `<div class="item">${body}</div>`;
                 return `<div class="item has-img"><img class="item-img" src="${smallImg(i.image)}" alt="" width="56" height="56" loading="lazy" decoding="async" onerror="this.remove()"><div class="item-body">${body}</div></div>`;
