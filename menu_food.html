@@ -110,6 +110,7 @@
             
             const sweetDessert = menuData.filter(i => i.category === 'デザート');
             const sweetIce = menuData.filter(i => i.category === 'アイス');
+            const sweetFruitSand = menuData.filter(i => i.category === 'フルーツサンド');
             const sweetSweets = menuData.filter(i => i.category === 'スイーツ');
             
             const limited = menuData.filter(i => i.category === '期間限定');
@@ -124,10 +125,11 @@
             }
 
             let col2Html = "";
-            if (sweetDessert.length > 0 || sweetIce.length > 0 || sweetSweets.length > 0) {
+            if (sweetDessert.length > 0 || sweetIce.length > 0 || sweetFruitSand.length > 0 || sweetSweets.length > 0) {
                 col2Html += `<div class="genre-title">SWEETS</div>` +
                            renderSection('デザート', sweetDessert) +
                            renderSection('アイス', sweetIce) +
+                           renderSection('フルーツサンド', sweetFruitSand) +
                            renderSection('スイーツ', sweetSweets);
             }
 
