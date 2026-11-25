@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 220" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="band" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#84492a"/>
+      <stop offset="0.55" stop-color="#6b381d"/>
+      <stop offset="1" stop-color="#552b15"/>
+    </linearGradient>
+    <linearGradient id="tail" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6a361b"/>
+      <stop offset="1" stop-color="#4a2511"/>
+    </linearGradient>
+    <filter id="sh" x="-5%" y="-20%" width="110%" height="150%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#3a1d0c" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <g filter="url(#sh)">
+    <!-- 左右の切れ込みのある尾（帯のうしろ） -->
+    <path d="M0,92 L140,92 L140,196 L0,196 L44,144 Z" fill="url(#tail)"/>
+    <path d="M1000,92 L860,92 L860,196 L1000,196 L956,144 Z" fill="url(#tail)"/>
+    <path d="M12,102 L130,102 M12,186 L130,186" stroke="#e9cfa6" stroke-width="2.5" opacity="0.75"/>
+    <path d="M988,102 L870,102 M988,186 L870,186" stroke="#e9cfa6" stroke-width="2.5" opacity="0.75"/>
+    <!-- 折り返し（帯と尾のつなぎ目） -->
+    <path d="M70,150 L140,150 L140,196 Z" fill="#33170a"/>
+    <path d="M930,150 L860,150 L860,196 Z" fill="#33170a"/>
+    <!-- 帯（ゆるいアーチ） -->
+    <path d="M70,46 Q500,14 930,46 L930,150 Q500,118 70,150 Z" fill="url(#band)"/>
+    <!-- 内側のクリーム色の線 -->
+    <path d="M86,60 Q500,30 914,60 L914,137 Q500,106 86,137 Z" fill="none" stroke="#f0d9b5" stroke-width="3"/>
+    <path d="M95,67 Q500,38 905,67 L905,130 Q500,99 95,130 Z" fill="none" stroke="#f0d9b5" stroke-width="1.2" opacity="0.6"/>
+  </g>
+</svg>
