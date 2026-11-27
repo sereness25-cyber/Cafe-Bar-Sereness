@@ -137,6 +137,9 @@
             .admin-calendar-table td { height: 64px; }
         }
 
+        /* おすすめ・人気のラベル */
+        .mb-chip { display: inline-block; font-size: 11px; font-weight: bold; color: #fff; border-radius: 999px; padding: 1px 8px; line-height: 1.6; vertical-align: 1px; margin-right: 4px; }
+        .mb-osusume { background: #c0392b; } .mb-ninki { background: #d48a12; }
         /* メニュー：ジャンルごとのまとまり */
         .genre-group { border: 1px solid #e6e1d8; border-radius: 10px; margin-bottom: 10px; background: #fcfbf8; }
         .genre-group > summary { cursor: pointer; padding: 12px 14px; font-weight: bold; list-style: none; display: flex; align-items: center; gap: 8px; }
@@ -242,6 +245,11 @@
             </select>
             <label>商品名</label><input type="text" id="menuName">
             <label>金額（例: 500円）</label><input type="text" id="menuPrice">
+            <label>ラベル <span style="font-weight:normal; color:#888; font-size:0.9em;">（商品名の前に表示）</span></label>
+            <div style="display:flex; gap:18px; margin-top:6px;">
+                <label style="display:flex; align-items:center; gap:6px; margin:0; font-weight:normal; cursor:pointer;"><input type="checkbox" id="menuBadgeOsusume" style="width:auto; margin:0;"> <span class="mb-chip mb-osusume">おすすめ</span></label>
+                <label style="display:flex; align-items:center; gap:6px; margin:0; font-weight:normal; cursor:pointer;"><input type="checkbox" id="menuBadgeNinki" style="width:auto; margin:0;"> <span class="mb-chip mb-ninki">人気</span></label>
+            </div>
             <label>簡単な説明</label><input type="text" id="menuDesc">
 
             <div class="file-upload-wrapper">
@@ -430,6 +438,7 @@
             if(allData.menu) {
                 allData.menu.forEach((m, idx) => {
                     m._originalIndex = idx;
+                    const sp = splitBadges(m.description); m.badges = sp.badges; m.description = sp.desc;
                     if(m.timeMode === 'day') m.timeMode = 'drink';
                     if(m.timeMode === 'night') m.timeMode = 'food';
                 });
@@ -561,6 +570,7 @@
         document.getElementById('menuName').value = "";
         document.getElementById('menuPrice').value = "";
         document.getElementById('menuDesc').value = "";
+        document.getElementById('menuBadgeOsusume').checked = false; document.getElementById('menuBadgeNinki').checked = false;
         document.getElementById('menuImageFile').value = "";
         document.getElementById('menuRemoveImage').checked = false;
         document.getElementById('menuRemoveImageLabel').style.display = 'none';
@@ -572,6 +582,17 @@
         document.getElementById('submitBtn').textContent = "メニューを追加・保存する";
         document.getElementById('message').textContent = "";
     }
+
+    // 「おすすめ」「人気」は、スプレッドシートの説明欄の先頭に [おすすめ][人気] の形で保存する（Apps Script はそのまま）
+    const BADGES = ['おすすめ', '人気'];
+    function splitBadges(raw) {
+        let desc = String(raw || ''), badges = [], m;
+        while ((m = /^\s*\[(おすすめ|人気)\]/.exec(desc))) { if (!badges.includes(m[1])) badges.push(m[1]); desc = desc.slice(m[0].length); }
+        return { badges, desc: desc.trim() };
+    }
+    const joinBadges = (badges, desc) => BADGES.filter(b => (badges || []).includes(b)).map(b => `[${b}]`).join('') + (desc || '');
+    const badgeChips = (badges) => (badges || []).map(b => `<span class="mb-chip ${b === 'おすすめ' ? 'mb-osusume' : 'mb-ninki'}">${b}</span>`).join('');
+    function formBadges() { const b = []; if (document.getElementById('menuBadgeOsusume').checked) b.push('おすすめ'); if (document.getElementById('menuBadgeNinki').checked) b.push('人気'); return b; }
 
     function setMenuPreview(src) {
         document.getElementById('menuImagePreviewImg').src = (src && !src.startsWith('data:')) ? src.replace(/([?&]sz=)w\d+/, '$1w200') : (src || "");
@@ -661,7 +682,7 @@
             html += `<div class="item-card">
                 ${thumb}
                 <div class="item-main">
-                    <div class="item-name">${m.name}</div>
+                    <div class="item-name">${badgeChips(m.badges)}${m.name}</div>
                     <div class="item-meta">${badge}<span>${m.category || ''}</span>${m.price ? `<span class="item-price">${m.price}</span>` : ''}</div>
                     ${descHtml}
                 </div>
@@ -691,6 +712,8 @@
         document.getElementById('menuName').value = m.name;
         document.getElementById('menuPrice').value = m.price;
         document.getElementById('menuDesc').value = m.description || "";
+        document.getElementById('menuBadgeOsusume').checked = (m.badges || []).includes('おすすめ');
+        document.getElementById('menuBadgeNinki').checked = (m.badges || []).includes('人気');
         document.getElementById('menuImageFile').value = "";
         document.getElementById('menuRemoveImage').checked = false;
         const hasImg = m.image && m.image !== "pending";
@@ -740,7 +763,7 @@
         showSyncBadge("↻ 並び順を保存します...");
         clearTimeout(reorderTimer);
         reorderTimer = setTimeout(() => {
-            sendDataAsync({ type: "menu_reorder", menuData: allData.menu.map(m => ({ category: m.category, name: m.name, price: m.price, description: m.description, timeMode: m.timeMode })) });
+            sendDataAsync({ type: "menu_reorder", menuData: allData.menu.map(m => ({ category: m.category, name: m.name, price: m.price, description: joinBadges(m.badges, m.description), timeMode: m.timeMode })) });
         }, 1500);
     }
 
@@ -1065,7 +1088,8 @@
             const timeMode = document.getElementById('timeMode').value;
             const category = document.getElementById('menuCategory').value;
             const price = document.getElementById('menuPrice').value;
-            const desc = document.getElementById('menuDesc').value;
+            const desc = document.getElementById('menuDesc').value.trim();
+            const badges = formBadges();
             const oldName = document.getElementById('oldMenuName').value;
             const oldTimeMode = document.getElementById('oldMenuTimeMode').value;
 
@@ -1078,17 +1102,17 @@
                 if (index > -1) {
                     const currentImage = allData.menu[index].image || "";
                     const newImage = imgFile ? "pending" : (removeImage ? "" : currentImage);
-                    savedItem = { timeMode: timeMode, category: category, name: name, price: price, description: desc, image: newImage, _originalIndex: index };
+                    savedItem = { timeMode: timeMode, category: category, name: name, price: price, description: desc, badges: badges, image: newImage, _originalIndex: index };
                     allData.menu[index] = savedItem;
                 }
             } else {
-                savedItem = { timeMode: timeMode, category: category, name: name, price: price, description: desc, image: imgFile ? "pending" : "", _originalIndex: allData.menu.length };
+                savedItem = { timeMode: timeMode, category: category, name: name, price: price, description: desc, badges: badges, image: imgFile ? "pending" : "", _originalIndex: allData.menu.length };
                 allData.menu.push(savedItem);
             }
             renderMenuList();
             resetMenuForm();
 
-            let payload = { type: "menu", timeMode: timeMode, category: category, name: name, price: price, description: desc, removeImage: removeImage && !imgFile };
+            let payload = { type: "menu", timeMode: timeMode, category: category, name: name, price: price, description: joinBadges(badges, desc), removeImage: removeImage && !imgFile };
             if (oldName) { payload.oldName = oldName; payload.oldTimeMode = oldTimeMode; }
 
             if (imgFile) {

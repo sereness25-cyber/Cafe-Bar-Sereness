@@ -4,7 +4,20 @@
    3. どちらの場合も、Apps Script から最新のデータを取りに行き、届いたら差し替えて保存する */
 (function () {
     var KEY = "sereness_data_cache";
-    window.loadSiteData = function (gasUrl, onData, onFail) {
+    // 説明欄の先頭の [おすすめ][人気] を取り出して i.badges に入れ、説明からは外す
+    function prep(d) {
+        if (d && d.menu) d.menu.forEach(function (i) {
+            var desc = String(i.description || ''), b = [], m;
+            while ((m = /^\s*\[(おすすめ|人気)\]/.exec(desc))) { if (b.indexOf(m[1]) < 0) b.push(m[1]); desc = desc.slice(m[0].length); }
+            i.badges = b; i.description = desc.trim();
+        });
+        return d;
+    }
+    window.menuBadgeHtml = function (i) {
+        return (i.badges || []).map(function (b) { return '<span class="mb-chip ' + (b === 'おすすめ' ? 'mb-osusume' : 'mb-ninki') + '">' + b + '</span>'; }).join('');
+    };
+    window.loadSiteData = function (gasUrl, onDataRaw, onFail) {
+        var onData = function (d) { onDataRaw(prep(d)); };
         var shown = false, live = false;
         try {
             var c = localStorage.getItem(KEY);

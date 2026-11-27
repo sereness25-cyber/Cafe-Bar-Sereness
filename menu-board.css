@@ -66,6 +66,10 @@ body { background: radial-gradient(circle at 50% 0%, #6b4a32 0%, #2e2119 60%, #1
 .name { order: 1; background: none; padding: 0; color: #3e2415; font-size: 15px; }
 .price { order: 3; background: none; padding: 0; color: #8a4b22; font-size: 15px; white-space: nowrap; }
 .desc { color: #6b4e3a; }
+/* おすすめ・人気のラベル（商品名の前） */
+.mb-chip { display: inline-block; font-size: 10.5px; font-weight: bold; color: #fff; border-radius: 999px; padding: 1px 7px; line-height: 1.6; margin-right: 5px; vertical-align: 2px; letter-spacing: 0.05em; white-space: nowrap; }
+.mb-osusume { background: #b83a2b; }
+.mb-ninki { background: #d48a12; }
 .price-note { font-size: 12px; font-weight: normal; color: #8a6a50; letter-spacing: 0.05em; }
 .item-row.no-price::after { content: none; }
 .item.has-img { gap: 12px; }
