@@ -82,15 +82,37 @@ body { background: radial-gradient(circle at 50% 0%, #6b4a32 0%, #2e2119 60%, #1
     .item-img { width: 52px; height: 52px; flex-basis: 52px; }
 }
 
-/* 印刷はこれまでどおり白い紙で（カードの画像は使わない） */
-@media print {
-    body { background: #fff; padding: 0; }
-    .menu-paper { width: auto; padding: 0; background: none; box-shadow: none; border-radius: 0; }
-    .menu-inner-border { border: 3px double #333; padding: 25px; }
-    .header { position: static; transform: none; height: auto; background: none; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
-    .logo-text { position: static; width: auto; height: auto; clip: auto; }
-    .mode-title { position: static; transform: none; color: #555; text-shadow: none; font-size: 14px; }
-    .menu-grid { grid-template-columns: 1fr 1fr !important; gap: 30px !important; }
-    .genre-title { background: #333; border-radius: 0; box-shadow: none; }
-    .item-img { border-radius: 6px; border: none; box-shadow: none; }
+/* 印刷：カードのデザインのまま A4 縦 1 ページに収める（menu-print.js が html に .printing を付けて縮小率を決める） */
+@page { size: A4 portrait; margin: 0; }
+@media print { .no-print { display: none !important; } }
+html.printing { --bw: 900px; background: #fff; height: 296mm; overflow: hidden; }
+html.printing body { background: #fff !important; padding: 0 !important; margin: 0 !important; width: 210mm; height: 296mm; overflow: hidden; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+html.printing .no-print, html.printing .back-link, html.printing .print-btn-container { display: none !important; }
+html.printing .menu-paper {
+    width: var(--bw) !important; max-width: none !important; margin: 0 !important; border: none !important; border-radius: 0 !important; box-shadow: none !important; overflow: visible !important;
+    padding: calc(var(--bw) * 0.521) calc(var(--bw) * 0.105) calc(var(--bw) * 0.393) !important;
+    background:
+        url(img/menu-board-top.jpg) top center / 100% auto no-repeat,
+        url(img/menu-board-bottom.jpg) bottom center / 100% auto no-repeat,
+        url(img/menu-board-mid.jpg) top center / 100% auto repeat-y !important;
+    zoom: var(--print-scale, 1);   /* 見た目だけでなく、占める大きさごと縮める（はみ出して2ページ目にならないように） */
 }
+html.printing .menu-inner-border { border: none !important; padding: 0 !important; }
+html.printing .header { position: absolute !important; left: 3% !important; right: 3% !important; top: calc(var(--bw) * 0.315) !important; height: calc(var(--bw) * 0.2068) !important; margin: 0 !important; padding: 0 !important; border: none !important; }
+html.printing .menu-grid { grid-template-columns: 1fr 1fr !important; gap: 0 44px !important; align-items: start; }
+html.printing .menu-columns { display: flex; gap: 44px; font-size: 16px; align-items: flex-start; }
+html.printing .menu-col { display: block !important; flex: 1; width: auto !important; min-width: 0; margin: 0 !important; padding: 0 !important; }
+html.printing body { display: flex !important; justify-content: center; align-items: flex-start; }
+/* 印刷は行を詰めて、カードをできるだけ大きく印刷する */
+html.printing .item { margin-bottom: 6px !important; }
+html.printing .item-img { width: 40px !important; height: 40px !important; flex: 0 0 40px !important; border-radius: 50% !important; border-width: 1.5px; box-shadow: none; }
+html.printing .item.has-img { gap: 9px; }
+html.printing .name, html.printing .price { font-size: 15px !important; }
+html.printing .desc { font-size: 11px !important; margin-top: 0 !important; }
+html.printing .menu-section { margin-top: 12px !important; }
+html.printing .menu-section h2 { font-size: 16px !important; margin: 0 0 8px !important; padding-bottom: 4px !important; }
+html.printing .genre-title { margin: 14px 0 4px !important; padding: 5px !important; }
+/* 品数が多いページ（Bar PLANS など）は、カードを広げて各見出しの中を2列にする */
+html.printing.print-wide .menu-section { column-count: 2; column-gap: 28px; }
+html.printing.print-wide .menu-section h2 { column-span: all; }
+html.printing.print-wide .item { break-inside: avoid; }
