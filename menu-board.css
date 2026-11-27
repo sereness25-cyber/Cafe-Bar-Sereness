@@ -2,6 +2,8 @@
    カードの画像は 3 つに分けている：上（ロゴとリボン）・まん中（くり返して伸ばす）・下（テーブルとキャンドル）
    画像の元の幅は 941px。上 490px・下 370px の高さの割合で余白を取る */
 :root { --bw: min(calc(100vw - 24px), 560px); }
+/* パソコン・タブレットはカードを広げて2列 */
+@media screen and (min-width: 768px) { :root { --bw: min(calc(100vw - 48px), 920px); } }
 
 html { background: #1f1712; }
 body { background: radial-gradient(circle at 50% 0%, #6b4a32 0%, #2e2119 60%, #1f1712 100%) no-repeat #1f1712; min-height: 100vh; padding: 12px; color: #3e2415; }
@@ -33,10 +35,17 @@ body { background: radial-gradient(circle at 50% 0%, #6b4a32 0%, #2e2119 60%, #1
 }
 
 /* 中身は1列（ドリンクのページの2列も1列にする） */
+/* スマホは1列、パソコン・タブレット（768px以上）は2列 */
 .menu-grid { grid-template-columns: 1fr !important; gap: 0 !important; }
-@media screen {
+@media screen and (max-width: 767px) {
     .menu-columns { font-size: 16px; }
     .menu-col { display: block !important; width: 100% !important; padding: 0 !important; margin: 0 !important; vertical-align: top; }
+}
+@media screen and (min-width: 768px) {
+    .menu-grid { grid-template-columns: 1fr 1fr !important; gap: 0 44px !important; align-items: start; }
+    .menu-columns { display: flex; gap: 44px; font-size: 16px; align-items: flex-start; }
+    .menu-col { display: block !important; flex: 1; width: auto !important; min-width: 0; margin: 0 !important; padding: 0 !important; }
+    .menu-grid > div > .genre-title:first-child, .menu-col > .menu-section:first-child, .menu-col > .genre-title:first-child { margin-top: 4px !important; }
 }
 .genre-title {
     background: #7a4a2e; color: #fff6e8; border-radius: 999px; margin: 26px 0 8px; padding: 6px;
